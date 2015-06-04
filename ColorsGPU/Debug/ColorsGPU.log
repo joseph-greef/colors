@@ -1,0 +1,27 @@
+﻿Build started 5/16/2015 4:31:07 PM.
+     1>Project "C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\ColorsGPU.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         Q:\Programs\VC\bin\CL.exe /c /IC:\SDL\include /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _CONSOLE /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc120.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
+         main.cpp
+     1>c:\users\llamanaru\programming\colorsgpu\colorsgpu\main.cpp(243): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+       Link:
+         Q:\Programs\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\llamanaru\Programming\ColorsGPU\Debug\ColorsGPU.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\SDL\lib\win32 /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\lib\Win32" cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL2.lib SDL2main.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\llamanaru\Programming\ColorsGPU\Debug\ColorsGPU.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\llamanaru\Programming\ColorsGPU\Debug\ColorsGPU.lib" /MACHINE:X86 Debug\kernel.cu.obj
+         Debug\board.obj
+         Debug\main.obj
+         Debug\RuleGenerator.obj
+         Debug\screen.obj
+         Debug\test.obj
+         ColorsGPU.vcxproj -> C:\Users\llamanaru\Programming\ColorsGPU\Debug\ColorsGPU.exe
+       PostBuildEvent:
+         echo copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\Debug\"
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\Debug\"
+         :VCEnd
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\Debug\"
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart32_70.dll
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart64_70.dll
+                 2 file(s) copied.
+     1>Done Building Project "C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\ColorsGPU.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.73
