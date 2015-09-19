@@ -26,6 +26,10 @@ void Initializer::init_board() {
     board->send_board_to_GPU();
 }
 
+void Initializer::init_symm() {
+
+}
+
 //create a board with valid hodge numbers
 void Initializer::init_hodge_board(int n) {
     //int count = 0;
@@ -211,9 +215,10 @@ void Initializer::init_circle() {
 //clears the board. If changing_background is true sets everything to -1
 //so it will age, otherwise sets it to 0 so it won't
 void Initializer::clear_board(int *b) {
+    int deadnum = -board->get_faders() - 1;
     for (int i = 0; i < CELL_WIDTH; i++) {
         for (int j = 0; j < CELL_HEIGHT; j++) {
-            b[j*CELL_WIDTH + i] = changing_background ? -1 : 0;
+            b[j*CELL_WIDTH + i] = changing_background ? deadnum : 0;
         }
     }
     board->send_board_to_GPU();
@@ -300,7 +305,6 @@ void Initializer::get_polygon(int center_x, int center_y, int mag, int dim, floa
         v[k][1] = std::sin(theta);
         x_sum += v[k][0];
         y_sum += v[k][1];
-
     }
     v[k] = (float*)malloc(sizeof(float) * 2);
     v[k][0] = -1 * x_sum;
@@ -342,6 +346,10 @@ void Initializer::get_polygon(int center_x, int center_y, int mag, int dim, floa
         }
     }
     points[index] = -1;
+    for (int k = 0; k < dim; k++) {
+        free(v[k]);
+    }
+    free(v);
 }
 
 
