@@ -3,6 +3,8 @@
 
 
 Screen::Screen(Board *new_board) {
+    board_obj = new_board;
+
     SDL_Surface* screen = NULL;
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
@@ -15,12 +17,17 @@ Screen::Screen(Board *new_board) {
                                            "SDL 2 window",             // window title
                                            SDL_WINDOWPOS_CENTERED,     // x position, centered
                                            SDL_WINDOWPOS_CENTERED,     // y position, centered
-                                           SCREEN_WIDTH,               // width, in pixels
-                                           SCREEN_HEIGHT,              // height, in pixels
-                                           SDL_WINDOW_BORDERLESS          // flags
+                                           0,               // width, in pixels
+                                           0,              // height, in pixels
+                                           SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED          // flags
                                            );
     //SDL_GetWindowSize(window, &screen_width, &screen_height);
 
+    int x, y;
+    SDL_GetWindowSize(window, &x, &y);
+
+    board_obj->set_cell_height(1080);
+    board_obj->set_cell_width(1920);
 
     screen = SDL_GetWindowSurface(window);
     pixels = (Uint32*)screen->pixels;
@@ -33,7 +40,6 @@ Screen::Screen(Board *new_board) {
 
     color_scheme = 0;
 
-    board_obj = new_board;
 
 }
 
@@ -51,7 +57,7 @@ void Screen::set_pixel(int x, int y, Uint32 color) {
     //just sets the correct block of pixels to the color
     for(int i = x*PIXELS_PER_CELL; i < x*PIXELS_PER_CELL+PIXELS_PER_CELL; i++) {
         for(int j = y*PIXELS_PER_CELL; j < y*PIXELS_PER_CELL+PIXELS_PER_CELL; j++) {
-            pixels[j*SCREEN_WIDTH+i] = color;
+            pixels[j*board_obj->get_cell_width()+i] = color;
         }
     }
 }
@@ -74,20 +80,20 @@ void Screen::draw_board() {
     if(draw_smooth) {
         int color;
         if(draw_colors) {
-            for(int j = 0; j < CELL_HEIGHT; j++) {
-                for(int i = 0; i < CELL_WIDTH; i++) {
+            for(int j = 0; j < board_obj->get_cell_height(); j++) {
+                for(int i = 0; i < board_obj->get_cell_width(); i++) {
                     //if we're alive modulo the age of the cell by the number of colors to get which color to draw and draw it
-                    if(board[j*CELL_WIDTH+i] > 0)
-                        set_pixel(i, j, colors[color_scheme][((board[j*CELL_WIDTH+i]+alive_offset)/color_speed_divisor) % 256]);
+                    if(board[j*board_obj->get_cell_width()+i] > 0)
+                        set_pixel(i, j, colors[color_scheme][((board[j*board_obj->get_cell_width()+i]+alive_offset)/color_speed_divisor) % 256]);
                     else //do the same if we're dead, but with negative age instead
-                        set_pixel(i, j, colors[color_scheme][((-board[j*CELL_WIDTH+i]+dead_offset)/color_speed_divisor) % 256]);
+                        set_pixel(i, j, colors[color_scheme][((-board[j*board_obj->get_cell_width()+i]+dead_offset)/color_speed_divisor) % 256]);
                 }
             }
         }
         else {
-            for(int j = 0; j < CELL_HEIGHT; j++) {
-                for(int i = 0; i < CELL_WIDTH; i++) {
-                    color = 255 * board_float[j*CELL_WIDTH+i];
+            for(int j = 0; j < board_obj->get_cell_height(); j++) {
+                for(int i = 0; i < board_obj->get_cell_width(); i++) {
+                    color = 255 * board_float[j*board_obj->get_cell_width()+i];
                     set_pixel(i, j, color | color << 8 | color << 16);
                 }
             }
@@ -97,23 +103,23 @@ void Screen::draw_board() {
         //if we're drawing in color
         if(draw_colors) {
             //go over the entire board
-            for(int j = 0; j < CELL_HEIGHT; j++) {
-                for(int i = 0; i < CELL_WIDTH; i++) {
+            for(int j = 0; j < board_obj->get_cell_height(); j++) {
+                for(int i = 0; i < board_obj->get_cell_width(); i++) {
                     //if we're alive modulo the age of the cell by the number of colors to get which color to draw and draw it
-                    if(board[j*CELL_WIDTH+i] > 0)
-                        set_pixel(i, j, colors[color_scheme][((board[j*CELL_WIDTH+i]+alive_offset)/color_speed_divisor) % 256]);
+                    if(board[j*board_obj->get_cell_width()+i] > 0)
+                        set_pixel(i, j, colors[color_scheme][((board[j*board_obj->get_cell_width()+i]+alive_offset)/color_speed_divisor) % 256]);
                     else //do the same if we're dead, but with negative age instead
-                        set_pixel(i, j, colors[color_scheme][((-board[j*CELL_WIDTH+i]+dead_offset)/color_speed_divisor) % 256]);
+                        set_pixel(i, j, colors[color_scheme][((-board[j*board_obj->get_cell_width()+i]+dead_offset)/color_speed_divisor) % 256]);
                 }
             }
         }
         //if we're doing black and white
         else {
             //iterate over the whole board
-            for(int j = 0; j < CELL_HEIGHT; j++) {
-                for(int i = 0; i < CELL_WIDTH; i++) {
+            for(int j = 0; j < board_obj->get_cell_height(); j++) {
+                for(int i = 0; i < board_obj->get_cell_width(); i++) {
                     //and draw white if alive
-                    if(board[j*CELL_WIDTH+i] > 0)
+                    if(board[j*board_obj->get_cell_width()+i] > 0)
                         set_pixel(i, j, 0xFFFFFF);
                     //and black if dead
                     else

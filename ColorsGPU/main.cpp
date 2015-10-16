@@ -12,7 +12,7 @@
 #include "RuleGenerator.h"
 #include "kernel.cuh"
 
-#define timeit 1
+
 
 //this function checks if there is user input and reacts accordingly
 //returns whether the program should keep running,

@@ -15,6 +15,7 @@ class Screen {
         bool draw_colors, draw_smooth;
         int alive_offset;
         int dead_offset;
+        int color_scheme;
         uint8_t color_speed_divisor;
         Uint32 *pixels;
         SDL_Window *window;
@@ -23,6 +24,7 @@ class Screen {
         Screen(Board *new_board);
         ~Screen();
         void set_pixel(int x, int y, Uint32 color);
+        void set_color_scheme(int scheme);
         void draw_board();
         void reset_colors();
         void flip_draw_colors();

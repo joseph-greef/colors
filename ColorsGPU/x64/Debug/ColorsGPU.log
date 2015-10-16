@@ -1,37 +1,40 @@
-﻿Build started 5/31/2015 4:44:02 PM.
-     1>Project "C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\ColorsGPU.vcxproj" on node 2 (Build target(s)).
-     1>AddCudaCompileDeps:
-         Q:\Programs\VC\bin\x86_amd64\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /DWIN32 /DWIN64 /D_DEBUG /D_CONSOLE /D_MBCS /IC:\SDL\include /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" /I. /FIcuda_runtime.h /c C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\kernel.cu 
-       CudaBuild:
-         Compiling CUDA source file kernel.cu...
-         cmd.exe /C "C:\Users\llamanaru\AppData\Local\Temp\tmpdb79f901449b4769b5ac0a012319da07.cmd"
-         "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2013 -ccbin "Q:\Programs\VC\bin\x86_amd64"  -IC:\SDL\include -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd  " -o x64\Debug\kernel.cu.obj "C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\kernel.cu"
-         
-         C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\nvcc.exe" -gencode=arch=compute_20,code=\"sm_20,compute_20\" --use-local-env --cl-version 2013 -ccbin "Q:\Programs\VC\bin\x86_amd64"  -IC:\SDL\include -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /Zi /RTC1 /MDd  " -o x64\Debug\kernel.cu.obj "C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\kernel.cu" 
-     1>C:/Users/llamanaru/Programming/ColorsGPU/ColorsGPU/kernel.cu(349): warning : variable "num_n" was set but never used
-     1>C:/Users/llamanaru/Programming/ColorsGPU/ColorsGPU/kernel.cu(349): warning : variable "num_m" was set but never used
-     1>C:/Users/llamanaru/Programming/ColorsGPU/ColorsGPU/kernel.cu(349): warning : variable "num_n" was set but never used
-     1>C:/Users/llamanaru/Programming/ColorsGPU/ColorsGPU/kernel.cu(349): warning : variable "num_m" was set but never used
-         kernel.cu
-       Link:
-         Q:\Programs\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\ColorsGPU.exe" /INCREMENTAL /NOLOGO /LIBPATH:C:\SDL\lib\x64 /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\lib\x64" cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL2.lib SDL2main.lib curand.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\ColorsGPU.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\ColorsGPU.lib" /MACHINE:X64 x64\Debug\kernel.cu.obj
-         x64\Debug\board.obj
-         x64\Debug\initializer.obj
-         x64\Debug\main.obj
-         x64\Debug\RuleGenerator.obj
-         x64\Debug\screen.obj
-         x64\Debug\test.obj
-         ColorsGPU.vcxproj -> C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\ColorsGPU.exe
-       PostBuildEvent:
-         echo copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\"
-         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\"
-         :VCEnd
-         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\"
-         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart32_70.dll
-         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart64_70.dll
-                 2 file(s) copied.
-     1>Done Building Project "C:\Users\llamanaru\Programming\ColorsGPU\ColorsGPU\ColorsGPU.vcxproj" (Build target(s)).
-
-Build succeeded.
-
-Time Elapsed 00:00:05.07
+﻿  board.cpp
+board.cpp(4): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
+board.cpp(21): warning C4305: '=' : truncation from 'double' to 'float'
+board.cpp(22): warning C4305: '=' : truncation from 'double' to 'float'
+board.cpp(23): warning C4305: '=' : truncation from 'double' to 'float'
+board.cpp(24): warning C4305: '=' : truncation from 'double' to 'float'
+board.cpp(25): warning C4305: '=' : truncation from 'double' to 'float'
+board.cpp(26): warning C4305: '=' : truncation from 'double' to 'float'
+board.cpp(402): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+board.cpp(403): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+board.cpp(405): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+board.cpp(406): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
+board.cpp(426): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+board.cpp(429): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+board.cpp(433): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+board.cpp(441): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(442): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(449): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(456): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(457): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(463): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(398): warning C4101: 'num_n' : unreferenced local variable
+board.cpp(398): warning C4101: 'num_m' : unreferenced local variable
+board.cpp(656): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+board.cpp(657): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+board.cpp(701): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+board.cpp(702): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+board.cpp(729): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(730): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+board.cpp(745): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(746): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(747): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(748): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(749): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+board.cpp(750): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
+  ColorsGPU.vcxproj -> C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\ColorsGPU.exe
+  copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart*.dll" "C:\Users\llamanaru\Programming\ColorsGPU\x64\Debug\"
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart32_70.dll
+  C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\bin\cudart64_70.dll
+          2 file(s) copied.

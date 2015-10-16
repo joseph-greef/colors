@@ -63,6 +63,9 @@ class Board {
 
         bool use_gpu;
 
+        int CELL_WIDTH;
+        int CELL_HEIGHT;
+
         curandGenerator_t rand_gen;
         
         int update_algorithm;
@@ -84,6 +87,11 @@ class Board {
 
         void move_board_up();
 
+        void free_cuda();
+        void alloc_cuda();
+
+        void free_mem();
+        void alloc_mem();
         
         int get_num_alive_neighbors(int x, int y, int neighborhood_type, int range);
         int get_sum_neighbors(int x, int y, int neighborhood_type, int range);
@@ -99,7 +107,11 @@ class Board {
 
         void update_board();
 
+        int get_cell_width();
+        int get_cell_height();
 
+        void set_cell_width(int new_width);
+        void set_cell_height(int new_height);
 
         void update_colors();
 
@@ -108,6 +120,8 @@ class Board {
 
         bool get_changing_background();
         void toggle_changing_background();
+
+        int get_faders();
 
         int* get_hodge_rules();
 

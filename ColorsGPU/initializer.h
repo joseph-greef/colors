@@ -33,6 +33,7 @@ public:
     void init_center_dot();
     void init_gliders();
     void init_circle();
+    void init_symm();
     void init_smooth_life();
     void init_square_shell();
     void init_circle_shell();

@@ -2,6 +2,8 @@
 #include "board.h"
 
 Board::Board() : gen(8), e2(time(NULL)), dist(0, 1) {
+    CELL_WIDTH = 12;
+    CELL_HEIGHT = 12;
     board = (int*)malloc(sizeof(int) * CELL_WIDTH * CELL_HEIGHT);
     board_buffer = (int*)malloc(sizeof(int) * CELL_WIDTH * CELL_HEIGHT);
     board_float = (float*)malloc(sizeof(float) * CELL_WIDTH * CELL_HEIGHT);
@@ -30,17 +32,8 @@ Board::Board() : gen(8), e2(time(NULL)), dist(0, 1) {
     use_gpu = false;
 
 
-
-    cudaMalloc((void**)&dev_board, CELL_HEIGHT * CELL_WIDTH * sizeof(int));
-    cudaMalloc((void**)&dev_board_buffer, CELL_HEIGHT * CELL_WIDTH * sizeof(int));
-
-    cudaMalloc((void**)&dev_rand_nums, CELL_HEIGHT * CELL_WIDTH * sizeof(float));
-
-    cudaMalloc((void**)&dev_board_float, CELL_HEIGHT * CELL_WIDTH * sizeof(float));
-    cudaMalloc((void**)&dev_board_buffer_float, CELL_HEIGHT * CELL_WIDTH * sizeof(float));
-
-
-
+    alloc_cuda();
+    
     cudaMalloc((void**)&dev_stay_alive, 9 * sizeof(float));
     cudaMalloc((void**)&dev_born, 9 * sizeof(float));
 
@@ -63,12 +56,66 @@ Board::~Board() {
     free(board);
     free(board_buffer);
     free(born);
+    free_cuda();
 }
 
+void Board::free_mem() {
+    free(board);
+    free(board_buffer);
+    free(board_float);
+    free(board_buffer_float);
+}
 
+void Board::alloc_mem() {
+    board = (int*)malloc(sizeof(int) * CELL_WIDTH * CELL_HEIGHT);
+    board_buffer = (int*)malloc(sizeof(int) * CELL_WIDTH * CELL_HEIGHT);
+    board_float = (float*)malloc(sizeof(float) * CELL_WIDTH * CELL_HEIGHT);
+    board_buffer_float = (float*)malloc(sizeof(float) * CELL_WIDTH * CELL_HEIGHT);
+}
 
+void Board::free_cuda() {
+    cudaFree((void*)dev_board);
+    cudaFree((void*)dev_board_buffer);
 
+    cudaFree((void*)dev_rand_nums);
 
+    cudaFree((void*)dev_board_float);
+    cudaFree((void*)dev_board_buffer_float);
+}
+
+void Board::alloc_cuda() {
+    cudaMalloc((void**)&dev_board, CELL_HEIGHT * CELL_WIDTH * sizeof(int));
+    cudaMalloc((void**)&dev_board_buffer, CELL_HEIGHT * CELL_WIDTH * sizeof(int));
+
+    cudaMalloc((void**)&dev_rand_nums, CELL_HEIGHT * CELL_WIDTH * sizeof(float));
+
+    cudaMalloc((void**)&dev_board_float, CELL_HEIGHT * CELL_WIDTH * sizeof(float));
+    cudaMalloc((void**)&dev_board_buffer_float, CELL_HEIGHT * CELL_WIDTH * sizeof(float));
+}
+
+int Board::get_cell_width() {
+    return CELL_WIDTH;
+}
+
+int Board::get_cell_height() {
+    return CELL_HEIGHT;
+}
+
+void Board::set_cell_height(int new_height) {
+    CELL_HEIGHT = new_height;
+    free_cuda();
+    alloc_cuda();
+    free_mem();
+    alloc_mem();
+}
+
+void Board::set_cell_width(int new_width) {
+    CELL_WIDTH = new_width;
+    free_cuda();
+    alloc_cuda();
+    free_mem();
+    alloc_mem();
+}
 
 //this function updates the board according to the ruleset
 void Board::update_board() {
@@ -151,7 +198,7 @@ void Board::update_board_hodge() {
 
     if (use_gpu) {
         cudaMemcpy(dev_hodge_rules, hodge_rules, 6 * sizeof(int), cudaMemcpyHostToDevice);
-        call_cuda_UBH(dev_board, dev_board_buffer, dev_hodge_rules);
+        call_cuda_UBH(dev_board, dev_board_buffer, dev_hodge_rules, CELL_WIDTH, CELL_HEIGHT);
         return;
     }
 
@@ -218,7 +265,7 @@ void Board::update_board_1D() {
 
     if (use_gpu) {
         cudaMemcpy(dev_OneD_rules, OneD_rules, (int)exp2(OneD_width) * sizeof(int), cudaMemcpyHostToDevice);
-        call_cuda_UB1D(dev_board, dev_board_buffer, dev_OneD_rules, OneD_width, alive_offset);
+        call_cuda_UB1D(dev_board, dev_board_buffer, dev_OneD_rules, OneD_width, alive_offset, CELL_WIDTH, CELL_HEIGHT);
         return;
     }
 
@@ -260,7 +307,7 @@ void Board::update_board_LtL() {
 
     if (use_gpu) {
         cudaMemcpy(dev_LtL_rules, LtL_rules, 6 * sizeof(int), cudaMemcpyHostToDevice);
-        call_cuda_UBLtL(dev_board, dev_board_buffer, dev_LtL_rules, 0.5);
+        call_cuda_UBLtL(dev_board, dev_board_buffer, dev_LtL_rules, 0.5, CELL_WIDTH, CELL_HEIGHT);
         return;
     }
 
@@ -361,8 +408,8 @@ void Board::update_board_smooth() {
 
     if (use_gpu) {
         cudaMemcpy(dev_smooth_rules, smooth_rules, 8 * sizeof(float), cudaMemcpyHostToDevice);
-        call_cuda_UBS(dev_board_float, dev_board_buffer_float, dev_smooth_rules, r_a_2, r_i_2, r_a_2_m_b, r_i_2_m_b, r_a_2_p_b, r_i_2_p_b);
-        call_cuda_USC(dev_board_buffer_float, dev_board, dev_board_buffer, 0.5);
+        call_cuda_UBS(dev_board_float, dev_board_buffer_float, dev_smooth_rules, r_a_2, r_i_2, r_a_2_m_b, r_i_2_m_b, r_a_2_p_b, r_i_2_p_b, CELL_WIDTH, CELL_HEIGHT);
+        call_cuda_USC(dev_board_buffer_float, dev_board, dev_board_buffer, 0.5, CELL_WIDTH, CELL_HEIGHT);
         cudaMemcpy(board_buffer_float, dev_board_buffer_float, CELL_WIDTH * CELL_HEIGHT * sizeof(float), cudaMemcpyDeviceToHost);
         float *temp = dev_board_buffer_float;
         dev_board_buffer_float = dev_board_float;
@@ -453,7 +500,7 @@ void Board::update_board_non_deterministic() {
         cudaMemcpy(dev_stay_alive, stay_alive, 9 * sizeof(float), cudaMemcpyHostToDevice);
         curandGenerateUniform(rand_gen, dev_rand_nums, CELL_HEIGHT * CELL_WIDTH);
         //cudaMemcpy(dev_board, board, CELL_WIDTH * CELL_HEIGHT * sizeof(int), cudaMemcpyDeviceToHost);
-        call_cuda_UBND(dev_board, dev_board_buffer, dev_born, dev_stay_alive, dev_rand_nums);
+        call_cuda_UBND(dev_board, dev_board_buffer, dev_born, dev_stay_alive, dev_rand_nums, CELL_WIDTH, CELL_HEIGHT);
         return;
     }
 
@@ -510,7 +557,7 @@ void Board::update_board_normal() {
         cudaMemcpy(dev_born, born, 9 * sizeof(float), cudaMemcpyHostToDevice);
         cudaMemcpy(dev_stay_alive, stay_alive, 9 * sizeof(float), cudaMemcpyHostToDevice);
         //cudaMemcpy(dev_board, board, CELL_WIDTH * CELL_HEIGHT * sizeof(int), cudaMemcpyDeviceToHost);
-        call_cuda_UBN(dev_board, dev_board_buffer, dev_born, dev_stay_alive, num_faders);
+        call_cuda_UBN(dev_board, dev_board_buffer, dev_born, dev_stay_alive, num_faders, CELL_WIDTH, CELL_HEIGHT);
         return;
     }
 
@@ -596,8 +643,8 @@ void Board::initialize_rules() {
     //float life_born[9] =       {-.0224982,-0.0439246,0.16508,-0.381114,0.0156361,0.254988,0.354988,0.2501,0.31466};
     //float life_stay_alive[9] = {1,1,1,1,1,1,1,1,1};
 
-    int life_born[9] =       {0,0,1,0,1,1,1,1,1};
-    int life_stay_alive[9] = {1,0,0,1,0,1,1,1,1};
+    int life_born[9] =       {0,0,0,1,1,1,1,1,1};
+    int life_stay_alive[9] = {0,0,0,1,1,1,0,0,0};
     
 
     free(born);
@@ -611,10 +658,10 @@ void Board::initialize_rules() {
         stay_alive[i] = life_stay_alive[i];
     }
     
-    num_faders = 7;
+    num_faders = 5;
 
-    //bugs int ltl[6] = {5, 34, 58, 34, 45, MOORE};
-    int ltl[6] = {7, 113, 225, 113, 225, MOORE};
+    int ltl[6] = {5, 34, 58, 34, 45, MOORE};
+    //int ltl[6] = {7, 113, 225, 113, 225, MOORE};
     for(int i = 0; i < 6; i++) {
         LtL_rules[i] = ltl[i];
     }
@@ -800,4 +847,8 @@ void Board::modify_num_faders(int factor) {
     num_faders += factor;
     if (num_faders < 0) 
         num_faders = 0;
+}
+
+int Board::get_faders() {
+    return num_faders;
 }
