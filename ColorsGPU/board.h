@@ -26,6 +26,16 @@
 
 class Board {
     private:
+        struct saved_rule {
+            float born[9];
+            float stay_alive[9];
+            int ltl[6];
+            int smooth[8];
+            int num_faders;
+        };
+
+        saved_rule saved_rules[10];
+
         int *board;
         int *board_buffer;
 
@@ -151,6 +161,9 @@ class Board {
         void send_board_to_GPU();
 
         void modify_num_faders(int factor);
+
+        void save_rules(int slot);
+        void recall_rules(int slot);
 };
 
 

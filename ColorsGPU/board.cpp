@@ -852,3 +852,30 @@ void Board::modify_num_faders(int factor) {
 int Board::get_faders() {
     return num_faders;
 }
+
+void Board::save_rules(int slot) {
+    for (int i = 0; i < 9; i++) {
+        saved_rules[slot].born[i] = born[i];
+        saved_rules[slot].stay_alive[i] = stay_alive[i];
+    }
+    for (int i = 0; i < 6; i++) {
+        saved_rules[slot].ltl[i] = LtL_rules[i];
+    }
+    for (int i = 0; i < 8; i++) {
+        saved_rules[slot].smooth[i] = smooth_rules[i];
+    }
+    saved_rules[slot].num_faders = num_faders;
+}
+void Board::recall_rules(int slot) {
+    for (int i = 0; i < 9; i++) {
+        born[i] = saved_rules[slot].born[i];
+        stay_alive[i] = saved_rules[slot].stay_alive[i];
+    }
+    for (int i = 0; i < 6; i++) {
+        LtL_rules[i] = saved_rules[slot].ltl[i];
+    }
+    for (int i = 0; i < 8; i++) {
+        smooth_rules[i] = saved_rules[slot].smooth[i];
+    }
+    num_faders = saved_rules[slot].num_faders;
+}
