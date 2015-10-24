@@ -3,8 +3,8 @@
 
 
 //define the size of your screen
-#define SCREEN_HEIGHT 540
-#define SCREEN_WIDTH 960
+//#define SCREEN_HEIGHT 540
+//#define SCREEN_WIDTH 960
 
 //the size of each cell
 #define PIXELS_PER_CELL 1

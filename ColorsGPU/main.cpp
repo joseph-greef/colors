@@ -503,26 +503,7 @@ int main(int argc, char * arg[])
     initer.init_board();
 
     uint8_t color_speed_divisor;
-    Uint32 *pixels;
-    SDL_Window *window;
-    SDL_Surface* screen2 = NULL;
-    // create a window
-    window = SDL_CreateWindow(
-                                           "SDL 2 window",             // window title
-                                           SDL_WINDOWPOS_CENTERED,     // x position, centered
-                                           SDL_WINDOWPOS_CENTERED,     // y position, centered
-                                           SCREEN_WIDTH/2,               // width, in pixels
-                                           SCREEN_HEIGHT/2,              // height, in pixels
-                                           SDL_WINDOW_OPENGL          // flags
-                                           );
-    //SDL_GetWindowSize(window, &screen_width, &screen_height);
-
-
-    screen2 = SDL_GetWindowSurface(window);
-    pixels = (Uint32*)screen2->pixels;
-    SDL_SetWindowTitle(window, "Look at ant tweak bar for how to make this window an actual UI");
-
-   
+    
 
     bool running = true;
     while(running) {
@@ -531,7 +512,6 @@ int main(int argc, char * arg[])
         screen.draw_board();
         //and draw it
         screen.update_window();
-        SDL_UpdateWindowSurface(window);
 
         board.update_board();
 

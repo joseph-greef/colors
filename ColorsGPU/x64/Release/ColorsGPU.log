@@ -1,58 +1,10 @@
 ﻿  Microsoft (R) C/C++ Optimizing Compiler Version 18.00.30501 for x64
   Copyright (C) Microsoft Corporation.  All rights reserved.
   
-  cl /c /IC:\SDL\include /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" /Zi /W3 /WX- /O2 /Oi /GL /D WIN32 /D WIN64 /D NDEBUG /D _CONSOLE /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt board.cpp initializer.cpp main.cpp screen.cpp
+  cl /c /IC:\SDL\include /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v7.0\include" /Zi /W3 /WX- /O2 /Oi /GL /D WIN32 /D WIN64 /D NDEBUG /D _CONSOLE /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt screen.cpp
   
-  board.cpp
-board.cpp(4): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-board.cpp(21): warning C4305: '=' : truncation from 'double' to 'float'
-board.cpp(22): warning C4305: '=' : truncation from 'double' to 'float'
-board.cpp(23): warning C4305: '=' : truncation from 'double' to 'float'
-board.cpp(24): warning C4305: '=' : truncation from 'double' to 'float'
-board.cpp(25): warning C4305: '=' : truncation from 'double' to 'float'
-board.cpp(26): warning C4305: '=' : truncation from 'double' to 'float'
-board.cpp(403): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-board.cpp(404): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-board.cpp(406): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-board.cpp(407): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-board.cpp(427): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
-board.cpp(430): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
-board.cpp(434): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-board.cpp(442): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(443): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(450): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(457): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(458): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(464): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(399): warning C4101: 'num_n' : unreferenced local variable
-board.cpp(399): warning C4101: 'num_m' : unreferenced local variable
-board.cpp(657): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-board.cpp(658): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-board.cpp(702): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-board.cpp(703): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-board.cpp(730): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(731): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-board.cpp(746): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(747): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(748): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(749): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(750): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(751): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-board.cpp(865): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
-board.cpp(878): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-  initializer.cpp
-initializer.cpp(6): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-initializer.cpp(94): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
-initializer.cpp(298): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-initializer.cpp(302): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
-initializer.cpp(322): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
-initializer.cpp(323): warning C4244: 'initializing' : conversion from 'int' to 'float', possible loss of data
-  main.cpp
-main.cpp(492): warning C4244: 'argument' : conversion from 'time_t' to 'unsigned int', possible loss of data
-main.cpp(505): warning C4101: 'color_speed_divisor' : unreferenced local variable
-main.cpp(494): warning C4101: 't' : unreferenced local variable
   screen.cpp
-screen.cpp(96): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+screen.cpp(99): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
   Generating code
   Finished generating code
   ColorsGPU.vcxproj -> C:\Users\llamanaru\Programming\ColorsGPU\x64\Release\ColorsGPU.exe

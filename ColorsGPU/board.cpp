@@ -2,8 +2,8 @@
 #include "board.h"
 
 Board::Board() : gen(8), e2(time(NULL)), dist(0, 1) {
-    CELL_WIDTH = 12;
-    CELL_HEIGHT = 12;
+    CELL_WIDTH = 1;
+    CELL_HEIGHT = 1;
     board = (int*)malloc(sizeof(int) * CELL_WIDTH * CELL_HEIGHT);
     board_buffer = (int*)malloc(sizeof(int) * CELL_WIDTH * CELL_HEIGHT);
     board_float = (float*)malloc(sizeof(float) * CELL_WIDTH * CELL_HEIGHT);
@@ -57,6 +57,15 @@ Board::~Board() {
     free(board_buffer);
     free(born);
     free_cuda();
+    cudaFree(dev_stay_alive);
+    cudaFree(dev_born);
+
+    cudaFree(dev_LtL_rules);
+    cudaFree(dev_hodge_rules);
+    
+    cudaFree(dev_smooth_rules);
+
+    cudaFree(dev_OneD_rules);
 }
 
 void Board::free_mem() {
@@ -878,4 +887,8 @@ void Board::recall_rules(int slot) {
         smooth_rules[i] = saved_rules[slot].smooth[i];
     }
     num_faders = saved_rules[slot].num_faders;
+}
+
+bool Board::get_use_gpu() {
+    return use_gpu;
 }

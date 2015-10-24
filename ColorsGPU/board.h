@@ -164,6 +164,8 @@ class Board {
 
         void save_rules(int slot);
         void recall_rules(int slot);
+
+        bool get_use_gpu();
 };
 
 

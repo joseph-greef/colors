@@ -20,6 +20,8 @@ class Screen {
         Uint32 *pixels;
         SDL_Window *window;
         Board *board_obj;
+
+        Uint32 *dev_pixels;
     public:
         Screen(Board *new_board);
         ~Screen();
