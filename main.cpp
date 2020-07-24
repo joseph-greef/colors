@@ -5,13 +5,12 @@
 //
 #include <iostream>
 #include <time.h>
-#include <SDL.h>
-#include <windows.h>
 #include "board.h"
 #include "screen.h"
 #include "initializer.h"
 #include "RuleGenerator.h"
 #include "kernel.cuh"
+#include <unistd.h>
 
 #define timeit 1
 
@@ -507,7 +506,7 @@ int main(int argc, char * arg[])
 
     bool running = true;
     while(running) {
-        Sleep(frame_delay);
+        usleep(frame_delay*1000); //microseconts -> milliseconds
         //translate board to pixels
         screen.draw_board();
         //and draw it

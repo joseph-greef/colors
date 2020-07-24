@@ -9,13 +9,13 @@
 #include <iostream>
 #include <algorithm>
 
-#include "cuda_runtime.h"
 #include "curand.h"
-#include <curand_kernel.h>
+#include "cuda_runtime.h"
+#include "kernel.cuh"
 
 #include <curand_precalc.h>
+#include <curand_kernel.h>
 
-#include "kernel.cuh"
 
 #include "info.h"
 #include "RuleGenerator.h"
