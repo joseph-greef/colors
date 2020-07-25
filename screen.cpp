@@ -80,6 +80,8 @@ void Screen::draw_board() {
     float *board_float = board_obj->get_board_float();
     int width = board_obj->get_cell_width();
     int height = board_obj->get_cell_height();
+    pixels = (Uint32*)(SDL_GetWindowSurface(window)->pixels);
+
     if(draw_smooth) {
         int color;
         if(draw_colors) {
@@ -131,6 +133,8 @@ void Screen::draw_board() {
             }
         }
     }
+
+    SDL_UpdateWindowSurface(window);
 
 }
 
