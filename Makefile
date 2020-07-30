@@ -23,6 +23,9 @@ kernel.o:kernel.cu kernel.cuh
 board.o:board.cpp board.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
+game.o:game.cpp game.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
 initializer.o:initializer.cpp initializer.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
@@ -35,7 +38,7 @@ RuleGenerator.o:RuleGenerator.cpp RuleGenerator.h
 screen.o:screen.cpp screen.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: kernel.o board.o initializer.o main.o RuleGenerator.o screen.o 
+colors: kernel.o board.o game.o initializer.o main.o RuleGenerator.o screen.o 
 	$(NVCC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 clean:
