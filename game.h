@@ -3,6 +3,7 @@
 
 #include "board.h"
 #include "initializer.h"
+#include "rulesets/ruleset.h"
 #include "screen.h"
 
 
@@ -11,6 +12,7 @@ class Game {
         Board _board;
         Initializer _initer;
         Screen _screen;
+        Ruleset *_ruleset;
 
     public:
         Game();

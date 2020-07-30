@@ -11,11 +11,17 @@ LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2
 INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include
 LIBRARIES := -L$(CUDA_PATH)/lib64
 
+SUBDIRS := $(wildcard */.)
+
 ################################################################################
 
 
 # Target rules
 all: colors
+
+
+.PHONY rulesets.a:
+	$(MAKE) -C rulesets/
 
 kernel.o:kernel.cu kernel.cuh
 	$(NVCC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
@@ -38,8 +44,9 @@ RuleGenerator.o:RuleGenerator.cpp RuleGenerator.h
 screen.o:screen.cpp screen.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: kernel.o board.o game.o initializer.o main.o RuleGenerator.o screen.o 
+colors: kernel.o board.o game.o initializer.o main.o RuleGenerator.o screen.o rulesets.a
 	$(NVCC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 clean:
 	rm -f colors *.o
+	$(MAKE) -C rulesets/ clean

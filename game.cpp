@@ -1,5 +1,6 @@
 
 #include "game.h"
+#include "rulesets/lifelike.h"
 
 #include <iostream>
 #include <SDL.h>
@@ -12,6 +13,7 @@ Game::Game()
 
     _board.set_update_algorithm(0);
     _initer.init_board();
+    _ruleset = new LifeLike;
 }
 
 Game::~Game() {
@@ -29,6 +31,7 @@ int Game::main() {
         //update board at the end so the first frame will get displayed
         _board.update_board();
 
+        _ruleset->tick();
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
                 exit(0);
