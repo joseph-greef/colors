@@ -8,7 +8,7 @@ CUDAFLAGS= -std=c++11 -c
 LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2
 
 # Common includes and paths for CUDA/SDL2
-INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include
+INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I../
 LIBRARIES := -L$(CUDA_PATH)/lib64
 
 
@@ -21,7 +21,13 @@ all: ../rulesets.a
 lifelike.o:lifelike.cpp lifelike.h ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-../rulesets.a: lifelike.o 
+rainbows.o:rainbows.cpp rainbows.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
+ruleset.o:ruleset.cpp ruleset.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
+../rulesets.a: lifelike.o ruleset.o rainbows.o 
 	$(NVCC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
 
 clean:

@@ -7,16 +7,26 @@
 
 
 Game::Game() 
-    : _board(),
-      _initer(&_board),
-      _screen(&_board) {
+    : _width(960)
+    , _height(540)
+{
+    if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+        std::cout << "ERROR SDL_Init" << std::endl;
+        exit(1);
+    }
 
-    _board.set_update_algorithm(0);
-    _initer.init_board();
-    _ruleset = new LifeLike;
+    _ruleset = new LifeLike(_width, _height);
+
+    _window = SDL_CreateWindow("Colors",               // window title
+                               SDL_WINDOWPOS_CENTERED, // x position
+                               SDL_WINDOWPOS_CENTERED, // y position
+                               _width,                 // width
+                               _height,                // height
+                               SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED);
 }
 
 Game::~Game() {
+    delete _ruleset;
 }
 
 int Game::main() {
@@ -24,13 +34,8 @@ int Game::main() {
     bool running = true, shift = false, control = false;
 
     while(running) {
-        //translate board to pixels
-        _screen.draw_board();
-        //and draw it
-        _screen.update_window();
-        //update board at the end so the first frame will get displayed
-        _board.update_board();
-
+        _ruleset->get_pixels((uint32_t*)(SDL_GetWindowSurface(_window)->pixels));
+        SDL_UpdateWindowSurface(_window);
         _ruleset->tick();
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {

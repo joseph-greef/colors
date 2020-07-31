@@ -9,10 +9,13 @@
 
 class Game {
     private:
-        Board _board;
-        Initializer _initer;
-        Screen _screen;
+        //Board _board;
+        //Initializer _initer;
         Ruleset *_ruleset;
+        //Screen _screen;
+        SDL_Window *_window;
+        int _width;
+        int _height;
 
     public:
         Game();

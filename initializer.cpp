@@ -2,11 +2,19 @@
 #include "initializer.h"
 
 
+/*
 //create the board initializer with some arbitrary starting values
 Initializer::Initializer(Board *b) : e2(time(NULL)){
     board = b;
     density = 50;
     num_gliders = 4;
+}
+*/
+Initializer::Initializer(int width, int height)
+    : _density(50)
+    , _height(height)
+    , _width(width)
+{
 }
 
 //nothing to deconstruct, why is this even here?
@@ -16,16 +24,15 @@ Initializer::~Initializer() {
 
 //randomly initializes the board with density percent alive
 //cells
-void Initializer::init_board() {
-    int *b = board->get_board();
-    for (int i = 0; i < board->get_cell_width(); i++) {
-        for (int j = 0; j < board->get_cell_height(); j++) {
-            b[j*board->get_cell_width() + i] = (rand() % 100 < density ? 1 : -1);
+void Initializer::init_board(int *board) {
+    for (int i = 0; i < _width; i++) {
+        for (int j = 0; j < _height; j++) {
+            board[j*_width + i] = (rand() % 100 < _density ? 1 : -1);
         }
     }
-    board->send_board_to_GPU();
 }
 
+#if 0
 void Initializer::init_symm() {
 
 }
@@ -75,12 +82,13 @@ void Initializer::init_quadrants() {
 void Initializer::init_center_dot() {
     int *b = board->get_board();
     clear_board(b);
-    int s = density / 10;
+    int s = 100;
     for (int i = (board->get_cell_width() - s) / 2; i < (board->get_cell_width() + s) / 2; i++) {
         for (int j = (board->get_cell_height() - s) / 2; j < (board->get_cell_height() + s) / 2; j++) {
             b[j*board->get_cell_width() + i] = 1;
         }
     }
+
     board->send_board_to_GPU();
 }
 
@@ -388,4 +396,5 @@ void Initializer::get_circle(int x, int y, int r, int* points) {
     points[index] = -1;
 }
 
+#endif
 
