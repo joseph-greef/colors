@@ -1,3 +1,24 @@
+
+#### General Controls 
+Key     | Effect
+------- | ------
+escape  | Quit
+p       | Print the current ruleset
+
+#### LifeLike Controls
+Key     | Effect
+------- | ------
+c       | Toggle drawing color
+e       | Initialize a square in the center of the board of width 2 $radius
+i       | Randomly initialize the board, cells have a $density % chance of being alive
+r       | Randomize the ruleset
+w       | Initialize a diamond in the center of the board with a long exis of 2 $radius
+x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
+d + NUM | Set the $density
+f + NUM | Set the number of refractory generations after a cell dies
+s + NUM | Set the $radius
+
+<!---
 ------------------------------- Simulation Controls -------------------------------
 
 q:                      Quits simulation
@@ -89,3 +110,4 @@ Arrow Right/Left:       increases/decreases the number of gliders to generate by
 [:			Same as - but for nondeterministic life
 
 ]: 			Same as + but for nondeterministic life
+--->
