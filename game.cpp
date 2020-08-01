@@ -1,9 +1,8 @@
 
+#include <iostream>
+
 #include "game.h"
 #include "rulesets/lifelike.h"
-
-#include <iostream>
-#include <SDL.h>
 
 
 Game::Game() 
@@ -27,6 +26,15 @@ Game::Game()
 
 Game::~Game() {
     delete _ruleset;
+}
+
+void Game::handle_input(SDL_Event event, bool control, bool shift) {
+    if(event.type == SDL_KEYDOWN) {
+        switch(event.key.keysym.sym) {
+            case SDLK_p:
+                _ruleset->print_rules();
+        }
+    }
 }
 
 int Game::main() {
@@ -55,9 +63,8 @@ int Game::main() {
                         exit(0);
                 }
             }
-            //TODO:
-            //_board.handle_input()
-            //_screen.handle_input()
+            this->handle_input(event, control, shift);
+            _ruleset->handle_input(event, control, shift);
         }
     }
 

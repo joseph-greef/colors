@@ -34,10 +34,11 @@ public:
     Initializer(int width, int height);
     ~Initializer();
 
+    void clear_board(int* board);
     void init_board(int *board);
+    void init_center_dot(int *board);
     //void init_hodge_board(int n);
     //void init_quadrants();
-    //void init_center_dot();
     //void init_gliders();
     //void init_circle();
     //void init_symm();
@@ -48,7 +49,6 @@ public:
 
     //void init_1D_board();
 
-    //void clear_board(int* b);
 
     //void make_glider(int x, int y, int orientation);
 

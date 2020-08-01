@@ -21,13 +21,32 @@ Initializer::Initializer(int width, int height)
 Initializer::~Initializer() {
 
 }
+//clears the board. If changing_background is true sets everything to -1
+//so it will age, otherwise sets it to 0 so it won't
+void Initializer::clear_board(int *board) {
+    for (int i = 0; i < _width; i++) {
+        for (int j = 0; j < _height; j++) {
+            board[j * _width + i] = -1;//changing_background ? -1000 : 0;
+        }
+    }
+}
 
-//randomly initializes the board with density percent alive
-//cells
+//randomly initializes the board with density percent alive cells
 void Initializer::init_board(int *board) {
     for (int i = 0; i < _width; i++) {
         for (int j = 0; j < _height; j++) {
             board[j*_width + i] = (rand() % 100 < _density ? 1 : -1);
+        }
+    }
+}
+
+//clears the board and draws a dot in the center with side length density/10
+void Initializer::init_center_dot(int *board) {
+    clear_board(board);
+    int s = 100;
+    for (int i = (_width - s) / 2; i < (_width + s) / 2; i++) {
+        for (int j = (_height - s) / 2; j < (_height + s) / 2; j++) {
+            board[j * _width + i] = 1;
         }
     }
 }
@@ -78,19 +97,6 @@ void Initializer::init_quadrants() {
     board->send_board_to_GPU();
 }
 
-//clears the board and draws a dot in the center with side length density/10
-void Initializer::init_center_dot() {
-    int *b = board->get_board();
-    clear_board(b);
-    int s = 100;
-    for (int i = (board->get_cell_width() - s) / 2; i < (board->get_cell_width() + s) / 2; i++) {
-        for (int j = (board->get_cell_height() - s) / 2; j < (board->get_cell_height() + s) / 2; j++) {
-            b[j*board->get_cell_width() + i] = 1;
-        }
-    }
-
-    board->send_board_to_GPU();
-}
 
 //initialize the floating point board
 void Initializer::init_smooth_life() {

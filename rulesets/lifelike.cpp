@@ -1,83 +1,140 @@
 
-#include "lifelike.h"
 #include <iostream>
+#include <stdlib.h>
+
+#include "lifelike.h"
 
 LifeLike::LifeLike(int width, int height)
     : Ruleset(width, height)
-    , _alive_color_scheme(0)
-    , _alive_offset(128)
-    , _dead_color_scheme(0)
-    , _dead_offset(0)
-    , _initializer(width, height)
-    , _num_faders(0)
-    , _rainbows()
+    , alive_color_scheme_(0)
+    , alive_offset_(128)
+    , dead_color_scheme_(0)
+    , dead_offset_(0)
+    , draw_color_(false)
+    , initializer_(width, height)
+    , num_faders_(0)
+    , rainbows_()
 {
     bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
     bool stay_alive_tmp[9] = {1, 0, 0, 1, 1, 1 ,1 ,1, 0};
 
-    memcpy(_born, born_tmp, sizeof(_born));
-    memcpy(_stay_alive, stay_alive_tmp, sizeof(_stay_alive));
+    memcpy(born_, born_tmp, sizeof(born_));
+    memcpy(stay_alive_, stay_alive_tmp, sizeof(stay_alive_));
 
-    _board = new int[width*height];
-    _board_buffer = new int[width*height];
+    board_ = new int[width*height];
+    board_buffer_ = new int[width*height];
 
-    _initializer.init_board(_board);
+    initializer_.init_board(board_);
     for(int i = 0; i < 9; i++) {
-        std::cout << _born[i] << " " <<  _stay_alive[i] << std::endl;
+        std::cout << born_[i] << " " <<  stay_alive_[i] << std::endl;
     }
 }
 
 LifeLike::~LifeLike() {
-    delete _board;
-    delete _board_buffer;
+    delete board_;
+    delete board_buffer_;
 }
 
 void LifeLike::get_pixels(uint32_t *pixels) {
-    Rainbows::age_to_pixels(_board, pixels,
-                            _alive_color_scheme, _alive_offset,
-                            _dead_color_scheme, _dead_offset,
-                            _width, _height);
+    if(draw_color_) {
+        Rainbows::age_to_pixels(board_, pixels,
+                                alive_color_scheme_, alive_offset_,
+                                dead_color_scheme_, dead_offset_,
+                                width_, height_);
+    }
+    else {
+        Rainbows::age_to_bw_pixels(board_, pixels,
+                                   width_, height_);
+    }
+}
+
+void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
+    if(event.type == SDL_KEYDOWN) {
+        switch(event.key.keysym.sym) {
+            case SDLK_c:
+                draw_color_ = !draw_color_;
+                break;
+            case SDLK_d:
+                initializer_.init_center_dot(board_);
+                break;
+            case SDLK_i:
+                initializer_.init_board(board_);
+                break;
+            case SDLK_r:
+                randomize_ruleset();
+                break;
+
+         }
+    }
+    else if(event.type == SDL_KEYUP) {
+        switch(event.key.keysym.sym) {
+        }
+    }
+    handle_var_changers(event, control, shift);
+}
+
+void LifeLike::print_rules() {
+    std::cout << "Born: ";
+    for(int i = 0; i < 9; i++) {
+        std::cout << born_[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Stay Alive: ";
+    for(int i = 0; i < 9; i++) {
+        std::cout << stay_alive_[i] << " ";
+    }
+    std::cout << std::endl;
+}
+
+void LifeLike::randomize_ruleset() {
+    for(int i = 0; i < 9; i++) {
+        born_[i] = (rand()%100>20 ? 1 : 0);
+        stay_alive_[i] = (rand()%100>20 ? 1 : 0);
+    }
+    born_[0] = false;
+
+    alive_offset_ = rand() & 256;
 }
 
 void LifeLike::tick() {
-    for(int j = 0; j < _height; j++) {
-        for(int i = 0; i < _width; i++) {
+    for(int j = 0; j < height_; j++) {
+        for(int i = 0; i < width_; i++) {
             //get how many alive neighbors it has
-            int neighbors = Ruleset::get_num_alive_neighbors(_board, i, j, 1,
+            int neighbors = Ruleset::get_num_alive_neighbors(board_, i, j, 1,
                                                              Moore);
-            int offset = j * _width + i;
-            //alive
-            if (_board[offset] > 0) {
-                if(_stay_alive[neighbors])
-                    //then age it
-                    _board_buffer[offset] = _board[offset] + 1;
-                else
-                    //otherwise kill it
-                    _board_buffer[offset] = -1;
+            int offset = j * width_ + i;
+
+            if(board_[offset] > 0) {
+                if(stay_alive_[neighbors]) {
+                    board_buffer_[offset] = board_[offset] + 1;
+                }
+                else {
+                    board_buffer_[offset] = -1;
+                }
 
             }
-            //dead
-            else if(_board[offset] <= -_num_faders) {
-                if(_born[neighbors])
-                    _board_buffer[offset] = 1;
-                //Don't age the cell if it's value is 0 to enable only seeing 
-                //live cells
-                else if(_board[offset] == 0)
-                    _board_buffer[offset] = 0;
-                else
-                    _board_buffer[offset] = _board[offset] - 1;
+            else if(board_[offset] <= -num_faders_) {
+                if(born_[neighbors]) {
+                    board_buffer_[offset] = 1;
+                }
+                else if(board_[offset] == 0) {
+                    board_buffer_[offset] = 0;
+                }
+                else {
+                    board_buffer_[offset] = board_[offset] - 1;
+                }
             }
-            //cell in refractory period 
             else {
-                _board_buffer[offset] = _board[offset] - 1;
+                board_buffer_[offset] = board_[offset] - 1;
             }
         }
     }
 
     {
-        int *tmp = _board_buffer;
-        _board_buffer = _board;
-        _board = tmp;
+        int *tmp = board_buffer_;
+        board_buffer_ = board_;
+        board_ = tmp;
     }
 
 }
