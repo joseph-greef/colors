@@ -10,8 +10,8 @@ LifeLike::LifeLike(int width, int height)
     , alive_offset_(128)
     , dead_color_scheme_(0)
     , dead_offset_(0)
-    , density_(50)
-    , dot_radius_(10)
+    , density_(1)
+    , dot_radius_(15)
     , draw_color_(false)
     , initializer_(width, height)
     , num_faders_(0)
@@ -31,7 +31,7 @@ LifeLike::LifeLike(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
-    initializer_.init_board(board_, density_);
+    initializer_.init_center_cross(board_, dot_radius_, density_);
 
     add_var_changer(&density_, SDLK_d, 10, 0, 100, "Density");
     add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
@@ -73,6 +73,9 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
                 break;
             case SDLK_w:
                 initializer_.init_center_diamond(board_, dot_radius_);
+                break;
+            case SDLK_x:
+                initializer_.init_center_cross(board_, dot_radius_, density_);
                 break;
 
          }

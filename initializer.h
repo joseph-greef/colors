@@ -35,6 +35,7 @@ public:
 
     void clear_board(int* board);
     void init_board(int *board, int density);
+    void init_center_cross(int *board, int line_width, int radius);
     void init_center_diamond(int *board, int radius);
     void init_center_square(int *board, int radius);
     //void init_hodge_board(int n);
