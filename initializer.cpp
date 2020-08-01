@@ -49,6 +49,17 @@ void Initializer::init_center_square(int *board, int radius) {
     }
 }
 
+void Initializer::init_center_diamond(int *board, int radius) {
+    clear_board(board);
+    for (int i = _width / 2 - radius; i < _width / 2 + radius; i++) {
+        for (int j = _height /  2 - radius; j < _height / 2 + radius; j++) {
+            if(abs(i - _width / 2)+abs(j - _height / 2) < radius) {
+                board[j * _width + i] = 1;
+            }
+        }
+    }
+}
+
 #if 0
 void Initializer::init_symm() {
 

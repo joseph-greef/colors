@@ -71,6 +71,9 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
             case SDLK_r:
                 randomize_ruleset();
                 break;
+            case SDLK_w:
+                initializer_.init_center_diamond(board_, dot_radius_);
+                break;
 
          }
     }
