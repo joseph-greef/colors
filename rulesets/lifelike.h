@@ -14,6 +14,7 @@ class LifeLike : public Ruleset {
         int dot_radius_;
         int dead_color_scheme_;
         int dead_offset_;
+        int density_;
         bool draw_color_;
         Initializer initializer_;
         int num_faders_;

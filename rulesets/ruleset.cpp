@@ -62,14 +62,12 @@ void Ruleset::handle_var_changers(SDL_Event event, bool control, bool shift) {
     if(modifier || base) {
         for(VarChangeEntry *entry: var_changes_) {
             if(entry->key_pressed) {
-                int multiplier = entry->multiplier;
-                multiplier = multiplier * (control ? 2 : 1);
-                multiplier = multiplier * (shift ? 5 : 1);
+                int mul = (control ? 2 : 1) * (shift ? 5 : 1);
                 if(base) {
-                    *(entry->variable) = (base % 10) * multiplier;
+                    *(entry->variable) = (base % 10) * entry->multiplier * mul;
                 }
                 if(modifier) {
-                    *(entry->variable) += modifier * multiplier;
+                    *(entry->variable) += modifier * mul;
                 }
                 
                 if(*(entry->variable) < entry->min_value) {

@@ -11,8 +11,7 @@ Initializer::Initializer(Board *b) : e2(time(NULL)){
 }
 */
 Initializer::Initializer(int width, int height)
-    : _density(50)
-    , _height(height)
+    : _height(height)
     , _width(width)
 {
 }
@@ -32,10 +31,10 @@ void Initializer::clear_board(int *board) {
 }
 
 //randomly initializes the board with density percent alive cells
-void Initializer::init_board(int *board) {
+void Initializer::init_board(int *board, int density) {
     for (int i = 0; i < _width; i++) {
         for (int j = 0; j < _height; j++) {
-            board[j*_width + i] = (rand() % 100 < _density ? 1 : -1);
+            board[j*_width + i] = (rand() % 100 < density ? 1 : -1);
         }
     }
 }

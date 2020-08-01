@@ -15,7 +15,6 @@ private:
     //int num_gliders;
     //std::mt19937 e2;
 
-    int _density;
     int _height;
     int _width;
 
@@ -35,7 +34,7 @@ public:
     ~Initializer();
 
     void clear_board(int* board);
-    void init_board(int *board);
+    void init_board(int *board, int density);
     void init_center_square(int *board, int radius);
     //void init_hodge_board(int n);
     //void init_quadrants();

@@ -10,6 +10,7 @@ LifeLike::LifeLike(int width, int height)
     , alive_offset_(128)
     , dead_color_scheme_(0)
     , dead_offset_(0)
+    , density_(50)
     , dot_radius_(10)
     , draw_color_(false)
     , initializer_(width, height)
@@ -30,10 +31,11 @@ LifeLike::LifeLike(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
-    initializer_.init_board(board_);
+    initializer_.init_board(board_, density_);
 
-    add_var_changer(&num_faders_, SDLK_f, 1, 0, INT_MAX, "Num Faders");
+    add_var_changer(&density_, SDLK_d, 10, 0, 100, "Density");
     add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
+    add_var_changer(&num_faders_, SDLK_f, 1, 0, INT_MAX, "Num Faders");
 }
 
 LifeLike::~LifeLike() {
@@ -60,13 +62,13 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
             case SDLK_c:
                 draw_color_ = !draw_color_;
                 break;
-            case SDLK_d:
+            case SDLK_e:
                 initializer_.init_center_square(board_, dot_radius_);
                 break;
             case SDLK_i:
-                initializer_.init_board(board_);
+                initializer_.init_board(board_, density_);
                 break;
-            case SDLK_f:
+            case SDLK_r:
                 randomize_ruleset();
                 break;
 
