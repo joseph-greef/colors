@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 enum NeighborhoodType {
@@ -11,10 +12,13 @@ enum NeighborhoodType {
 };
 
 typedef struct var_change_entry {
-    int *variable;
     SDL_Keycode key;
-    int multiplier;
     bool key_pressed;
+    int max_value;
+    int min_value;
+    int multiplier;
+    const char *name;
+    int *variable;
 } VarChangeEntry;
 
 class Ruleset {
@@ -33,7 +37,10 @@ class Ruleset {
         virtual void print_rules() = 0;
         virtual void tick() = 0;
 
-        void add_var_changer(int *variable, SDL_Keycode key, int multiplier);
+        void add_var_changer(int *variable, SDL_Keycode key, int multiplier,
+                             const char *name);
+        void add_var_changer(int *variable, SDL_Keycode key, int multiplier,
+                             int min_value, int max_value, const char *name);
         int get_num_alive_neighbors(int *board, int x, int y, int radius,
                                     NeighborhoodType type);
         void handle_var_changers(SDL_Event event, bool control, bool shift);

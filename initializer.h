@@ -36,7 +36,7 @@ public:
 
     void clear_board(int* board);
     void init_board(int *board);
-    void init_center_dot(int *board);
+    void init_center_square(int *board, int radius);
     //void init_hodge_board(int n);
     //void init_quadrants();
     //void init_gliders();

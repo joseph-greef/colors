@@ -41,11 +41,10 @@ void Initializer::init_board(int *board) {
 }
 
 //clears the board and draws a dot in the center with side length density/10
-void Initializer::init_center_dot(int *board) {
+void Initializer::init_center_square(int *board, int radius) {
     clear_board(board);
-    int s = 100;
-    for (int i = (_width - s) / 2; i < (_width + s) / 2; i++) {
-        for (int j = (_height - s) / 2; j < (_height + s) / 2; j++) {
+    for (int i = _width / 2 - radius; i < _width / 2 + radius; i++) {
+        for (int j = _height /  2 - radius; j < _height / 2 + radius; j++) {
             board[j * _width + i] = 1;
         }
     }

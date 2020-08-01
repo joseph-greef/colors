@@ -10,13 +10,19 @@ LifeLike::LifeLike(int width, int height)
     , alive_offset_(128)
     , dead_color_scheme_(0)
     , dead_offset_(0)
+    , dot_radius_(10)
     , draw_color_(false)
     , initializer_(width, height)
     , num_faders_(0)
     , rainbows_()
 {
-    bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
-    bool stay_alive_tmp[9] = {1, 0, 0, 1, 1, 1 ,1 ,1, 0};
+    //Random pretty pattern
+    //bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
+    //bool stay_alive_tmp[9] = {1, 0, 0, 1, 1, 1 ,1 ,1, 0};
+    //star wars
+    bool born_tmp[9] = {0, 0, 1, 0, 0, 0 ,0 ,0, 0};
+    bool stay_alive_tmp[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
+    num_faders_ = 4;
 
     memcpy(born_, born_tmp, sizeof(born_));
     memcpy(stay_alive_, stay_alive_tmp, sizeof(stay_alive_));
@@ -25,9 +31,9 @@ LifeLike::LifeLike(int width, int height)
     board_buffer_ = new int[width*height];
 
     initializer_.init_board(board_);
-    for(int i = 0; i < 9; i++) {
-        std::cout << born_[i] << " " <<  stay_alive_[i] << std::endl;
-    }
+
+    add_var_changer(&num_faders_, SDLK_f, 1, 0, INT_MAX, "Num Faders");
+    add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
 LifeLike::~LifeLike() {
@@ -55,12 +61,12 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
                 draw_color_ = !draw_color_;
                 break;
             case SDLK_d:
-                initializer_.init_center_dot(board_);
+                initializer_.init_center_square(board_, dot_radius_);
                 break;
             case SDLK_i:
                 initializer_.init_board(board_);
                 break;
-            case SDLK_r:
+            case SDLK_f:
                 randomize_ruleset();
                 break;
 
