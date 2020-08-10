@@ -1,7 +1,6 @@
 #ifndef _INITIALIZER_H
 #define _INITIALIZER_H
 
-#include "board.h"
 
 #include "info.h"
 

@@ -6,33 +6,34 @@
 
 
 Game::Game() 
-    : _width(960)
-    , _height(540)
+    : width_(512)
+    , height_(512)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
         exit(1);
     }
 
-    _ruleset = new LifeLike(_width, _height);
+    ruleset_ = new LifeLike(width_, height_);
 
-    _window = SDL_CreateWindow("Colors",               // window title
+    window_ = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
                                SDL_WINDOWPOS_CENTERED, // y position
-                               _width,                 // width
-                               _height,                // height
+                               width_,                 // width
+                               height_,                // height
                                SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED);
 }
 
 Game::~Game() {
-    delete _ruleset;
+    delete ruleset_;
 }
 
 void Game::handle_input(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
             case SDLK_p:
-                _ruleset->print_rules();
+                ruleset_->print_rules();
+                break;
         }
     }
 }
@@ -41,10 +42,11 @@ int Game::main() {
     SDL_Event event;
     bool running = true, shift = false, control = false;
 
+    //TODO: Scheduler
     while(running) {
-        _ruleset->get_pixels((uint32_t*)(SDL_GetWindowSurface(_window)->pixels));
-        SDL_UpdateWindowSurface(_window);
-        _ruleset->tick();
+        ruleset_->get_pixels((uint32_t*)(SDL_GetWindowSurface(window_)->pixels));
+        SDL_UpdateWindowSurface(window_);
+        ruleset_->tick();
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
                 exit(0);
@@ -64,7 +66,7 @@ int Game::main() {
                 }
             }
             this->handle_input(event, control, shift);
-            _ruleset->handle_input(event, control, shift);
+            ruleset_->handle_input(event, control, shift);
         }
     }
 
