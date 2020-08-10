@@ -3,6 +3,7 @@
 Key     | Effect
 ------- | ------
 escape  | Quit
+f       | Toggle Cuda Kernel
 p       | Print the current ruleset
 
 #### LifeLike Controls

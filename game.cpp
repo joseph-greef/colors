@@ -34,6 +34,9 @@ void Game::handle_input(SDL_Event event, bool control, bool shift) {
             case SDLK_p:
                 ruleset_->print_rules();
                 break;
+            case SDLK_f:
+                ruleset_->toggle_gpu();
+                break;
         }
     }
 }

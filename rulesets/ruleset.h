@@ -27,14 +27,18 @@ class Ruleset {
     protected:
         int height_;
         int width_;
+        bool use_gpu_;
 
     public:
         Ruleset(int width, int height);
         ~Ruleset();
 
+        virtual void free_cuda() = 0;
         virtual void get_pixels(uint32_t *pixels) = 0;
         virtual void handle_input(SDL_Event event, bool control, bool shift) = 0;
         virtual void print_rules() = 0;
+        virtual void setup_cuda() = 0;
+
         virtual void tick() = 0;
 
         void add_var_changer(int *variable, SDL_Keycode key, int multiplier,
@@ -44,6 +48,7 @@ class Ruleset {
         int get_num_alive_neighbors(int *board, int x, int y, int radius,
                                     NeighborhoodType type);
         void handle_var_changers(SDL_Event event, bool control, bool shift);
+        void toggle_gpu();
 };
 
 #endif //_RULE_SET_H
