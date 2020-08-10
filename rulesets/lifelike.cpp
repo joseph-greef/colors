@@ -35,8 +35,10 @@ LifeLike::LifeLike(int width, int height)
     initializer_.init_center_cross(board_, dot_radius_, density_);
 
     add_var_changer(&density_, SDLK_d, 10, 0, 100, "Density");
-    add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
     add_var_changer(&num_faders_, SDLK_f, 1, 0, INT_MAX, "Num Faders");
+    add_var_changer(&dead_color_scheme_, SDLK_m, 1, 0, 9, "Dead Scheme");
+    add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, 9, "Alive Scheme");
+    add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
 LifeLike::~LifeLike() {
@@ -109,7 +111,8 @@ void LifeLike::randomize_ruleset() {
     }
     born_[0] = false;
 
-    alive_offset_ = rand() & 256;
+    alive_offset_ = rand() % RAINBOW_LENGTH;
+    dead_offset_ = rand() % RAINBOW_LENGTH;
 }
 
 void LifeLike::tick() {

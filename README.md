@@ -16,6 +16,8 @@ w       | Initialize a diamond in the center of the board with a long exis of 2 
 x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
 d + NUM | Set the $density
 f + NUM | Set the number of refractory generations after a cell dies
+m + NUM | Set the dead color scheme
+n + NUM | Set the alive color scheme
 s + NUM | Set the $radius
 
 <!---
