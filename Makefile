@@ -1,10 +1,9 @@
 CUDA_PATH ?= /usr/local/cuda-10.2
 HOST_ARCH   := $(shell uname -m)
 
-CC=g++
-NVCC=$(CUDA_PATH)/bin/nvcc
-CXXFLAGS= -fopenmp -g -Wextra -std=c++11
-CUDAFLAGS= -std=c++11 -c 
+CC=$(CUDA_PATH)/bin/nvcc
+CXXFLAGS= -g -std=c++11
+#CUDAFLAGS= -std=c++11 -c 
 LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
@@ -19,16 +18,16 @@ SUBDIRS := $(wildcard */.)
 
 
 # Target rules
-all: colors rulesets.a
+all: colors rulesets/rulesets.a
 
 
-rulesets.a:
+rulesets/rulesets.a:
 	$(MAKE) -C rulesets/
 
-.PHONY: all rulesets.a
+.PHONY: all rulesets/rulesets.a
 
-kernel.o:kernel.cu kernel.cuh
-	$(NVCC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
+#kernel.o:kernel.cu kernel.cuh
+#	$(NVCC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
 
 #board.o:board.cpp board.h
 #	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
@@ -48,8 +47,8 @@ main.o:main.cpp
 #screen.o:screen.cpp screen.h
 #	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: kernel.o game.o initializer.o main.o rulesets.a #board.o screen.o RuleGenerator.o
-	$(NVCC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
+colors: game.o initializer.o main.o rulesets/rulesets.a #kernel.o board.o screen.o RuleGenerator.o
+	$(CC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 clean:
 	rm -f colors *.o

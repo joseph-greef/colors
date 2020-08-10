@@ -1,10 +1,9 @@
 CUDA_PATH ?= /usr/local/cuda-10.2
 HOST_ARCH   := $(shell uname -m)
 
-CC=g++
-NVCC=$(CUDA_PATH)/bin/nvcc
-CXXFLAGS= -fopenmp -O3 -Wextra -std=c++11
-CUDAFLAGS= -std=c++11 -c 
+CC=$(CUDA_PATH)/bin/nvcc
+CXXFLAGS= -O3 -std=c++11 
+#CUDAFLAGS= -std=c++11 -c 
 LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2
 
 # Common includes and paths for CUDA/SDL2
@@ -16,7 +15,7 @@ LIBRARIES := -L$(CUDA_PATH)/lib64
 
 
 # Target rules
-all: ../rulesets.a
+all: rulesets.a
 
 lifelike.o:lifelike.cpp lifelike.h ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
@@ -27,8 +26,8 @@ rainbows.o:rainbows.cpp rainbows.h
 ruleset.o:ruleset.cpp ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-../rulesets.a: lifelike.o ruleset.o rainbows.o 
-	$(NVCC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
+rulesets.a: lifelike.o ruleset.o rainbows.o 
+	$(CC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
 
 clean:
 	rm -f ../rulesets.a *.o
