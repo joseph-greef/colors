@@ -4,7 +4,7 @@ HOST_ARCH   := $(shell uname -m)
 CC=$(CUDA_PATH)/bin/nvcc
 CXXFLAGS= -g -std=c++11
 #CUDAFLAGS= -std=c++11 -c 
-LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2
+LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 

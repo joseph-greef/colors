@@ -5,6 +5,7 @@ Key     | Effect
 escape  | Quit
 f       | Toggle Cuda Kernel
 p       | Print the current ruleset
+[       | Save a screenshot
 
 #### LifeLike Controls
 Key     | Effect

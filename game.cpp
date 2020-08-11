@@ -1,13 +1,17 @@
 
+#include <ctime>
+#include <iomanip>
 #include <iostream>
+#include <SDL_image.h>
+#include <sstream>
 
 #include "game.h"
 #include "rulesets/lifelike.h"
 
 
 Game::Game() 
-    : width_(512)
-    , height_(512)
+    : width_(1920)
+    , height_(1080)
 {
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
@@ -34,6 +38,17 @@ void Game::handle_input(SDL_Event event, bool control, bool shift) {
             case SDLK_p:
                 ruleset_->print_rules();
                 break;
+            case SDLK_LEFTBRACKET: {
+                //Get the time and convert it to a string.png
+                std::time_t t = std::time(nullptr);
+                std::tm tm = *std::localtime(&t);
+                std::ostringstream oss;
+                oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S.png");
+                std::string str = oss.str();
+
+                IMG_SavePNG(SDL_GetWindowSurface(window_), str.c_str());
+                break;
+            }
             case SDLK_f:
                 ruleset_->toggle_gpu();
                 break;
