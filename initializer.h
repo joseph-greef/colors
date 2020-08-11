@@ -14,8 +14,8 @@ private:
     //int num_gliders;
     //std::mt19937 e2;
 
-    int _height;
-    int _width;
+    int height_;
+    int width_;
 
 
     //void get_circle(int x, int y, int r, int* points);
