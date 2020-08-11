@@ -27,6 +27,7 @@ LifeLike::LifeLike(int width, int height)
     //Random pretty pattern
     //bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
     //bool stay_alive_tmp[9] = {1, 0, 0, 1, 1, 1 ,1 ,1, 0};
+
     //star wars
     bool born_tmp[9] = {0, 0, 1, 0, 0, 0 ,0 ,0, 0};
     bool stay_alive_tmp[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
@@ -214,7 +215,7 @@ void LifeLike::update_board() {
                 }
 
             }
-            else if(board_[offset] <= -num_faders_) {
+            else if(board_[offset] <= -num_faders_ || board_[offset] == 0) {
                 if(born_[neighbors]) {
                     board_buffer_[offset] = 1;
                 }
