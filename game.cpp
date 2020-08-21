@@ -13,10 +13,13 @@ Game::Game()
     : width_(1920)
     , height_(1080)
 {
+    uint8_t data = 0;
+    uint8_t mask = 0;
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
         exit(1);
     }
+    SDL_Cursor *cursor = SDL_CreateCursor(&data, &mask, 1, 1, 0, 0);
 
     ruleset_ = new LifeLike(width_, height_);
 
@@ -26,6 +29,8 @@ Game::Game()
                                width_,                 // width
                                height_,                // height
                                SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED);
+    SDL_SetCursor(cursor);
+
 }
 
 Game::~Game() {
@@ -60,7 +65,6 @@ int Game::main() {
     SDL_Event event;
     bool running = true, shift = false, control = false;
 
-    //TODO: Scheduler
     while(running) {
         ruleset_->get_pixels((uint32_t*)(SDL_GetWindowSurface(window_)->pixels));
         SDL_UpdateWindowSurface(window_);
