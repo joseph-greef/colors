@@ -9,10 +9,11 @@
 
 class Game {
     private:
+        bool lock_cursor_;
         Ruleset *ruleset_;
         SDL_Window *window_;
-        int width_;
-        int height_;
+        const int width_;
+        const int height_;
 
         void handle_input(SDL_Event event, bool control, bool shift);
 

@@ -4,6 +4,7 @@ Key     | Effect
 ------- | ------
 escape  | Quit
 f       | Toggle Cuda Kernel
+l       | Toggle cursor lock
 p       | Print the current ruleset
 [       | Save a screenshot
 

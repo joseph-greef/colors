@@ -11,7 +11,8 @@
 
 
 Game::Game() 
-    : width_(920)
+    : lock_cursor_(false)
+    , width_(920)
     , height_(1080)
 {
     uint8_t data = 0;
@@ -41,6 +42,12 @@ Game::~Game() {
 void Game::handle_input(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
+            case SDLK_f:
+                ruleset_->toggle_gpu();
+                break;
+            case SDLK_l:
+                lock_cursor_ = !lock_cursor_;
+                break;
             case SDLK_p:
                 ruleset_->print_rules();
                 break;
@@ -55,9 +62,6 @@ void Game::handle_input(SDL_Event event, bool control, bool shift) {
                 IMG_SavePNG(SDL_GetWindowSurface(window_), str.c_str());
                 break;
             }
-            case SDLK_f:
-                ruleset_->toggle_gpu();
-                break;
         }
     }
 }
@@ -71,6 +75,9 @@ int Game::main() {
         SDL_UpdateWindowSurface(window_);
         ruleset_->tick();
         while(SDL_PollEvent(&event)) {
+            if(lock_cursor_) {
+                SDL_WarpMouseInWindow(window_, width_/2, height_/2);
+            }
             if(event.type == SDL_QUIT) {
                 exit(0);
             }
