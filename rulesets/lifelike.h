@@ -1,4 +1,7 @@
 
+#ifndef _LIFELIKE_H
+#define _LIFELIKE_H
+
 #include "initializer.h"
 #include "rainbows.h"
 #include "ruleset.h"
@@ -45,3 +48,5 @@ class LifeLike : public Ruleset {
         void setup_cuda();
         void tick();
 };
+
+#endif //_LIFELIKE_H

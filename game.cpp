@@ -6,11 +6,12 @@
 #include <sstream>
 
 #include "game.h"
+#include "input_manager.h"
 #include "rulesets/lifelike.h"
 
 
 Game::Game() 
-    : width_(1920)
+    : width_(920)
     , height_(1080)
 {
     uint8_t data = 0;
@@ -88,6 +89,7 @@ int Game::main() {
                 }
             }
             this->handle_input(event, control, shift);
+            InputManager::handle_input(event, control, shift);
             ruleset_->handle_input(event, control, shift);
         }
     }

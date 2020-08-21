@@ -19,5 +19,8 @@ all:cuda_kernels.a
 lifelike_cu.o:lifelike.cu lifelike.cuh
 	$(CC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
 
-cuda_kernels.a: common_cu.o lifelike_cu.o #
+cuda_kernels.a: lifelike_cu.o #
 	$(CC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
+
+clean:
+	rm *.o cuda_kernels.a

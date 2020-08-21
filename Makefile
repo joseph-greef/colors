@@ -38,6 +38,9 @@ game.o:game.cpp game.h
 initializer.o:initializer.cpp initializer.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
+input_manager.o:input_manager.cpp input_manager.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
 main.o:main.cpp
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
@@ -47,7 +50,7 @@ main.o:main.cpp
 #screen.o:screen.cpp screen.h
 #	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: game.o initializer.o main.o rulesets/rulesets.a rulesets/cuda_kernels/cuda_kernels.a #kernel.o board.o screen.o RuleGenerator.o
+colors: game.o input_manager.o initializer.o main.o rulesets/rulesets.a rulesets/cuda_kernels/cuda_kernels.a #kernel.o board.o screen.o RuleGenerator.o
 	$(CC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 clean:

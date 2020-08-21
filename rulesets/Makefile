@@ -36,3 +36,4 @@ rulesets.a: lifelike.o ruleset.o rainbows.o
 
 clean:
 	rm -f ../rulesets.a *.o
+	$(MAKE) -C cuda_kernels/ clean

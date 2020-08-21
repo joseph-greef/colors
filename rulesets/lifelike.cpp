@@ -9,6 +9,7 @@
 #include "lifelike.cuh"
 #endif
 
+#include "input_manager.h"
 #include "lifelike.h"
 
 LifeLike::LifeLike(int width, int height)
@@ -41,11 +42,11 @@ LifeLike::LifeLike(int width, int height)
 
     initializer_.init_center_cross(board_, dot_radius_, density_);
 
-    add_var_changer(&density_, SDLK_d, 10, 0, 100, "Density");
-    add_var_changer(&num_faders_, SDLK_a, 1, 0, INT_MAX, "Num Faders");
-    add_var_changer(&dead_color_scheme_, SDLK_m, 1, 0, 9, "Dead Scheme");
-    add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, 9, "Alive Scheme");
-    add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
+    InputManager::add_var_changer(&num_faders_,         SDLK_a, 1, 0, INT_MAX, "Num Faders");
+    InputManager::add_var_changer(&density_,            SDLK_d, 10, 0, 100, "Density");
+    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 1, 0, 9, "Dead Scheme");
+    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, 9, "Alive Scheme");
+    InputManager::add_var_changer(&dot_radius_,         SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
 LifeLike::~LifeLike() {
@@ -128,8 +129,6 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
         }
 #endif
     }
-
-    handle_var_changers(event, control, shift);
 }
 
 void LifeLike::print_rules() {
