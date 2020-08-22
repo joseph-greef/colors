@@ -113,17 +113,17 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
 }
 
 void LifeLike::print_rules() {
-    std::cout << "Born: ";
+    std::cout << "Born: {";
     for(int i = 0; i < 9; i++) {
-        std::cout << born_[i] << " ";
+        std::cout << born_[i] << ", ";
     }
-    std::cout << std::endl;
+    std::cout << "}" << std::endl;
 
-    std::cout << "Stay Alive: ";
+    std::cout << "Stay Alive: {";
     for(int i = 0; i < 9; i++) {
-        std::cout << stay_alive_[i] << " ";
+        std::cout << stay_alive_[i] << ", ";
     }
-    std::cout << std::endl;
+    std::cout << "}" << std::endl;
 }
 
 void LifeLike::randomize_ruleset() {
