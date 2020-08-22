@@ -21,6 +21,19 @@ Key     | Effect
 d + NUM | Set the density of random generation, and the width of lines
 s + NUM | Set the radius of drawn structures
 
+#### Hodge Controls
+Key     | Effect
+------- | ------
+e       | Initialize a square in the center of the board of width 2 $radius
+i       | Randomly initialize the board, cells have a $density % chance of being alive
+r       | Randomize the ruleset
+w       | Initialize a diamond in the center of the board with a long axis of 2 $radius
+x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
+h + NUM | Set the death threshold (x25)
+j + NUM | Set the infection rate (x10)
+k + NUM | Set the infection threshold (x1)
+
+
 #### LifeLike Controls
 Key     | Effect
 ------- | ------

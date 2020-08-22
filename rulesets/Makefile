@@ -22,6 +22,9 @@ all: rulesets.a cuda_kernels/cuda_kernels.a
 cuda_kernels/cuda_kernels.a:
 	$(MAKE) -C cuda_kernels/
 
+hodge.o:hodge.cpp hodge.h ruleset.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
 lifelike.o:lifelike.cpp lifelike.h ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
@@ -31,7 +34,7 @@ rainbows.o:rainbows.cpp rainbows.h
 ruleset.o:ruleset.cpp ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-rulesets.a: lifelike.o ruleset.o rainbows.o 
+rulesets.a: hodge.o lifelike.o ruleset.o rainbows.o 
 	$(CC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
 
 clean:
