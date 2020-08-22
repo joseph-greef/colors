@@ -9,16 +9,11 @@
 
 class LifeLike : public Ruleset {
     private:
-        int alive_color_scheme_;
-        int alive_offset_;
         int *board_;
         int *board_buffer_;
         bool born_[9];
         int dot_radius_;
-        int dead_color_scheme_;
-        int dead_offset_;
         int density_;
-        bool draw_color_;
         Initializer initializer_;
         int num_faders_;
         Rainbows rainbows_;

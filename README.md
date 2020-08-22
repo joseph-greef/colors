@@ -8,10 +8,16 @@ l       | Toggle cursor lock
 p       | Print the current ruleset
 [       | Save a screenshot
 
+#### Rainbow Transcriber Controls
+Key     | Effect
+------- | ------
+c       | Save the currect color schemes and load the previous saved schemes
+m + NUM | Set the dead color scheme
+n + NUM | Set the alive color scheme
+
 #### LifeLike Controls
 Key     | Effect
 ------- | ------
-c       | Toggle drawing color
 e       | Initialize a square in the center of the board of width 2 $radius
 i       | Randomly initialize the board, cells have a $density % chance of being alive
 r       | Randomize the ruleset
@@ -19,8 +25,6 @@ w       | Initialize a diamond in the center of the board with a long axis of 2 
 x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
 a + NUM | Set the number of refractory generations after a cell dies
 d + NUM | Set the $density
-m + NUM | Set the dead color scheme
-n + NUM | Set the alive color scheme
 s + NUM | Set the $radius
 
 <!---

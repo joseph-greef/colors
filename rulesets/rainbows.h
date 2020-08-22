@@ -6,14 +6,21 @@
 #define RAINBOW_LENGTH 256
 class Rainbows {
     public:
-        static void age_to_pixels(int *age_board, uint32_t *pixels, 
-                                  int alive_color_scheme, int alive_offset,
-                                  int dead_color_scheme, int dead_offset,
-                                  int width, int height);
-        static void age_to_bw_pixels(int *age_board, uint32_t *pixels, 
-                                     int width, int height);
+        Rainbows(int width, int height);
+        ~Rainbows();
+        void age_to_pixels(int *age_board, uint32_t *pixels); 
+        void handle_input(SDL_Event event, bool control, bool shift);
+        void randomize_colors();
     private: 
-        static uint32_t colors[10][RAINBOW_LENGTH];
+        int alive_color_scheme_;
+        int alive_offset_;
+        int dead_color_scheme_;
+        int dead_offset_;
+        int height_;
+        int width_;
+
+        static uint32_t colors[][RAINBOW_LENGTH];
+        static int num_colors;
 };
 
 #endif //_RAINBOW_H

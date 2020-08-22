@@ -14,16 +14,11 @@
 
 LifeLike::LifeLike(int width, int height)
     : Ruleset(width, height)
-    , alive_color_scheme_(0)
-    , alive_offset_(128)
-    , dead_color_scheme_(0)
-    , dead_offset_(0)
     , density_(1)
     , dot_radius_(15)
-    , draw_color_(false)
     , initializer_(width, height)
     , num_faders_(0)
-    , rainbows_()
+    , rainbows_(width, height)
 {
     //Random pretty pattern
     //bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
@@ -44,8 +39,6 @@ LifeLike::LifeLike(int width, int height)
 
     InputManager::add_var_changer(&num_faders_,         SDLK_a, 1, 0, INT_MAX, "Num Faders");
     InputManager::add_var_changer(&density_,            SDLK_d, 10, 0, 100, "Density");
-    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 1, 0, 9, "Dead Scheme");
-    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, 9, "Alive Scheme");
     InputManager::add_var_changer(&dot_radius_,         SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
@@ -58,6 +51,7 @@ void LifeLike::copy_board_to_gpu() {
     cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
                cudaMemcpyHostToDevice);
 }
+
 void LifeLike::copy_rules_to_gpu() {
     cudaMemcpy(cudev_born_, born_, 9 * sizeof(bool),
                cudaMemcpyHostToDevice);
@@ -76,25 +70,16 @@ void LifeLike::free_cuda() {
 }
 
 void LifeLike::get_pixels(uint32_t *pixels) {
-    if(draw_color_) {
-        Rainbows::age_to_pixels(board_, pixels,
-                                alive_color_scheme_, alive_offset_,
-                                dead_color_scheme_, dead_offset_,
-                                width_, height_);
-    }
-    else {
-        Rainbows::age_to_bw_pixels(board_, pixels,
-                                   width_, height_);
-    }
+    rainbows_.age_to_pixels(board_, pixels);
 }
 
 void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
     bool board_changed = false;
+    
+    rainbows_.handle_input(event, control, shift);
+
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
-            case SDLK_c:
-                draw_color_ = !draw_color_;
-                break;
             case SDLK_e:
                 initializer_.init_center_square(board_, dot_radius_);
                 board_changed = true;
@@ -152,8 +137,7 @@ void LifeLike::randomize_ruleset() {
     }
     born_[0] = false;
 
-    alive_offset_ = rand() % RAINBOW_LENGTH;
-    dead_offset_ = rand() % RAINBOW_LENGTH;
+    rainbows_.randomize_colors();
 
 #ifdef USE_GPU
     if(use_gpu_) {

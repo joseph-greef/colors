@@ -12,7 +12,7 @@
 
 Game::Game() 
     : lock_cursor_(false)
-    , width_(920)
+    , width_(1080)
     , height_(1080)
 {
     uint8_t data = 0;
