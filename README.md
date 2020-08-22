@@ -15,6 +15,12 @@ c       | Save the currect color schemes and load the previous saved schemes
 m + NUM | Set the dead color scheme
 n + NUM | Set the alive color scheme
 
+#### Global Initialization Controls
+Key     | Effect
+------- | ------
+d + NUM | Set the density of random generation, and the width of lines
+s + NUM | Set the radius of drawn structures
+
 #### LifeLike Controls
 Key     | Effect
 ------- | ------
@@ -24,8 +30,6 @@ r       | Randomize the ruleset
 w       | Initialize a diamond in the center of the board with a long axis of 2 $radius
 x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
 a + NUM | Set the number of refractory generations after a cell dies
-d + NUM | Set the $density
-s + NUM | Set the $radius
 
 <!---
 ------------------------------- Simulation Controls -------------------------------

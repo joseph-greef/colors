@@ -14,8 +14,6 @@
 
 LifeLike::LifeLike(int width, int height)
     : Ruleset(width, height)
-    , density_(1)
-    , dot_radius_(15)
     , initializer_(width, height)
     , num_faders_(0)
     , rainbows_(width, height)
@@ -35,11 +33,9 @@ LifeLike::LifeLike(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
-    initializer_.init_center_cross(board_, dot_radius_, density_);
+    initializer_.init_center_cross(board_);
 
     InputManager::add_var_changer(&num_faders_,         SDLK_a, 1, 0, INT_MAX, "Num Faders");
-    InputManager::add_var_changer(&density_,            SDLK_d, 10, 0, 100, "Density");
-    InputManager::add_var_changer(&dot_radius_,         SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
 LifeLike::~LifeLike() {
@@ -81,22 +77,22 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
             case SDLK_e:
-                initializer_.init_center_square(board_, dot_radius_);
+                initializer_.init_center_square(board_);
                 board_changed = true;
                 break;
             case SDLK_i:
-                initializer_.init_board(board_, density_);
+                initializer_.init_board(board_);
                 board_changed = true;
                 break;
             case SDLK_r:
                 randomize_ruleset();
                 break;
             case SDLK_w:
-                initializer_.init_center_diamond(board_, dot_radius_);
+                initializer_.init_center_diamond(board_);
                 board_changed = true;
                 break;
             case SDLK_x:
-                initializer_.init_center_cross(board_, dot_radius_, density_);
+                initializer_.init_center_cross(board_);
                 board_changed = true;
                 break;
 

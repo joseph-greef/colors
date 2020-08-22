@@ -1,11 +1,18 @@
 
+#include <climits>
+
 #include "initializer.h"
+#include "input_manager.h"
 
 
 Initializer::Initializer(int width, int height)
-    : height_(height)
+    : density_(1)
+    , dot_radius_(54)
+    , height_(height)
     , width_(width)
 {
+    InputManager::add_var_changer(&density_,    SDLK_d, 10, 0, 100, "Density");
+    InputManager::add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
 Initializer::~Initializer() {
@@ -23,45 +30,44 @@ void Initializer::clear_board(int *board) {
 }
 
 //randomly initializes the board with density percent alive cells
-void Initializer::init_board(int *board, int density) {
+void Initializer::init_board(int *board) {
     for (int i = 0; i < width_; i++) {
         for (int j = 0; j < height_; j++) {
-            board[j* width_ + i] = (rand() % 100 < density ? 1 : -1);
+            board[j* width_ + i] = (rand() % 100 < density_ ? 1 : 0);
         }
     }
 }
 
 //clears the board and draws a dot in the center with side length density/10
-void Initializer::init_center_square(int *board, int radius) {
+void Initializer::init_center_square(int *board) {
     clear_board(board);
-    for (int i = width_ / 2 - radius; i < width_ / 2 + radius; i++) {
-        for (int j = height_ /  2 - radius; j < height_ / 2 + radius; j++) {
+    for (int i = width_ / 2 - dot_radius_; i < width_ / 2 + dot_radius_; i++) {
+        for (int j = height_ /  2 - dot_radius_; j < height_ / 2 + dot_radius_; j++) {
             board[j * width_ + i] = 1;
         }
     }
 }
 
-void Initializer::init_center_diamond(int *board, int radius) {
+void Initializer::init_center_diamond(int *board) {
     clear_board(board);
-    for (int i = width_ / 2 - radius; i < width_ / 2 + radius; i++) {
-        for (int j = height_ /  2 - radius; j < height_ / 2 + radius; j++) {
-            if(abs(i - width_ / 2)+abs(j - height_ / 2) < radius) {
+    for (int i = width_ / 2 - dot_radius_; i < width_ / 2 + dot_radius_; i++) {
+        for (int j = height_ /  2 - dot_radius_; j < height_ / 2 + dot_radius_; j++) {
+            if(abs(i - width_ / 2)+abs(j - height_ / 2) < dot_radius_) {
                 board[j * width_ + i] = 1;
             }
         }
     }
 }
 
-
-void Initializer::init_center_cross(int *board, int line_width, int radius) {
+void Initializer::init_center_cross(int *board) {
     clear_board(board);
-    for (int i = width_ / 2 - line_width; i < width_ / 2 + line_width; i++) {
-        for (int j = height_ /  2 - radius; j < height_ / 2 + radius; j++) {
+    for (int i = width_ / 2 - density_; i < width_ / 2 + density_; i++) {
+        for (int j = height_ /  2 - dot_radius_; j < height_ / 2 + dot_radius_; j++) {
             board[j * width_ + i] = 1;
         }
     }
-    for (int i = width_ / 2 - radius; i < width_ / 2 + radius; i++) {
-        for (int j = height_ /  2 - line_width; j < height_ / 2 + line_width; j++) {
+    for (int i = width_ / 2 - dot_radius_; i < width_ / 2 + dot_radius_; i++) {
+        for (int j = height_ /  2 - density_; j < height_ / 2 + density_; j++) {
             board[j * width_ + i] = 1;
         }
     }
