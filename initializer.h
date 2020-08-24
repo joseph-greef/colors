@@ -16,7 +16,7 @@ private:
     
 public:
     //Initializer(Board *b);
-    Initializer(int width, int height);
+    Initializer(int density, int dot_radius, int width, int height);
     ~Initializer();
 
     void clear_board(int* board);

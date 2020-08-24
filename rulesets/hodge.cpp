@@ -15,13 +15,13 @@
 Hodge::Hodge(int width, int height)
     : Ruleset(width, height)
     , changing_background_(false)
-    , death_threshold_(255)
-    , infection_rate_(15)
+    , death_threshold_(260)
+    , infection_rate_(30)
     , infection_threshold_(2)
-    , initializer_(width, height)
-    , k1_(3)
-    , k2_(3)
-    , podge_(false)
+    , initializer_(2, 5, width, height)
+    , k1_(2)
+    , k2_(5)
+    , podge_(true)
     , rainbows_(width, height)
 {
     board_ = new int[width*height];
@@ -35,7 +35,7 @@ Hodge::Hodge(int width, int height)
     InputManager::add_var_changer(&k1_, SDLK_k, 1, 0, INT_MAX, "k1");
     InputManager::add_var_changer(&k2_, SDLK_l, 1, 0, INT_MAX, "k2");
 
-    initializer_.init_board(board_);
+    initializer_.init_center_square(board_);
 }
 
 Hodge::~Hodge() {

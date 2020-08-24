@@ -14,7 +14,7 @@
 
 LifeLike::LifeLike(int width, int height)
     : Ruleset(width, height)
-    , initializer_(width, height)
+    , initializer_(1, 54, width, height)
     , num_faders_(0)
     , rainbows_(width, height)
 {

@@ -5,9 +5,9 @@
 #include "input_manager.h"
 
 
-Initializer::Initializer(int width, int height)
-    : density_(1)
-    , dot_radius_(54)
+Initializer::Initializer(int density, int dot_radius, int width, int height)
+    : density_(density)
+    , dot_radius_(dot_radius)
     , height_(height)
     , width_(width)
 {
