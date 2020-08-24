@@ -47,20 +47,23 @@ void Hodge::copy_board_to_gpu() {
 #ifdef USE_GPU
     cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
                cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
 #endif //USE_GPU
-}
-
-void Hodge::copy_rules_to_gpu() {
-    //TODO
 }
 
 void Hodge::free_cuda() {
 #ifdef USE_GPU
-    std::cout << "Freeing CUDA" << std::endl;
-    cudaFree((void*)cudev_board_);
-    cudaFree((void*)cudev_board_buffer_);
-    cudaFree((void*)cudev_born_);
-    cudaFree((void*)cudev_stay_alive_);
+    std::cout << "Stopping CUDA" << std::endl;
+    if(cudev_board_) {
+        cudaFree((void*)cudev_board_);
+    }
+    if(cudev_board_buffer_) {
+        cudaFree((void*)cudev_board_buffer_);
+    }
+    cudaDeviceSynchronize();
+
+    cudev_board_ = NULL;
+    cudev_board_buffer_ = NULL;
 #endif //USE_GPU
 }
 
@@ -193,11 +196,6 @@ void Hodge::randomize_ruleset() {
     infection_threshold_ = rand() % 4 + 1;
 
     rainbows_.randomize_colors();
-#ifdef USE_GPU
-    if(use_gpu_) {
-        copy_rules_to_gpu();
-    }
-#endif //USE_GPU
 }
 
 void Hodge::setup_cuda() {
@@ -210,7 +208,8 @@ void Hodge::setup_cuda() {
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
 
     copy_board_to_gpu();
-    copy_rules_to_gpu();
+
+    cudaDeviceSynchronize();
 #endif //USE_GPU
 }
 
@@ -232,6 +231,7 @@ void Hodge::tick() {
 
         cudaMemcpy(board_, cudev_board_buffer_, 
                    width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
 
         temp = cudev_board_buffer_;
         cudev_board_buffer_ = cudev_board_;
