@@ -27,12 +27,12 @@ class Screen {
         ~Screen();
         void set_pixel(int x, int y, Uint32 color);
         void set_color_scheme(int scheme);
+        SDL_Point get_screen_dimensions();
         void draw_board();
         void reset_colors();
         void flip_draw_colors();
         void flip_draw_smooth();
         void set_color_speed_divisor(uint8_t new_color_speed_divisor);
-        void update_window();
 };
 
 

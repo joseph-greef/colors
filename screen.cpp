@@ -1,6 +1,6 @@
 
 #include "screen.h"
-#include "rainbows.h"
+#include "rulesets/rainbows.h"
 
 
 Screen::Screen(Board *new_board) {
@@ -64,6 +64,10 @@ void Screen::set_pixel(int x, int y, Uint32 color) {
     //}
 }
 
+SDL_Point Screen::get_screen_dimensions() {
+    SDL_Point p = {960, 540};
+    return p;
+}
 
 //this function converts a board of cells into a screen's worth of pixels
 void Screen::draw_board() {
@@ -80,9 +84,9 @@ void Screen::draw_board() {
                 for(int i = 0; i < width; i++) {
                     //if we're alive modulo the age of the cell by the number of colors to get which color to draw and draw it
                     if(board[j*width+i] > 0)
-                        set_pixel(i, j, colors[color_scheme][((board[j*width+i]+alive_offset)/color_speed_divisor) & 255]);
+                        set_pixel(i, j, old_colors[color_scheme][((board[j*width+i]+alive_offset)/color_speed_divisor) & 255]);
                     else //do the same if we're dead, but with negative age instead
-                        set_pixel(i, j, colors[color_scheme][((-board[j*width+i]+dead_offset)/color_speed_divisor) & 255]);
+                        set_pixel(i, j, old_colors[color_scheme][((-board[j*width+i]+dead_offset)/color_speed_divisor) & 255]);
                 }
             }
         }
@@ -103,9 +107,9 @@ void Screen::draw_board() {
                 for(int i = 0; i < width; i++) {
                     //if we're alive modulo the age of the cell by the number of colors to get which color to draw and draw it
                     if(board[j*width+i] > 0)
-                        set_pixel(i, j, colors[color_scheme][((board[j*width+i]+alive_offset)) & 255]);
+                        set_pixel(i, j, old_colors[color_scheme][((board[j*width+i]+alive_offset)) & 255]);
                     else //do the same if we're dead, but with negative age instead
-                        set_pixel(i, j, colors[color_scheme][((-board[j*width+i]+dead_offset)) & 255]);
+                        set_pixel(i, j, old_colors[color_scheme][((-board[j*width+i]+dead_offset)) & 255]);
                 }
             }
         }
@@ -152,10 +156,5 @@ void Screen::flip_draw_smooth() {
 
 void Screen::set_color_speed_divisor(uint8_t new_color_speed_divisor) {
     color_speed_divisor = new_color_speed_divisor;
-}
-
-void Screen::update_window() {
-    SDL_UpdateWindowSurface(window);
-
 }
 

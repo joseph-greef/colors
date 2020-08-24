@@ -1,3 +1,53 @@
+
+#### General Controls 
+Key     | Effect
+------- | ------
+escape  | Quit
+f       | Toggle Cuda Kernel
+l       | Toggle cursor lock
+p       | Print the current ruleset
+[       | Save a screenshot
+z + NUM | Change rulesets
+
+#### Rainbow Transcriber Controls
+Key     | Effect
+------- | ------
+c       | Save the currect color schemes and load the previous saved schemes
+m + NUM | Set the dead color scheme
+n + NUM | Set the alive color scheme
+
+#### Global Initialization Controls
+Key     | Effect
+------- | ------
+d + NUM | Set the density of random generation, and the width of lines
+s + NUM | Set the radius of drawn structures
+
+#### Hodge Controls
+Key     | Effect
+------- | ------
+b       | Toggle changing background colors
+e       | Initialize a square in the center of the board of width 2 $radius
+i       | Randomly initialize the board, cells have a $density % chance of being alive
+o       | Toggle Hodge vs Hodgepodge
+r       | Randomize the ruleset
+w       | Initialize a diamond in the center of the board with a long axis of 2 $radius
+x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
+h + NUM | Set the death threshold (x25)
+j + NUM | Set the infection rate (x10)
+k + NUM | Set the infection threshold (x1)
+
+
+#### LifeLike Controls
+Key     | Effect
+------- | ------
+e       | Initialize a square in the center of the board of width 2 $radius
+i       | Randomly initialize the board, cells have a $density % chance of being alive
+r       | Randomize the ruleset
+w       | Initialize a diamond in the center of the board with a long axis of 2 $radius
+x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
+a + NUM | Set the number of refractory generations after a cell dies
+
+<!---
 ------------------------------- Simulation Controls -------------------------------
 
 q:                      Quits simulation
@@ -89,3 +139,4 @@ Arrow Right/Left:       increases/decreases the number of gliders to generate by
 [:			Same as - but for nondeterministic life
 
 ]: 			Same as + but for nondeterministic life
+--->
