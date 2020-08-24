@@ -24,8 +24,6 @@ class Hodge : public Ruleset {
 #ifdef USE_GPU
         int *cudev_board_;
         int *cudev_board_buffer_;
-        bool *cudev_born_;
-        bool *cudev_stay_alive_;
 #endif
 
         void copy_board_to_gpu();

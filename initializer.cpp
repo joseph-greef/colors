@@ -16,7 +16,8 @@ Initializer::Initializer(int width, int height)
 }
 
 Initializer::~Initializer() {
-
+    InputManager::remove_var_changer(SDLK_d);
+    InputManager::remove_var_changer(SDLK_s);
 }
 
 //clears the board. If changing_background is true sets everything to -1

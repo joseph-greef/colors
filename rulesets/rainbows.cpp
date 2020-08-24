@@ -15,6 +15,8 @@ Rainbows::Rainbows(int width, int height)
 }
 
 Rainbows::~Rainbows() {
+    InputManager::remove_var_changer(SDLK_m);
+    InputManager::remove_var_changer(SDLK_n);
 }
 
 void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {

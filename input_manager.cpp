@@ -89,3 +89,29 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
         }
     }
 }
+
+void InputManager::remove_var_changer(SDL_Keycode key) {
+    VarChangeEntry *toErase = NULL;
+
+    if(used_keys_.erase(key) == 0) {
+        std::cout << "Attempted to remove key "
+                  << SDL_GetKeyName(key) 
+                  << " which wasn't added." << std::endl;
+    }
+    for(VarChangeEntry *entry: int_changes_) {
+        if(key == entry->key) {
+            toErase = entry;
+            break;
+        }
+    }
+    if(toErase) {
+        int_changes_.erase(toErase);
+        delete(toErase);
+    }
+    else {
+        std::cout << "Didn't find "
+                  << SDL_GetKeyName(key) 
+                  << " in int_changes_" << std::endl;
+    }
+}
+

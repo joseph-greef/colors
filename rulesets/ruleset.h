@@ -19,7 +19,7 @@ class Ruleset {
 
     public:
         Ruleset(int width, int height);
-        ~Ruleset();
+        virtual ~Ruleset();
 
         virtual void free_cuda() = 0;
         virtual void get_pixels(uint32_t *pixels) = 0;

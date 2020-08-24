@@ -33,14 +33,21 @@ LifeLike::LifeLike(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
+    cudev_board_ = NULL;
+
     initializer_.init_center_cross(board_);
 
-    InputManager::add_var_changer(&num_faders_,         SDLK_a, 1, 0, INT_MAX, "Num Faders");
+    InputManager::add_var_changer(&num_faders_, SDLK_a, 1, 0, INT_MAX, "Num Faders");
 }
 
 LifeLike::~LifeLike() {
     delete board_;
     delete board_buffer_;
+    if(cudev_board_) {
+        free_cuda();
+    }
+
+    InputManager::remove_var_changer(SDLK_a);
 }
 
 void LifeLike::copy_board_to_gpu() {
@@ -166,7 +173,6 @@ void LifeLike::setup_cuda() {
 #ifdef USE_GPU
     std::cout << "Starting CUDA" << std::endl;
     cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_born_, 9 * sizeof(bool));
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));

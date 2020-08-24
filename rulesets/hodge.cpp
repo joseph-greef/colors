@@ -27,6 +27,8 @@ Hodge::Hodge(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
+    cudev_board_ = NULL;
+
     InputManager::add_var_changer(&death_threshold_, SDLK_g, 25, 0, INT_MAX, "Death Threshold");
     InputManager::add_var_changer(&infection_rate_, SDLK_h, 10, INT_MIN, INT_MAX, "Infection Rate");
     InputManager::add_var_changer(&infection_threshold_, SDLK_j, 1, 0, INT_MAX, "Infection Theshold");
@@ -39,6 +41,14 @@ Hodge::Hodge(int width, int height)
 Hodge::~Hodge() {
     delete board_;
     delete board_buffer_;
+    if(cudev_board_) {
+        free_cuda();
+    }
+    InputManager::remove_var_changer(SDLK_g);
+    InputManager::remove_var_changer(SDLK_h);
+    InputManager::remove_var_changer(SDLK_j);
+    InputManager::remove_var_changer(SDLK_k);
+    InputManager::remove_var_changer(SDLK_l);
 }
 
 std::string Hodge::Name = std::string("Hodge");
@@ -203,9 +213,6 @@ void Hodge::setup_cuda() {
     std::cout << "Starting CUDA" << std::endl;
     cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_born_, 9 * sizeof(bool));
-    cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
 
     copy_board_to_gpu();
 

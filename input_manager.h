@@ -29,6 +29,8 @@ class InputManager {
         static void add_var_changer(int *variable, SDL_Keycode key, int multiplier,
                                     int min_value, int max_value, std::string name);
         static void handle_input(SDL_Event event, bool control, bool shift);
+        static void remove_var_changer(SDL_Keycode key);
 };
 
 #endif //_INPUT_MANAGER_H
+
