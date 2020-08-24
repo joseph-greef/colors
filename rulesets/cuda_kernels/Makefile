@@ -16,10 +16,13 @@ all:cuda_kernels.a
 #common_cu.o:common.cu common.cuh
 #	$(CC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
 
+hodge_cu.o:hodge.cu hodge.cuh
+	$(CC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
+
 lifelike_cu.o:lifelike.cu lifelike.cuh
 	$(CC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
 
-cuda_kernels.a: lifelike_cu.o #
+cuda_kernels.a: hodge_cu.o lifelike_cu.o #
 	$(CC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
 
 clean:

@@ -3,7 +3,6 @@
 #include <iostream>
 #include <stdlib.h>
 
-#undef USE_GPU
 #ifdef USE_GPU
 #include "curand.h"
 #include "cuda_runtime.h"
@@ -220,8 +219,16 @@ void Hodge::tick() {
 #if USE_GPU
         int *temp = NULL;
 
-        call_cuda_lifelike(cudev_board_, cudev_board_buffer_, cudev_born_,
-                           cudev_stay_alive_, num_faders_, width_, height_);
+        if(podge_) {
+            call_cuda_hodgepodge(cudev_board_, cudev_board_buffer_, death_threshold_,
+                                 infection_rate_, k1_, k2_,
+                                 width_, height_, changing_background_);
+        }
+        else {
+            call_cuda_hodge(cudev_board_, cudev_board_buffer_, death_threshold_,
+                            infection_rate_, infection_threshold_,
+                            width_, height_, changing_background_);
+        }
 
         cudaMemcpy(board_, cudev_board_buffer_, 
                    width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);

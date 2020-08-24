@@ -24,6 +24,7 @@ s + NUM | Set the radius of drawn structures
 #### Hodge Controls
 Key     | Effect
 ------- | ------
+b       | Toggle changing background colors
 e       | Initialize a square in the center of the board of width 2 $radius
 i       | Randomly initialize the board, cells have a $density % chance of being alive
 o       | Toggle Hodge vs Hodgepodge
