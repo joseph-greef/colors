@@ -18,19 +18,17 @@ SUBDIRS := $(wildcard */.)
 
 
 # Target rules
-all: colors rulesets/rulesets.a
+all: colors rulesets/rulesets.a cuda_kernels/cuda_kernels.a
 
+cuda_kernels/cuda_kernels.a:
+	$(MAKE) -C cuda_kernels/
 
 rulesets/rulesets.a:
 	$(MAKE) -C rulesets/
 
+.PHONY: all cuda_kernels/cuda_kernels.a
+
 .PHONY: all rulesets/rulesets.a
-
-#kernel.o:kernel.cu kernel.cuh
-#	$(NVCC) $(INCLUDES) $(CUDAFLAGS) -o $@ -c $<
-
-#board.o:board.cpp board.h
-#	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 game.o:game.cpp game.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
@@ -44,15 +42,10 @@ input_manager.o:input_manager.cpp input_manager.h
 main.o:main.cpp
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-#RuleGenerator.o:RuleGenerator.cpp RuleGenerator.h
-#	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
-
-#screen.o:screen.cpp screen.h
-#	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
-
-colors: game.o input_manager.o initializer.o main.o rulesets/rulesets.a rulesets/cuda_kernels/cuda_kernels.a #kernel.o board.o screen.o RuleGenerator.o
+colors: game.o input_manager.o initializer.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a 
 	$(CC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 clean:
 	rm -f colors *.o
 	$(MAKE) -C rulesets/ clean
+	$(MAKE) -C cuda_kernels/ clean
