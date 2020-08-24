@@ -26,6 +26,7 @@ Key     | Effect
 ------- | ------
 e       | Initialize a square in the center of the board of width 2 $radius
 i       | Randomly initialize the board, cells have a $density % chance of being alive
+o       | Toggle Hodge vs Hodgepodge
 r       | Randomize the ruleset
 w       | Initialize a diamond in the center of the board with a long axis of 2 $radius
 x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density

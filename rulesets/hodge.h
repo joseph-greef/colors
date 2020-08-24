@@ -11,10 +11,14 @@ class Hodge : public Ruleset {
     private:
         int *board_;
         int *board_buffer_;
+        bool changing_background_;
         int death_threshold_;
         int infection_rate_;
         int infection_threshold_;
         Initializer initializer_;
+        int k1_;
+        int k2_;
+        bool podge_;
         Rainbows rainbows_;
 
 #ifdef USE_GPU
@@ -27,10 +31,14 @@ class Hodge : public Ruleset {
         void copy_board_to_gpu();
         void copy_rules_to_gpu();
 
+        int get_next_value_healthy(int x, int y);
+        int get_next_value_infected(int x, int y);
         int get_sum_neighbors(int x, int y);
 
         void randomize_ruleset();
         void update_board();
+        void update_hodge();
+        void update_hodgepodge();
 
 
     public:
