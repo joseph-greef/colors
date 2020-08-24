@@ -7,11 +7,16 @@
 
 #include "game.h"
 #include "input_manager.h"
+
+#define NUM_RULESETS 2
+#include "rulesets/hodge.h"
 #include "rulesets/lifelike.h"
 
 
 Game::Game() 
-    : lock_cursor_(false)
+    : current_ruleset_(1)
+    , lock_cursor_(false)
+    , ruleset_(NULL)
     , width_(1080)
     , height_(1080)
 {
@@ -23,8 +28,6 @@ Game::Game()
     }
     SDL_Cursor *cursor = SDL_CreateCursor(&data, &mask, 1, 1, 0, 0);
 
-    ruleset_ = new LifeLike(width_, height_);
-
     window_ = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
                                SDL_WINDOWPOS_CENTERED, // y position
@@ -33,10 +36,23 @@ Game::Game()
                                SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED);
     SDL_SetCursor(cursor);
 
+    change_ruleset(current_ruleset_);
+    InputManager::add_var_changer(&current_ruleset_, SDLK_z, 1, 0, NUM_RULESETS-1, "Ruleset");
 }
 
 Game::~Game() {
     delete ruleset_;
+}
+
+void Game::change_ruleset(int new_ruleset) {
+    if(ruleset_) {
+        delete ruleset_;
+    }
+
+    switch(new_ruleset) {
+        case 0: ruleset_ = new LifeLike(width_, height_); break;
+        case 1: ruleset_ = new Hodge(width_, height_); break;
+    }
 }
 
 void Game::handle_input(SDL_Event event, bool control, bool shift) {
@@ -69,11 +85,19 @@ void Game::handle_input(SDL_Event event, bool control, bool shift) {
 int Game::main() {
     SDL_Event event;
     bool running = true, shift = false, control = false;
+    int last_ruleset = current_ruleset_;
 
     while(running) {
+        if(last_ruleset != current_ruleset_) {
+            change_ruleset(current_ruleset_);
+        }
+        last_ruleset = current_ruleset_;
+
         ruleset_->get_pixels((uint32_t*)(SDL_GetWindowSurface(window_)->pixels));
         SDL_UpdateWindowSurface(window_);
+
         ruleset_->tick();
+
         while(SDL_PollEvent(&event)) {
             if(lock_cursor_) {
                 SDL_WarpMouseInWindow(window_, width_/2, height_/2);
@@ -95,6 +119,7 @@ int Game::main() {
                         exit(0);
                 }
             }
+
             this->handle_input(event, control, shift);
             InputManager::handle_input(event, control, shift);
             ruleset_->handle_input(event, control, shift);
