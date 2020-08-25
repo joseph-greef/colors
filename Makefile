@@ -45,7 +45,14 @@ main.o:main.cpp
 colors: game.o input_manager.o initializer.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a 
 	$(CC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
+pdf:
+	{ grip README.md 8421 & echo $$! > grip.PID; }
+	sleep 2
+	wkhtmltopdf http://localhost:8421 readme.pdf
+	kill `cat grip.PID`
+	rm grip.PID
+
 clean:
-	rm -f colors *.o
+	rm -f colors readme.pdf *.o
 	$(MAKE) -C rulesets/ clean
 	$(MAKE) -C cuda_kernels/ clean
