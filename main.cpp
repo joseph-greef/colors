@@ -7,18 +7,21 @@
 #include <SDL_image.h>
 #include <sstream>
 #include <time.h>
+#include <vector>
 
 #include "game.h"
 #include "input_manager.h"
+#include "movie.h"
 
 #define WIDTH 1080
 #define HEIGHT 1080
 
 int main(int argc, char * arg[])
 {
-
     Game game(WIDTH, HEIGHT);
     SDL_Event event;
+    MovieWriter *writer = NULL;
+    std::vector<uint8_t> writer_pixels(4 * WIDTH * HEIGHT);
     bool running = true, shift = false, control = false;
     bool lock_cursor = false;
 
@@ -46,6 +49,11 @@ int main(int argc, char * arg[])
 
         game.draw_board((uint32_t*)(SDL_GetWindowSurface(window)->pixels));
         SDL_UpdateWindowSurface(window);
+
+        if(writer) {
+            game.draw_board((uint32_t*)(&writer_pixels[0]));
+            writer->addFrame(&writer_pixels[0]);
+        }
 
         game.tick();
 
@@ -81,6 +89,21 @@ int main(int argc, char * arg[])
                         IMG_SavePNG(SDL_GetWindowSurface(window), str.c_str());
                         break;
                     }
+                    case SDLK_RIGHTBRACKET:
+                        if(writer) {
+                            std::cout << "Writing video file." << std::endl;
+                            delete writer;
+                            writer = NULL;
+                        }
+                        else {
+                            std::time_t t = std::time(nullptr);
+                            std::tm tm = *std::localtime(&t);
+                            std::ostringstream oss;
+                            oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S");
+                            std::string str = oss.str();
+                            writer = new MovieWriter(str, WIDTH, HEIGHT);
+                        }
+                        break;
                     case SDLK_l:
                         lock_cursor = !lock_cursor;
                         break;

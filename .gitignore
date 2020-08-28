@@ -1,4 +1,6 @@
 *.o
+*.so
 *.a
+moviemaker-cpp_build
 colors
 readme.pdf

@@ -12,6 +12,7 @@ class Game {
         SDL_Cursor *cursor_;
         Ruleset *rulesets_[NUM_RULESETS];
         SDL_Window *window_;
+        bool writingVideo_;
         const int width_;
         const int height_;
 

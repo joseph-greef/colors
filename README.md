@@ -7,6 +7,7 @@ f       | Toggle Cuda Kernel
 l       | Toggle cursor lock
 p       | Print the current ruleset
 [       | Save a screenshot
+]       | Start/end h264 video capture
 z + NUM | Change rulesets
 
 #### Rainbow Transcriber Controls

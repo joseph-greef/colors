@@ -33,14 +33,17 @@ rulesets/rulesets.a:
 game.o:game.cpp game.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
+initializer.o:initializer.cpp initializer.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
 input_manager.o:input_manager.cpp input_manager.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 main.o:main.cpp
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: game.o input_manager.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a 
-	$(LD) $(LIBRARIES) $(LDFLAGS) -o $@ $+
+colors: game.o input_manager.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a libmoviemaker-cpp.so
+	$(LD) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 pdf:
 	{ grip README.md 8421 & echo $$! > grip.PID; }
@@ -50,7 +53,8 @@ pdf:
 	rm grip.PID
 
 clean:
-	rm -f colors readme.pdf *.o
+	rm -f colors *.so readme.pdf *.o
+	rm -rf moviemaker-cpp_build/
 	$(MAKE) -C rulesets/ clean
 	$(MAKE) -C cuda_kernels/ clean
 
