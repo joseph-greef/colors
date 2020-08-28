@@ -1,0 +1,3 @@
+[submodule "moviemaker-cpp"]
+	path = moviemaker-cpp
+	url = git@github.com:apc-llc/moviemaker-cpp.git
