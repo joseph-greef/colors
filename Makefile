@@ -56,3 +56,6 @@ clean:
 	rm -f colors readme.pdf *.o
 	$(MAKE) -C rulesets/ clean
 	$(MAKE) -C cuda_kernels/ clean
+
+cleanmedia:
+	rm *.png *.gif *.mp4
