@@ -20,8 +20,8 @@ Game::Game()
     , width_(1080)
     , height_(1080)
 {
-    uint8_t data = 0;
-    uint8_t mask = 0;
+    static uint8_t data = 0;
+    static uint8_t mask = 0;
     if(SDL_Init(SDL_INIT_EVERYTHING) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
         exit(1);
