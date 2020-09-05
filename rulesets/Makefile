@@ -2,7 +2,7 @@ CUDA_PATH ?= /usr/local/cuda-10.2
 HOST_ARCH   := $(shell uname -m)
 
 LD=$(CUDA_PATH)/bin/nvcc
-CC=gcc
+CXX=g++
 CXXFLAGS = -g -DUSE_GPU -std=c++11 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
 LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 
@@ -17,19 +17,19 @@ LIBRARIES := -L$(CUDA_PATH)/lib64
 all: rulesets.a
 
 initializer.o:initializer.cpp initializer.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 hodge.o:hodge.cpp hodge.h ruleset.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 lifelike.o:lifelike.cpp lifelike.h ruleset.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 rainbows.o:rainbows.cpp rainbows.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 ruleset.o:ruleset.cpp ruleset.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 rulesets.a: initializer.o hodge.o lifelike.o ruleset.o rainbows.o 
 	$(LD) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+

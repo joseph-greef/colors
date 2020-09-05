@@ -2,14 +2,16 @@ CUDA_PATH ?= /usr/local/cuda-10.2
 HOST_ARCH   := $(shell uname -m)
 
 LD=$(CUDA_PATH)/bin/nvcc
+CXX=g++
 CC=gcc
-CXXFLAGS = -g -DUSE_GPU -std=c++11 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
+CFLAGS = -g -DUSE_GPU -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
+CXXFLAGS = $(CFLAGS) -std=c++11
 LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 
 # Common includes and paths for CUDA/SDL2
-INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I$(CURRENT_DIR)
+INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I$(CURRENT_DIR) -Imoviemaker-cpp/include
 LIBRARIES := -L$(CUDA_PATH)/lib64
 
 SUBDIRS := $(wildcard */.)
@@ -26,23 +28,32 @@ cuda_kernels/cuda_kernels.a:
 rulesets/rulesets.a:
 	$(MAKE) -C rulesets/
 
+libmoviemaker-cpp.so:
+	mkdir -p moviemaker-cpp_build
+	cmake -S moviemaker-cpp -B moviemaker-cpp_build
+	make -C moviemaker-cpp_build -j12
+	cp moviemaker-cpp_build/libmoviemaker-cpp.so libmoviemaker-cpp.so
+
+gifenc.o:gifenc/gifenc.c gifenc/gifenc.h
+	$(CC) $(INCLUDES) $(CFLAGS) -o $@ -c $<
+
 .PHONY: all cuda_kernels/cuda_kernels.a
 
 .PHONY: all rulesets/rulesets.a
 
 game.o:game.cpp game.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 initializer.o:initializer.cpp initializer.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 input_manager.o:input_manager.cpp input_manager.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 main.o:main.cpp
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: game.o input_manager.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a libmoviemaker-cpp.so
+colors: game.o gifenc.o input_manager.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a libmoviemaker-cpp.so
 	$(LD) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
 
 pdf:

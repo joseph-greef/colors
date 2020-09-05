@@ -1,4 +1,9 @@
 
+#include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+
 #include "input_manager.h"
 #include "rainbows.h"
 
@@ -7,6 +12,7 @@ Rainbows::Rainbows(int width, int height)
     , alive_offset_(0)
     , dead_color_scheme_(Rainbows::num_colors - 2)
     , dead_offset_(0)
+    , gif_(NULL)
     , saved_alive_color_scheme_(0)
     , saved_dead_color_scheme_(0)
     , height_(height)
@@ -33,6 +39,10 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
             }
         }
     }
+
+    if(gif_) {
+        save_gif_frame(age_board);
+    }
 }
 
 void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
@@ -48,6 +58,15 @@ void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
                     saved_dead_color_scheme_ = tmp_dead;
                 }
                 break;
+            case SDLK_BACKSLASH:
+                if(gif_) {
+                    ge_close_gif(gif_);
+                    gif_ = NULL;
+                }
+                else {
+                    start_gif();
+                }
+                break;
         }
     }
 }
@@ -55,6 +74,38 @@ void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
 void Rainbows::randomize_colors() {
     alive_offset_ = rand() % RAINBOW_LENGTH;                                    
     dead_offset_ = rand() % RAINBOW_LENGTH;
+}
+
+void Rainbows::save_gif_frame(int *age_board) {
+    for(int i = 0; i < width_ * height_; i++) {
+        if(age_board[i] > 0) {
+            gif_->frame[i] = (age_board[i] + alive_offset_) & 255;
+        }
+        else {
+            gif_->frame[i] = (-age_board[i] + dead_offset_) & 255;
+        }
+    }
+    ge_add_frame(gif_, 2);
+}
+
+void Rainbows::start_gif() {
+    static uint8_t rainbow_no_alpha[GIF_COLOR_LEN * 3] = { 0 };
+    std::time_t t = std::time(nullptr);
+    std::tm tm = *std::localtime(&t);
+    std::ostringstream oss;
+    oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S.gif");
+    std::string str = oss.str();
+
+    for(int i = 0; i < GIF_COLOR_LEN; i++) {
+        int nai = 3 * i;
+        uint32_t color = colors[alive_color_scheme_][i];
+        uint8_t *components = (uint8_t*)&color;
+        rainbow_no_alpha[nai] = components[2];
+        rainbow_no_alpha[nai + 1] = components[1];
+        rainbow_no_alpha[nai + 2] = components[0];
+    }
+
+    gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8, 0);
 }
 
 void Rainbows::start() { 
