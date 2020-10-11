@@ -14,8 +14,8 @@ enum NeighborhoodType {
 class Ruleset {
     protected:
         int height_;
-        int width_;
         bool use_gpu_;
+        int width_;
 
     public:
         Ruleset(int width, int height);

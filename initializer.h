@@ -1,9 +1,6 @@
 #ifndef _INITIALIZER_H
 #define _INITIALIZER_H
 
-
-#include "info.h"
-
 #include <random>
 #include <SDL.h>
 
