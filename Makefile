@@ -1,10 +1,10 @@
 CUDA_PATH ?= /usr/local/cuda-10.2
 HOST_ARCH   := $(shell uname -m)
 
-CC=$(CUDA_PATH)/bin/nvcc
-CXXFLAGS= -g -std=c++11
-#CUDAFLAGS= -std=c++11 -c 
-LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
+LD=$(CUDA_PATH)/bin/nvcc
+CC=gcc
+CXXFLAGS = -g -std=c++11 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
+LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 
@@ -43,7 +43,7 @@ main.o:main.cpp
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 colors: game.o input_manager.o initializer.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a 
-	$(CC) $(LIBRARIES) $(LDFLAGS) -o $@ $+ 
+	$(LD) $(LIBRARIES) $(LDFLAGS) -o $@ $+
 
 pdf:
 	{ grip README.md 8421 & echo $$! > grip.PID; }

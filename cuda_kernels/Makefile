@@ -2,7 +2,6 @@ CUDA_PATH ?= /usr/local/cuda-10.2
 HOST_ARCH   := $(shell uname -m)
 
 CC=$(CUDA_PATH)/bin/nvcc
-CXXFLAGS= -O3 -std=c++11 -DUSE_GPU
 CUDAFLAGS= -std=c++11 -dc 
 LDFLAGS= -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2
 
