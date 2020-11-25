@@ -3,7 +3,7 @@ HOST_ARCH   := $(shell uname -m)
 
 LD=$(CUDA_PATH)/bin/nvcc
 CC=gcc
-CXXFLAGS = -g -std=c++11 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
+CXXFLAGS = -g -DUSE_GPU -std=c++11 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
 LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
