@@ -3,7 +3,6 @@
 
 #include <SDL.h>
 
-#include "initializer.h"
 #include "rulesets/ruleset.h"
 
 

@@ -16,6 +16,9 @@ LIBRARIES := -L$(CUDA_PATH)/lib64
 # Target rules
 all: rulesets.a
 
+initializer.o:initializer.cpp initializer.h
+	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
 hodge.o:hodge.cpp hodge.h ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
@@ -28,7 +31,7 @@ rainbows.o:rainbows.cpp rainbows.h
 ruleset.o:ruleset.cpp ruleset.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-rulesets.a: hodge.o lifelike.o ruleset.o rainbows.o 
+rulesets.a: initializer.o hodge.o lifelike.o ruleset.o rainbows.o 
 	$(LD) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+
 
 clean:

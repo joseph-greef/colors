@@ -33,16 +33,13 @@ rulesets/rulesets.a:
 game.o:game.cpp game.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-initializer.o:initializer.cpp initializer.h
-	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
-
 input_manager.o:input_manager.cpp input_manager.h
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 main.o:main.cpp
 	$(CC) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colors: game.o input_manager.o initializer.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a 
+colors: game.o input_manager.o main.o rulesets/rulesets.a cuda_kernels/cuda_kernels.a 
 	$(LD) $(LIBRARIES) $(LDFLAGS) -o $@ $+
 
 pdf:
