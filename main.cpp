@@ -1,5 +1,6 @@
 
 #include <ctime>
+#include <chrono>
 #include <iomanip>
 #include <iostream>
 #include <random>
@@ -7,6 +8,7 @@
 #include <SDL_image.h>
 #include <sstream>
 #include <time.h>
+#include <thread>
 #include <vector>
 
 #include "game.h"
@@ -22,13 +24,18 @@ int main(int argc, char * arg[])
     SDL_Event event;
     MovieWriter *writer = NULL;
     std::vector<uint8_t> writer_pixels(4 * WIDTH * HEIGHT);
-    bool running = true, shift = false, control = false;
+
+    int fps_target = 60;
     bool lock_cursor = false;
+    bool running = true, shift = false, control = false;
+
 
     static uint8_t data[8] = {0};
     static uint8_t mask[8] = {0};
 
     srand(time(NULL));
+
+    InputManager::add_var_changer(&fps_target, SDLK_v, 5, 1, INT_MAX, "FPS Target");
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
@@ -46,6 +53,7 @@ int main(int argc, char * arg[])
     SDL_SetCursor(cursor);
 
     while(running) {
+        auto start_time = std::chrono::steady_clock::now();
 
         game.draw_board((uint32_t*)(SDL_GetWindowSurface(window)->pixels));
         SDL_UpdateWindowSurface(window);
@@ -115,6 +123,11 @@ int main(int argc, char * arg[])
         if(lock_cursor) {
             SDL_WarpMouseInWindow(window, WIDTH/2, HEIGHT/2);
         }
+
+        std::chrono::microseconds frame_delay(1000000/fps_target);
+        auto next_frame_time = start_time + frame_delay;
+        auto delay_time = next_frame_time - std::chrono::steady_clock::now();
+        std::this_thread::sleep_for(delay_time);
     }
 
     SDL_FreeCursor(cursor);
