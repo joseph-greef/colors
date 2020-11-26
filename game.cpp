@@ -38,6 +38,7 @@ void Game::change_ruleset(int new_ruleset) {
         }
     }
     active_ruleset_->stop();
+    InputManager::reset();
     active_ruleset_ = rulesets_[new_ruleset];
     active_ruleset_->start();
 }
