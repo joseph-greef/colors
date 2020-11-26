@@ -17,15 +17,18 @@ class Ruleset {
         bool use_gpu_;
         int width_;
 
+        virtual void start_cuda() = 0;
+        virtual void stop_cuda() = 0;
+
     public:
         Ruleset(int width, int height);
         virtual ~Ruleset();
 
-        virtual void free_cuda() = 0;
         virtual void get_pixels(uint32_t *pixels) = 0;
         virtual void handle_input(SDL_Event event, bool control, bool shift) = 0;
         virtual void print_rules() = 0;
-        virtual void setup_cuda() = 0;
+        virtual void start() = 0;
+        virtual void stop() = 0;
 
         virtual void tick() = 0;
 
@@ -34,4 +37,8 @@ class Ruleset {
         void toggle_gpu();
 };
 
-#endif //_RULE_SET_H
+#include "lifelike.h"
+#include "hodge.h"
+#define NUM_RULESETS 2
+
+#endif //_RULESET_H

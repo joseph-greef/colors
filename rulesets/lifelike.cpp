@@ -33,64 +33,53 @@ LifeLike::LifeLike(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
-    cudev_board_ = NULL;
+#ifdef USE_GPU
+    std::cout << "Allocating CUDA memory for LifeLike" << std::endl;
+    cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
+    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
+    cudaMalloc((void**)&cudev_born_, 9 * sizeof(int));
+    cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
+#endif //USE_GPU
 
     initializer_.init_center_cross(board_);
-
-    InputManager::add_var_changer(&num_faders_, SDLK_a, 1, 0, INT_MAX, "Num Faders");
 }
 
 LifeLike::~LifeLike() {
-    delete board_;
-    delete board_buffer_;
-    if(cudev_board_) {
-        free_cuda();
-    }
-
-    InputManager::remove_var_changer(SDLK_a);
-}
-
-void LifeLike::copy_board_to_gpu() {
+    delete [] board_;
+    delete [] board_buffer_;
 #ifdef USE_GPU
-    cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
-               cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
+    std::cout << "Freeing CUDA memory for LifeLike" << std::endl;
+    cudaFree((void*)cudev_board_);
+    cudaFree((void*)cudev_board_buffer_);
+    cudaFree((void*)cudev_born_);
+    cudaFree((void*)cudev_stay_alive_);
 #endif //USE_GPU
 }
 
-void LifeLike::copy_rules_to_gpu() {
 #ifdef USE_GPU
+void LifeLike::copy_board_to_gpu() {
+    cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
+               cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+}
+
+void LifeLike::copy_rules_to_gpu() {
     cudaMemcpy(cudev_born_, born_, 9 * sizeof(bool),
                cudaMemcpyHostToDevice);
     cudaMemcpy(cudev_stay_alive_, stay_alive_, 9 * sizeof(bool),
                cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
-#endif //USE_GPU
 }
 
-void LifeLike::free_cuda() {
-#ifdef USE_GPU
-    std::cout << "Stopping CUDA" << std::endl;
-    if(cudev_board_) {
-        cudaFree((void*)cudev_board_);
-    }
-    if(cudev_board_buffer_) {
-        cudaFree((void*)cudev_board_buffer_);
-    }
-    if(cudev_born_) {
-        cudaFree((void*)cudev_born_);
-    }
-    if(cudev_stay_alive_) {
-        cudaFree((void*)cudev_stay_alive_);
-    }
-    cudaDeviceSynchronize();
-
-    cudev_board_ = NULL;
-    cudev_board_buffer_ = NULL;
-    cudev_born_ = NULL;
-    cudev_stay_alive_ = NULL;
-#endif //USE_GPU
+void LifeLike::start_cuda() {
+    copy_rules_to_gpu();
+    copy_board_to_gpu();
 }
+
+void LifeLike::stop_cuda() {
+}
+
+#endif //USE_GPU
 
 void LifeLike::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
@@ -125,18 +114,13 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
 
          }
     }
-    else if(event.type == SDL_KEYUP) {
-        switch(event.key.keysym.sym) {
-        }
-    }
-
-    if(board_changed) {
 #ifdef USE_GPU
+    if(board_changed) {
         if(use_gpu_) {
             copy_board_to_gpu();
         }
-#endif
     }
+#endif
 }
 
 void LifeLike::print_rules() {
@@ -169,20 +153,18 @@ void LifeLike::randomize_ruleset() {
 #endif //USE_GPU
 }
 
-void LifeLike::setup_cuda() {
-#ifdef USE_GPU
-    std::cout << "Starting CUDA" << std::endl;
-    cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_born_, 9 * sizeof(bool));
-    cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
+void LifeLike::start() { 
+    InputManager::add_var_changer(&num_faders_, SDLK_a, 1, 0, INT_MAX, "Num Faders");
 
-    copy_board_to_gpu();
-    copy_rules_to_gpu();
+    initializer_.start();
+    rainbows_.start();
+}
 
-    cudaDeviceSynchronize();
+void LifeLike::stop() { 
+    InputManager::remove_var_changer(SDLK_a);
 
-#endif //USE_GPU
+    initializer_.stop();
+    rainbows_.stop();
 }
 
 void LifeLike::tick() {
@@ -249,4 +231,5 @@ void LifeLike::update_board() {
     }
 
 }
+
 

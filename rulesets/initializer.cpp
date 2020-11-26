@@ -11,13 +11,9 @@ Initializer::Initializer(int density, int dot_radius, int width, int height)
     , height_(height)
     , width_(width)
 {
-    InputManager::add_var_changer(&density_,    SDLK_d, 10, 0, 100, "Density");
-    InputManager::add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
 }
 
 Initializer::~Initializer() {
-    InputManager::remove_var_changer(SDLK_d);
-    InputManager::remove_var_changer(SDLK_s);
 }
 
 //clears the board. If changing_background is true sets everything to -1
@@ -72,5 +68,15 @@ void Initializer::init_center_cross(int *board) {
             board[j * width_ + i] = 1;
         }
     }
+}
+
+void Initializer::start() { 
+    InputManager::add_var_changer(&density_,    SDLK_d, 10, 0, 100, "Density");
+    InputManager::add_var_changer(&dot_radius_, SDLK_s, 1, 0, INT_MAX, "Dot Size");
+}
+
+void Initializer::stop() { 
+    InputManager::remove_var_changer(SDLK_d);
+    InputManager::remove_var_changer(SDLK_s);
 }
 

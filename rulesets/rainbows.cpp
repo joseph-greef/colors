@@ -7,16 +7,14 @@ Rainbows::Rainbows(int width, int height)
     , alive_offset_(0)
     , dead_color_scheme_(Rainbows::num_colors - 2)
     , dead_offset_(0)
+    , saved_alive_color_scheme_(0)
+    , saved_dead_color_scheme_(0)
     , height_(height)
     , width_(width)
 {
-    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 1, 0, Rainbows::num_colors-1, "Dead Scheme");
-    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, Rainbows::num_colors-1, "Alive Scheme");
 }
 
 Rainbows::~Rainbows() {
-    InputManager::remove_var_changer(SDLK_m);
-    InputManager::remove_var_changer(SDLK_n);
 }
 
 void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
@@ -38,18 +36,16 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
 }
 
 void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
-    static int saved_alive_color_scheme = 0;
-    static int saved_dead_color_scheme = 0;
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
             case SDLK_c:
                 {
                     int tmp_alive = alive_color_scheme_;
                     int tmp_dead = dead_color_scheme_;
-                    alive_color_scheme_ = saved_alive_color_scheme;
-                    dead_color_scheme_ = saved_dead_color_scheme;
-                    saved_alive_color_scheme = tmp_alive;
-                    saved_dead_color_scheme = tmp_dead;
+                    alive_color_scheme_ = saved_alive_color_scheme_;
+                    dead_color_scheme_ = saved_dead_color_scheme_;
+                    saved_alive_color_scheme_ = tmp_alive;
+                    saved_dead_color_scheme_ = tmp_dead;
                 }
                 break;
         }
@@ -59,6 +55,16 @@ void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
 void Rainbows::randomize_colors() {
     alive_offset_ = rand() % RAINBOW_LENGTH;                                    
     dead_offset_ = rand() % RAINBOW_LENGTH;
+}
+
+void Rainbows::start() { 
+    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 1, 0, Rainbows::num_colors-1, "Dead Scheme");
+    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, Rainbows::num_colors-1, "Alive Scheme");
+}
+
+void Rainbows::stop() { 
+    InputManager::remove_var_changer(SDLK_m);
+    InputManager::remove_var_changer(SDLK_n);
 }
 
 uint32_t Rainbows::colors[][RAINBOW_LENGTH] = {

@@ -21,6 +21,9 @@ public:
     void init_center_cross(int *board);
     void init_center_diamond(int *board);
     void init_center_square(int *board);
+
+    void start();
+    void stop();
 };
 
 #endif //_INITIALIZER_H

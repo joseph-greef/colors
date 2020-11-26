@@ -59,10 +59,10 @@ int Ruleset::get_num_alive_neighbors(int *board, int x, int y,
 void Ruleset::toggle_gpu() {
     use_gpu_ = !use_gpu_;
     if(use_gpu_) {
-        setup_cuda();
+        start_cuda();
     }
     else {
-        free_cuda();
+        stop_cuda();
     } 
 }
 
