@@ -30,7 +30,7 @@ int main(int argc, char * arg[])
 
     srand(time(NULL));
 
-    InputManager::add_var_changer(&fps_target, SDLK_v, 5, 10, INT_MAX, "FPS Target");
+    InputManager::add_var_changer(&fps_target, SDLK_v, 10, 10, INT_MAX, "FPS Target");
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
