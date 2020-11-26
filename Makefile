@@ -55,4 +55,4 @@ clean:
 	$(MAKE) -C cuda_kernels/ clean
 
 cleanmedia:
-	rm *.png *.gif *.mp4
+	rm -f *.png *.gif *.mp4
