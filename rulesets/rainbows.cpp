@@ -14,6 +14,7 @@ Rainbows::Rainbows(int width, int height)
     , dead_color_scheme_(Rainbows::num_colors - 2)
     , dead_offset_(0)
     , gif_(NULL)
+    , gif_frames_(0)
     , saved_alive_color_scheme_(0)
     , saved_dead_color_scheme_(0)
     , height_(height)
@@ -65,7 +66,7 @@ void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
                     gif_ = NULL;
                 }
                 else {
-                    start_gif();
+                    start_gif(control);
                 }
                 break;
         }
@@ -87,9 +88,15 @@ void Rainbows::save_gif_frame(int *age_board) {
         }
     }
     ge_add_frame(gif_, 2);
+
+    gif_frames_--;
+    if(gif_frames_ == 0) {
+        ge_close_gif(gif_);
+        gif_ = NULL;
+    }
 }
 
-void Rainbows::start_gif() {
+void Rainbows::start_gif(bool control) {
     static uint8_t rainbow_no_alpha[GIF_COLOR_LEN * 3] = { 0 };
     std::time_t t = std::time(nullptr);
     std::tm tm = *std::localtime(&t);
@@ -107,6 +114,12 @@ void Rainbows::start_gif() {
     }
 
     gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8, 0);
+    if(control) {
+        gif_frames_ = 256;
+    }
+    else {
+        gif_frames_ = 0;
+    }
 }
 
 void Rainbows::start() { 
