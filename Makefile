@@ -64,10 +64,13 @@ pdf:
 	rm grip.PID
 
 clean:
-	rm -f colors *.so readme.pdf *.o
-	rm -rf moviemaker-cpp_build/
+	rm -f colors readme.pdf *.o
 	$(MAKE) -C rulesets/ clean
 	$(MAKE) -C cuda_kernels/ clean
+
+cleansubmodules:
+	rm *.so gifenc.o
+	rm -rf moviemaker-cpp_build/
 
 cleanmedia:
 	rm -f *.png *.gif *.mp4
