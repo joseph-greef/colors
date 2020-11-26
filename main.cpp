@@ -63,6 +63,10 @@ int main(int argc, char * arg[])
                     case SDLK_RSHIFT:
                         shift = event.type == SDL_KEYDOWN;
                         break;
+                }
+            }
+            if(event.type == SDL_KEYDOWN) {
+                switch(event.key.keysym.sym) {
                     case SDLK_ESCAPE:
                         running = false;
                         break;
