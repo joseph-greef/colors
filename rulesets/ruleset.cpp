@@ -60,9 +60,11 @@ void Ruleset::toggle_gpu() {
     use_gpu_ = !use_gpu_;
     if(use_gpu_) {
         start_cuda();
+        std::cout << "Starting CUDA" << std::endl;
     }
     else {
         stop_cuda();
+        std::cout << "Stopping CUDA" << std::endl;
     } 
 }
 
