@@ -7,6 +7,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <sstream>
+#include <tclap/CmdLine.h>
 #include <time.h>
 #include <thread>
 #include <vector>
@@ -15,34 +16,70 @@
 #include "input_manager.h"
 #include "movie.h"
 
-#define WIDTH 1080
-#define HEIGHT 1080
 
-int main(int argc, char * arg[])
+int main(int argc, char * argv[])
 {
-    Game game(WIDTH, HEIGHT);
-    SDL_Event event;
-    MovieWriter *writer = NULL;
-    std::vector<uint8_t> writer_pixels(4 * WIDTH * HEIGHT);
+    int width, height, fps_target, square;
+    try {
+        TCLAP::CmdLine cmd("See README.md/readme.pdf for simulation controls", ' ', "0.1");
+        TCLAP::ValueArg<int> fps_arg("f", "fps", "Set the initial FPS target of the simulation", false, 144, "int");
+        cmd.add(fps_arg);
+        TCLAP::ValueArg<int> square_arg("s", "square", "If set positive, overrides other size controls to create a square of the given size", false, -1, "int");
+        cmd.add(square_arg);
+        TCLAP::ValueArg<int> width_arg("c", "cols", "Set the width of sim, uses screen width if unset or invalid", false, -1, "int");
+        cmd.add(width_arg);
+        TCLAP::ValueArg<int> height_arg("r", "rows", "Set the height of sim, uses screen height if unset or invalid", false, -1, "int");
+        cmd.add(height_arg);
 
-    int fps_target = 60;
-    bool running = true, shift = false, control = false;
+        cmd.parse(argc, argv);
 
-    srand(time(NULL));
-
-    InputManager::add_var_changer(&fps_target, SDLK_v, 10, 10, INT_MAX, "FPS Target");
+        width = width_arg.getValue();
+        height = height_arg.getValue();
+        fps_target = fps_arg.getValue();
+        square = square_arg.getValue();
+    } catch (TCLAP::ArgException &e) {
+        std::cerr << "error: " << e.error() << " for arg " << e.argId() << std::endl;
+        return -1;
+    }
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
         exit(1);
     }
 
+    SDL_DisplayMode display_mode;
+    SDL_GetCurrentDisplayMode(0, &display_mode);
+
+    if(square > 0) {
+        width = height = square;
+    }
+    else {
+        if(width < 1) {
+            width = display_mode.w;
+        }
+        if(height < 1) {
+            height = display_mode.h;
+        }
+    }
+
+    Game game(width, height);
+
+    //Main loop control/input variables
+    bool running = true, shift = false, control = false;
+    SDL_Event event;
+
+    MovieWriter *writer = NULL;
+    std::vector<uint8_t> writer_pixels(4 * width * height);
+
+    srand(time(NULL));
+
+    InputManager::add_var_changer(&fps_target, SDLK_v, 10, 10, INT_MAX, "FPS Target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
                                SDL_WINDOWPOS_CENTERED, // y position
-                               WIDTH,                 // width
-                               HEIGHT,                // height
+                               width,                 // width
+                               height,                // height
                                SDL_WINDOW_BORDERLESS | SDL_WINDOW_MAXIMIZED);
     SDL_ShowCursor(0);
     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -104,7 +141,7 @@ int main(int argc, char * arg[])
                             std::ostringstream oss;
                             oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S");
                             std::string str = oss.str();
-                            writer = new MovieWriter(str, WIDTH, HEIGHT);
+                            writer = new MovieWriter(str, width, height);
                         }
                         break;
                 }
