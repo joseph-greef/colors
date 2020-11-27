@@ -29,6 +29,7 @@ Game::~Game() {
     for(Ruleset *ruleset: rulesets_) {
         delete ruleset;
     }
+    InputManager::remove_var_changer(SDLK_z);
 }
 
 void Game::change_ruleset(int new_ruleset) {

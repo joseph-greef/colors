@@ -62,6 +62,7 @@ int main(int argc, char * argv[])
         }
     }
 
+    srand(time(NULL));
     Game game(width, height);
 
     //Main loop control/input variables
@@ -70,8 +71,6 @@ int main(int argc, char * argv[])
 
     MovieWriter *writer = NULL;
     std::vector<uint8_t> writer_pixels(4 * width * height);
-
-    srand(time(NULL));
 
     InputManager::add_var_changer(&fps_target, SDLK_v, 10, INT_MAX, "(Main) FPS Target");
 
@@ -164,6 +163,8 @@ int main(int argc, char * argv[])
         auto delay_time = next_frame_time - std::chrono::steady_clock::now();
         std::this_thread::sleep_for(delay_time);
     }
+
+    InputManager::remove_var_changer(SDLK_v);
 
     SDL_DestroyWindow(window);
     SDL_Quit();
