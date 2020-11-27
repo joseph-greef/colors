@@ -10,7 +10,7 @@ class Game {
         int last_ruleset_;
         bool lock_cursor_;
         SDL_Cursor *cursor_;
-        Ruleset *rulesets_[NUM_RULESETS];
+        std::vector<Ruleset*> rulesets_;
         SDL_Window *window_;
         bool writingVideo_;
         const int width_;

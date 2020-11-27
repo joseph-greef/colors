@@ -11,32 +11,27 @@
 Game::Game(int width, int height) 
     : active_ruleset_(NULL)
     , current_ruleset_(0)
-    , last_ruleset_(0)
+    , last_ruleset_(current_ruleset_)
     , lock_cursor_(false)
     , width_(width)
     , height_(height)
 {
-    memset(rulesets_, 0, sizeof(rulesets_));
-    active_ruleset_ = rulesets_[0] = new LifeLike(width_, height_);
+    rulesets_.push_back(new LifeLike(width_, height_));
+    rulesets_.push_back(new Hodge(width_, height_));
+
+    active_ruleset_ = rulesets_[current_ruleset_];
     active_ruleset_->start();
+
     InputManager::add_var_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "(Game) Ruleset");
 }
 
 Game::~Game() {
-    for(int i = 0; i < NUM_RULESETS; i++) {
-        if(rulesets_[i] != NULL) {
-            delete rulesets_[i];
-        }
+    for(Ruleset *ruleset: rulesets_) {
+        delete ruleset;
     }
 }
 
 void Game::change_ruleset(int new_ruleset) {
-    if(rulesets_[new_ruleset] == NULL) {
-        switch(new_ruleset) {
-            case 0: rulesets_[new_ruleset] = new LifeLike(width_, height_); break;
-            case 1: rulesets_[new_ruleset] = new Hodge(width_, height_); break;
-        }
-    }
     active_ruleset_->stop();
     InputManager::reset();
     active_ruleset_ = rulesets_[new_ruleset];
