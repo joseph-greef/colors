@@ -25,4 +25,4 @@ cuda_kernels.a: hodge_cu.o lifelike_cu.o #
 	$(CC) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+ 
 
 clean:
-	rm *.o cuda_kernels.a
+	rm -f *.o cuda_kernels.a
