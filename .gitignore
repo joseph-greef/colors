@@ -1,6 +1,9 @@
 *.o
 *.so
 *.a
+*.gif
+*.png
+*.mp4
 moviemaker-cpp_build
 colors
 readme.pdf
