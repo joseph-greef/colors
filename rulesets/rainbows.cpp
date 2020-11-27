@@ -123,10 +123,10 @@ void Rainbows::start_gif(bool control) {
 }
 
 void Rainbows::start() { 
-    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 1, 0, Rainbows::num_colors-1, "Dead Scheme");
-    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 1, 0, Rainbows::num_colors-1, "Alive Scheme");
-    InputManager::add_var_changer(&dead_offset_,  SDLK_COMMA, 5, INT_MIN, INT_MAX, "Dead Offset");
-    InputManager::add_var_changer(&alive_offset_, SDLK_PERIOD, 5, INT_MIN, INT_MAX, "Alive Offset");
+    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "Dead Scheme");
+    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "Alive Scheme");
+    InputManager::add_var_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "Dead Offset");
+    InputManager::add_var_changer(&alive_offset_, SDLK_PERIOD, INT_MIN, INT_MAX, "Alive Offset");
 }
 
 void Rainbows::stop() { 

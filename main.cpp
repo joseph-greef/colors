@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 
     srand(time(NULL));
 
-    InputManager::add_var_changer(&fps_target, SDLK_v, 10, 10, INT_MAX, "FPS Target");
+    InputManager::add_var_changer(&fps_target, SDLK_v, 10, INT_MAX, "FPS Target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position

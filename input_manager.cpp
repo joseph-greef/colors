@@ -15,7 +15,7 @@ std::vector<VarChangeEntry*> InputManager::left_mouse_vars_ = std::vector<VarCha
 
 std::vector<VarChangeEntry*> InputManager::right_mouse_vars_ = std::vector<VarChangeEntry*>();
 
-void InputManager::add_var_changer(int *variable, SDL_Keycode key, int multiplier,
+void InputManager::add_var_changer(int *variable, SDL_Keycode key,
                                    int min_value, int max_value, std::string name) {
     if(!used_keys_.insert(key).second) {
         std::cout << "Warning: Attempted rebind on "
@@ -30,7 +30,8 @@ void InputManager::add_var_changer(int *variable, SDL_Keycode key, int multiplie
     entry->key_pressed = false;
     entry->max_value = max_value;
     entry->min_value = min_value;
-    entry->multiplier = multiplier;
+    entry->override_value = 0;
+    entry->overridden = false;
     entry->name = name;
     entry->variable = variable;
     int_changes_.insert(entry);
@@ -49,6 +50,11 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
         for(VarChangeEntry *entry: int_changes_) {
             if(event.key.keysym.sym == entry->key) {
                 entry->key_pressed = (event.type == SDL_KEYDOWN);
+                if(event.type == SDL_KEYUP && entry->overridden) {
+                    modify_entry(entry, entry->override_value, 0);
+                }
+                entry->override_value = 0;
+                entry->overridden = false;
                 break;
             }
         }
@@ -91,7 +97,7 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
            event.key.keysym.sym <= SDLK_KP_0) {
             //order is KP_1, KP_2 ... KP_0
             override_value = event.key.keysym.sym - SDLK_KP_1 + 1;
-            override_value = (override_value % 10) * mul;
+            override_value = (override_value % 10);
         }
         else if(event.key.keysym.sym == SDLK_KP_PLUS) {
             modify_value = mul;
@@ -103,10 +109,19 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
     else if(event.type == SDL_MOUSEWHEEL) {
         modify_value = event.wheel.y * mul;
     }
-    if(modify_value || override_value != -1) {
+    if(modify_value) {
         for(VarChangeEntry *entry: int_changes_) {
             if(entry->key_pressed) {
-                modify_entry(entry, override_value, modify_value);
+                modify_entry(entry, -1, modify_value);
+            }
+        }
+    }
+    if(override_value != -1) {
+        for(VarChangeEntry *entry: int_changes_) {
+            if(entry->key_pressed) {
+                entry->override_value *= 10;
+                entry->override_value += override_value;
+                entry->overridden = true;
             }
         }
     }
@@ -114,7 +129,7 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
 
 void InputManager::modify_entry(VarChangeEntry *entry, int override_value, int modify_value) {
     if(override_value != -1) {
-        *(entry->variable) = override_value * entry->multiplier;
+        *(entry->variable) = override_value;
     }
     if(modify_value) {
         *(entry->variable) += modify_value;

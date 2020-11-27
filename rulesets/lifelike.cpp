@@ -154,7 +154,7 @@ void LifeLike::randomize_ruleset() {
 }
 
 void LifeLike::start() { 
-    InputManager::add_var_changer(&num_faders_, SDLK_a, 1, 0, INT_MAX, "Num Faders");
+    InputManager::add_var_changer(&num_faders_, SDLK_a, 0, INT_MAX, "Num Faders");
 
     initializer_.start();
     rainbows_.start();

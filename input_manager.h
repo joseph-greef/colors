@@ -14,7 +14,8 @@ typedef struct var_change_entry {
     bool key_pressed;
     int max_value;
     int min_value;
-    int multiplier;
+    int override_value;
+    bool overridden;
     std::string name;
     int *variable;
 } VarChangeEntry;
@@ -31,7 +32,7 @@ class InputManager {
 
         static void modify_entry(VarChangeEntry *entry, int override_value, int modify_entry);
     public:
-        static void add_var_changer(int *variable, SDL_Keycode key, int multiplier,
+        static void add_var_changer(int *variable, SDL_Keycode key,
                                     int min_value, int max_value, std::string name);
         static void handle_input(SDL_Event event, bool control, bool shift);
         static void remove_var_changer(SDL_Keycode key);

@@ -19,7 +19,7 @@ Game::Game(int width, int height)
     memset(rulesets_, 0, sizeof(rulesets_));
     active_ruleset_ = rulesets_[0] = new LifeLike(width_, height_);
     active_ruleset_->start();
-    InputManager::add_var_changer(&current_ruleset_, SDLK_z, 1, 0, NUM_RULESETS-1, "Ruleset");
+    InputManager::add_var_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "Ruleset");
 }
 
 Game::~Game() {
