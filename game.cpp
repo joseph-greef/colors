@@ -18,6 +18,7 @@ Game::Game(int width, int height)
 {
     rulesets_.push_back(new LifeLike(width_, height_));
     rulesets_.push_back(new Hodge(width_, height_));
+    rulesets_.push_back(new Ants(width_, height_));
 
     active_ruleset_ = rulesets_[current_ruleset_];
     active_ruleset_->start();

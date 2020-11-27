@@ -40,6 +40,7 @@ class Ruleset {
 
 #include "lifelike.h"
 #include "hodge.h"
-#define NUM_RULESETS 2
+#include "ants/ants.h"
+#define NUM_RULESETS 3
 
 #endif //_RULESET_H
