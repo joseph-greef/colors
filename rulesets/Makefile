@@ -16,7 +16,10 @@ LIBRARIES := -L$(CUDA_PATH)/lib64
 # Target rules
 all: rulesets.a
 
-ants.o:ants/ants.cpp ants/ants.h ruleset.h
+ants.o:ants/ants.cpp ants/ants.h ruleset.h ants/ant_location.h
+	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
+
+colony.o:ants/colony.cpp ants/colony.h ants/ant_location.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 hodge.o:hodge.cpp hodge.h ruleset.h
@@ -34,8 +37,8 @@ rainbows.o:rainbows.cpp rainbows.h
 ruleset.o:ruleset.cpp ruleset.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-rulesets.a: ants.o hodge.o initializer.o lifelike.o ruleset.o rainbows.o 
+rulesets.a: ants.o colony.o hodge.o initializer.o lifelike.o ruleset.o rainbows.o 
 	$(LD) $(LIBRARIES) $(LDFLAGS) --lib -o $@ $+
 
 clean:
-	rm -f ../rulesets.a *.o
+	rm -f rulesets.a *.o
