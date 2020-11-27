@@ -3,7 +3,7 @@ HOST_ARCH   := $(shell uname -m)
 
 LD=$(CUDA_PATH)/bin/nvcc
 CXX=g++
-CXXFLAGS = -g -DUSE_GPU -std=c++11 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
+CXXFLAGS = -g -DUSE_GPU -std=c++17 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
 LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 
 # Common includes and paths for CUDA/SDL2
@@ -16,10 +16,10 @@ LIBRARIES := -L$(CUDA_PATH)/lib64
 # Target rules
 all: rulesets.a
 
-ants.o:ants/ants.cpp ants/ants.h ruleset.h ants/ant.h
+ants.o:ants/ants.cpp ants/ants.h ruleset.h ants/ant.h ants/food.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
-colony.o:ants/colony.cpp ants/colony.h ants/ant.h
+colony.o:ants/colony.cpp ants/colony.h ants/ant.h ants/food.h
 	$(CXX) $(INCLUDES) $(CXXFLAGS) -o $@ -c $<
 
 hodge.o:hodge.cpp hodge.h ruleset.h

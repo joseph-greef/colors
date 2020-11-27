@@ -5,7 +5,7 @@ LD=$(CUDA_PATH)/bin/nvcc
 CXX=g++
 CC=gcc
 CFLAGS = -g -DUSE_GPU -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
-CXXFLAGS = $(CFLAGS) -std=c++11
+CXXFLAGS = $(CFLAGS) -std=c++17
 LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))

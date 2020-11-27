@@ -1,6 +1,7 @@
 #ifndef _ANTS_COLONY_H
 #define _ANTS_COLONY_H
 
+#include <random>
 #include <vector>
 
 class Colony;
@@ -15,10 +16,19 @@ class Colony {
         int y_;
         int colony_number_;
         int color_;
+        float food_signal_strength_;
+        float home_signal_strength_;
+        int max_signal_steps_;
 
+        std::random_device rd_;
+        std::mt19937 e2_;
+        std::uniform_real_distribution<> dist_;
 
-        float *enemy_pheromones_;
-        float *enemy_pheromones_buffer_;
+        float *food_pheromones_;
+        float *food_pheromones_buffer_;
+
+        float *home_pheromones_;
+        float *home_pheromones_buffer_;
 
     public:
         Colony(int width, int height, int x, int y, int colony_number, int color);
