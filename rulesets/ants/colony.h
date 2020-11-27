@@ -3,7 +3,9 @@
 
 #include <vector>
 
-#include "ant_location.h"
+class Colony;
+
+#include "ant.h"
 
 class Colony {
     private:
@@ -14,16 +16,16 @@ class Colony {
         int colony_number_;
         int color_;
 
-        std::vector<AntLocation> ant_locations_;
 
         float *enemy_pheromones_;
         float *enemy_pheromones_buffer_;
 
-
     public:
         Colony(int width, int height, int x, int y, int colony_number, int color);
         ~Colony();
+        void add_starting_ants(std::vector<Ant> *ants);
         void draw_self(uint32_t *pixels);
+        void move_ant(Ant *ant);
 };
 
 #endif //_ANTS_COLONY_H

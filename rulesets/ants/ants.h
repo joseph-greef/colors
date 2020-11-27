@@ -4,12 +4,12 @@
 #include <vector>
 
 #include "../ruleset.h"
-#include "ant_location.h"
 #include "colony.h"
 
 class Ants : public Ruleset {
     private:
         std::vector<Colony*> colonies_;
+        std::vector<Ant> ants_;
         int num_colonies_;
         int *world_;
 

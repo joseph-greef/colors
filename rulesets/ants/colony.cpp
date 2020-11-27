@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <stdlib.h>
 
 #include "colony.h"
 
@@ -28,15 +29,6 @@ Colony::Colony(int width, int height, int x, int y, int colony_number, int color
 
     enemy_pheromones_ = new float[width*height];
     enemy_pheromones_buffer_ = new float[width*height];
-
-    for(int i = -2; i <= 2; i++) {
-        for(int j = -2; j <= 2; j++) {
-            if(i == 0 && j == 0) {
-                continue;
-            }
-            ant_locations_.push_back({x_ + i, y_ + j});
-        }
-    }
 }
 
 Colony::~Colony() {
@@ -44,6 +36,17 @@ Colony::~Colony() {
     delete [] enemy_pheromones_buffer_;
 }
 
+void Colony::add_starting_ants(std::vector<Ant> *ants) {
+    for(int i = -2; i <= 2; i++) {
+        for(int j = -2; j <= 2; j++) {
+            if(i == 0 && j == 0) {
+                continue;
+            }
+            ants->push_back({x_ + i, y_ + j, colony_number_, this});
+        }
+    }
+
+}
 void Colony::draw_self(uint32_t *pixels) {
     for(int j = -2; j <= 2; j++) {
         for(int i = -2; i <= 2; i++) {
@@ -53,4 +56,13 @@ void Colony::draw_self(uint32_t *pixels) {
             }
         }
     }
+    /*for(AntLocation ant_loc: ant_locations_) {
+        int offset = ant_loc.y * width_ + ant_loc.x;
+        pixels[offset] = color_;
+    }*/
+}
+
+void Colony::move_ant(Ant *ant) {
+    ant->x = (ant->x + rand() % 3 - 1) % width_;
+    ant->y = (ant->y + rand() % 3 - 1) % height_;
 }
