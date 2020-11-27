@@ -26,6 +26,7 @@ class Ruleset {
 
         virtual void get_pixels(uint32_t *pixels) = 0;
         virtual void handle_input(SDL_Event event, bool control, bool shift) = 0;
+        virtual void print_controls() = 0;
         virtual void print_rules() = 0;
         virtual void start() = 0;
         virtual void stop() = 0;

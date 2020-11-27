@@ -73,6 +73,12 @@ void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
     }
 }
 
+void Rainbows::print_rules() {
+    std::cout << std::endl << "Rainbows Controls:" << std::endl;
+    std::cout << "C: Toggle color" << std::endl;
+    std::cout << "\\: Start/Stop gif recording" << std::endl;
+}
+
 void Rainbows::randomize_colors() {
     alive_offset_ = rand() % RAINBOW_LENGTH;                                    
     dead_offset_ = rand() % RAINBOW_LENGTH;
@@ -123,10 +129,10 @@ void Rainbows::start_gif(bool control) {
 }
 
 void Rainbows::start() { 
-    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "Dead Scheme");
-    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "Alive Scheme");
-    InputManager::add_var_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "Dead Offset");
-    InputManager::add_var_changer(&alive_offset_, SDLK_PERIOD, INT_MIN, INT_MAX, "Alive Offset");
+    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "(RnBw) Dead Scheme");
+    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
+    InputManager::add_var_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "(RnBw) Dead Offset");
+    InputManager::add_var_changer(&alive_offset_, SDLK_PERIOD, INT_MIN, INT_MAX, "(RnBw) Alive Offset");
 }
 
 void Rainbows::stop() { 

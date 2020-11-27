@@ -148,6 +148,12 @@ void InputManager::modify_entry(VarChangeEntry *entry, int override_value, int m
               << std::endl;
 }
 
+void InputManager::print_controls() {
+    std::cout << std::endl << "Input Managed Controls:" << std::endl;
+    for(VarChangeEntry *entry: int_changes_) {
+        std::cout << SDL_GetKeyName(entry->key) << ": " << entry->name << std::endl;
+    }
+}
 
 void InputManager::remove_var_changer(SDL_Keycode key) {
     VarChangeEntry *toErase = NULL;

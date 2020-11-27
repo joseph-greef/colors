@@ -19,7 +19,7 @@ Game::Game(int width, int height)
     memset(rulesets_, 0, sizeof(rulesets_));
     active_ruleset_ = rulesets_[0] = new LifeLike(width_, height_);
     active_ruleset_->start();
-    InputManager::add_var_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "Ruleset");
+    InputManager::add_var_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "(Game) Ruleset");
 }
 
 Game::~Game() {
@@ -54,11 +54,17 @@ void Game::handle_input(SDL_Event event, bool control, bool shift) {
                 active_ruleset_->toggle_gpu();
                 break;
             case SDLK_p:
-                //ruleset_->print_rules();
+                active_ruleset_->print_rules();
                 break;
         }
     }
     active_ruleset_->handle_input(event, control, shift);
+}
+
+void Game::print_controls() {
+    std::cout << "F     : Toggle CUDA processing" << std::endl;
+    std::cout << "P     : Print current ruleset info" << std::endl;
+    active_ruleset_->print_controls();
 }
 
 void Game::tick(void) {

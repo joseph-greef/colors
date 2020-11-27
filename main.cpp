@@ -21,8 +21,8 @@ int main(int argc, char * argv[])
 {
     int width, height, fps_target, square;
     try {
-        TCLAP::CmdLine cmd("See README.md/readme.pdf for simulation controls", ' ', "0.1");
-        TCLAP::ValueArg<int> fps_arg("f", "fps", "Set the initial FPS target of the simulation", false, 144, "int");
+        TCLAP::CmdLine cmd("See README.md/readme.pdf or press ' (single quote) while running for simulation controls.", ' ', "0.1");
+        TCLAP::ValueArg<int> fps_arg("f", "fps", "Set the initial FPS target of the simulation, defaults to 144Hz", false, 144, "int");
         cmd.add(fps_arg);
         TCLAP::ValueArg<int> square_arg("s", "square", "If set positive, overrides other size controls to create a square of the given size", false, -1, "int");
         cmd.add(square_arg);
@@ -73,7 +73,7 @@ int main(int argc, char * argv[])
 
     srand(time(NULL));
 
-    InputManager::add_var_changer(&fps_target, SDLK_v, 10, INT_MAX, "FPS Target");
+    InputManager::add_var_changer(&fps_target, SDLK_v, 10, INT_MAX, "(Main) FPS Target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
@@ -143,6 +143,15 @@ int main(int argc, char * argv[])
                             std::string str = oss.str();
                             writer = new MovieWriter(str, width, height);
                         }
+                        break;
+                    case SDLK_QUOTE:
+                        std::cout << std::endl << "Game Controls:" << std::endl;
+                        std::cout << "escape: Quit program" << std::endl;
+                        std::cout << "[     : Take Screenshot" << std::endl;
+                        std::cout << "]     : Start/Stop video capture" << std::endl;
+                        std::cout << "'     : Print help message" << std::endl;
+                        game.print_controls();
+                        InputManager::print_controls();
                         break;
                 }
             }

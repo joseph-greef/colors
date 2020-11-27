@@ -16,6 +16,7 @@ class Rainbows {
         ~Rainbows();
         void age_to_pixels(int *age_board, uint32_t *pixels); 
         void handle_input(SDL_Event event, bool control, bool shift);
+        void print_rules();
         void randomize_colors();
         void start();
         void stop();

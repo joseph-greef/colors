@@ -167,6 +167,19 @@ int Hodge::get_sum_neighbors(int x, int y) {
     return sum;
 }
 
+void Hodge::print_controls() {
+    std::cout << std::endl << "Hodge Controls:" << std::endl;
+    std::cout << "B: Toggle changing background" << std::endl;
+    std::cout << "E: Initialize center square" << std::endl;
+    std::cout << "I: Initialixe random board" << std::endl;
+    std::cout << "O: Toggle between Hodge and HodgePodge" << std::endl;
+    std::cout << "R: Randomize ruleset" << std::endl;
+    std::cout << "W: Initialize center diamond" << std::endl;
+    std::cout << "X: Initialize center cross" << std::endl;
+
+    rainbows_.print_rules();
+}
+
 void Hodge::print_rules() {
     std::cout << "Hodge";
     if(podge_) {
@@ -193,11 +206,11 @@ void Hodge::randomize_ruleset() {
 }
 
 void Hodge::start() { 
-    InputManager::add_var_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "Death Threshold");
-    InputManager::add_var_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "Infection Rate");
-    InputManager::add_var_changer(&infection_threshold_, SDLK_j, 0, INT_MAX, "Infection Theshold");
-    InputManager::add_var_changer(&k1_, SDLK_k, 0, INT_MAX, "k1");
-    InputManager::add_var_changer(&k2_, SDLK_l, 0, INT_MAX, "k2");
+    InputManager::add_var_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "(Hoge) Death Threshold");
+    InputManager::add_var_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
+    InputManager::add_var_changer(&infection_threshold_, SDLK_j, 0, INT_MAX, "(Hoge) Infection Theshold");
+    InputManager::add_var_changer(&k1_, SDLK_k, 0, INT_MAX, "(Hoge) k1");
+    InputManager::add_var_changer(&k2_, SDLK_l, 0, INT_MAX, "(Hoge) k2");
 
     initializer_.start();
     rainbows_.start();

@@ -123,6 +123,17 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
 #endif
 }
 
+void LifeLike::print_controls() {
+    std::cout << std::endl << "LifeLike Controls:" << std::endl;
+    std::cout << "E: Initialize center square" << std::endl;
+    std::cout << "I: Initialixe random board" << std::endl;
+    std::cout << "R: Randomize ruleset" << std::endl;
+    std::cout << "W: Initialize center diamond" << std::endl;
+    std::cout << "X: Initialize center cross" << std::endl;
+
+    rainbows_.print_rules();
+}
+
 void LifeLike::print_rules() {
     std::cout << "Born: {";
     for(int i = 0; i < 9; i++) {
@@ -154,7 +165,7 @@ void LifeLike::randomize_ruleset() {
 }
 
 void LifeLike::start() { 
-    InputManager::add_var_changer(&num_faders_, SDLK_a, 0, INT_MAX, "Num Faders");
+    InputManager::add_var_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
 
     initializer_.start();
     rainbows_.start();

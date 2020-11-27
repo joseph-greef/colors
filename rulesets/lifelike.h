@@ -37,6 +37,7 @@ class LifeLike : public Ruleset {
         ~LifeLike();
         void get_pixels(uint32_t *pixels);
         void handle_input(SDL_Event event, bool control, bool shift);
+        void print_controls();
         void print_rules();
         void start();
         void stop();

@@ -71,8 +71,8 @@ void Initializer::init_center_cross(int *board) {
 }
 
 void Initializer::start() { 
-    InputManager::add_var_changer(&density_,    SDLK_d, 0, 100, "Density");
-    InputManager::add_var_changer(&dot_radius_, SDLK_s, 0, INT_MAX, "Dot Size");
+    InputManager::add_var_changer(&density_,    SDLK_d, 0, 100, "(Init) Density");
+    InputManager::add_var_changer(&dot_radius_, SDLK_s, 0, INT_MAX, "(Init) Dot Size");
 }
 
 void Initializer::stop() { 
