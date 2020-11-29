@@ -3,11 +3,10 @@ HOST_ARCH   := $(shell uname -m)
 
 LD=$(CUDA_PATH)/bin/nvcc
 CXX=g++
-CXXFLAGS = -g -DUSE_GPU -std=c++17 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
-LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image
-
+CXXFLAGS= -g -DUSE_GPU -std=c++17 -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
+LDFLAGS= 
 # Common includes and paths for CUDA/SDL2
-INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I../ -I../cuda_kernels
+INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I../ -I../cuda_kernels -I/usr/include/opencv4
 LIBRARIES := -L$(CUDA_PATH)/lib64
 
 
