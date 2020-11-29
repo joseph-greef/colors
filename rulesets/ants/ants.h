@@ -1,6 +1,7 @@
 #ifndef _ANTS_ANTS_H
 #define _ANTS_ANTS_H
 
+#include <list>
 #include <random>
 #include <vector>
 
@@ -8,11 +9,27 @@
 #include "colony.h"
 #include "food.h"
 
+enum WorldEntryType {
+    NoneType,
+    FoodType,
+    AntType,
+    ColonyType,
+};
+
+struct WorldEntry {
+    WorldEntryType type;
+    //TODO: Real polymorphism
+    void *ptr;
+    int index;
+};
+    
+
 class Ants : public Ruleset {
     private:
         std::vector<Colony*> colonies_;
-        std::vector<Ant> ants_;
-        std::vector<Food> foods_;
+        std::list<Ant*> ants_;
+        std::list<Food*> foods_;
+        int colony_pheromone_display_;
         int food_probability_;
         int num_colonies_;
         int starting_food_density_;
@@ -20,7 +37,7 @@ class Ants : public Ruleset {
         std::mt19937 e2_;
         std::uniform_real_distribution<> dist_;
 
-        int *world_;
+        WorldEntry *world_;
 
         void reset();
 #ifdef USE_GPU

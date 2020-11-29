@@ -3,16 +3,18 @@
 #include <stdlib.h>
 
 #include "ants.h"
+#include "input_manager.h"
 
 Ants::Ants(int width, int height)
     : Ruleset(width, height)
+    , colony_pheromone_display_(max_colonies)
     , food_probability_(10)
-    , num_colonies_(1)
-    , starting_food_density_(500)
+    , num_colonies_(5)
+    , starting_food_density_(1500)
     , e2_(rd_())
-    , dist_(0, 10)
+    , dist_(0, 1)
 {
-    world_ = new int[width_ * height_];
+    world_ = new WorldEntry[width_ * height_];
     reset();
 }
 
@@ -24,16 +26,25 @@ Ants::~Ants() {
 }
 
 void Ants::get_pixels(uint32_t *pixels) {
-    memset(pixels, 0, width_ * height_ * sizeof(uint32_t));
+    if(colony_pheromone_display_ < num_colonies_) {
+        colonies_[colony_pheromone_display_]->draw_pheromones(pixels);
+    }
+    else {
+        for(int j = 0; j < height_; j++) {
+            for(int i = 0; i < width_; i++) {
+                pixels[j * width_ + i] = 0;
+            }
+        }
+    }
     for(Colony *colony: colonies_) {
         colony->draw_self(pixels);
     }
-    for(Ant ant: ants_) {                                
-        int offset = ant.y * width_ + ant.x;                            
-        pixels[offset] = Ants::colony_colors[ant.colony_number];
+    for(Ant *ant: ants_) {
+        int offset = ant->y * width_ + ant->x;                            
+        pixels[offset] = Ants::colony_colors[ant->colony_number];
     }
-    for(Food food: foods_) {                                
-        int offset = food.y * width_ + food.x;                            
+    for(Food *food: foods_) {
+        int offset = food->y * width_ + food->x;                            
         pixels[offset] = 0x00FF00; //Green food
     }
 }
@@ -59,16 +70,25 @@ void Ants::reset() {
         delete colony;
     }
     colonies_.clear();
+    for(Ant *ant: ants_) {
+        delete ant;
+    }
+    ants_.clear();
+    for(Food *food: foods_) {
+        delete food;
+    }
+    foods_.clear();
+
     for(int i = 0; i < num_colonies_; i++) {
         colonies_.push_back(new Colony(width_, height_,
                                        rand() % width_, rand() % height_,
                                        i+1, colony_colors[i+1]));
-        colonies_.back()->add_starting_ants(&ants_);
+        colonies_.back()->add_ants(&ants_, 25);
     }
     for(int i = 0; i < width_ * height_ / starting_food_density_; i++) {
-        foods_.push_back({rand() % (width_ - 2) + 1, 
-                          rand() % (height_ - 2) + 1, 
-                          rand() % 50});
+        foods_.push_back(new Food(rand() % (width_ - 2) + 1, 
+                                  rand() % (height_ - 2) + 1, 
+                                  rand() % 50));
     }
 }
 
@@ -83,25 +103,110 @@ void Ants::stop_cuda() {
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
+    InputManager::add_var_changer(&colony_pheromone_display_, SDLK_m, 0, max_colonies, "(Ants) Pheromone Display");
 }
 
 void Ants::stop() {
+    InputManager::remove_var_changer(SDLK_m);
 }
 
 void Ants::tick() {
-    for(uint32_t i = 0; i < ants_.size(); i++) {
-        ants_[i].colony->move_ant(&ants_[i]);
+    std::vector<Ant*> to_remove;
+    for(Ant *ant: ants_) {
+        if(!ant->colony->move_ant(ant)) {
+            to_remove.push_back(ant);
+        }
+    }
+    for(Ant *ant: to_remove) {
+        ants_.remove(ant);
+    }
+    for(Colony *colony: colonies_) {
+        colony->update_pheromones();
+        for(Food *food: foods_) {
+            colony->add_food_smell(food->x, food->y, 10);
+        }
+        for(Ant *ant: ants_) {
+            if(ant->colony != colony) {
+                colony->add_enemy_smell(ant->x, ant->y, 10);
+            }
+        }
+        /*for(Colony *c2: colonies_) {
+            if(c2 != colony) {
+                c2->add_enemy_smell(colony->get_x(), colony->get_y(), 200);
+            }
+        }*/
     }
 
 
     //Detect and handle events
     memset(world_, 0, width_*height_*sizeof(world_[0]));
 
-    if(dist_(e2_) * 100 < food_probability_ &&
-       foods_.size() < width_ * height_ / 100ul) {
-        foods_.push_back({rand() % (width_ - 2) + 1, 
-                          rand() % (height_ - 2) + 1, 
-                          rand() % 50});
+    for(Food *food: foods_) {
+        int offset = food->y * width_ + food->x;                            
+        world_[offset].type = FoodType;
+        world_[offset].ptr = food;
+    }
+
+    for(Colony *colony: colonies_) {
+        int offset = colony->get_offset();                            
+        world_[offset].type = ColonyType;
+        world_[offset].ptr = colony;
+    }
+
+    to_remove.clear();
+    for(Ant *ant: ants_) {
+        int offset = ant->y * width_ + ant->x;                            
+        bool overwrite_world = true;
+        if(world_[offset].type == FoodType) {
+            Food *f = static_cast<Food*>(world_[offset].ptr);
+            if(!ant->has_food && f->bites_left > 0) {
+                f->bites_left -= 1;
+                if(f->bites_left == 0) {
+                    delete f;
+                    foods_.remove(f);
+                    foods_.push_back(new Food(rand() % (width_ - 2) + 1, 
+                                              rand() % (height_ - 2) + 1, 
+                                              rand() % 50));
+                }
+                ant->has_food = true;
+                ant->steps_since_event = 0;
+                ant->colony->add_food_smell(ant->x, ant->y, 10);
+            }
+        }
+        else if(world_[offset].type == ColonyType) {
+            Colony *c = static_cast<Colony*>(world_[offset].ptr);
+            if(ant->has_food && c->owns_ant(ant)) {
+                ant->has_food = false;
+                ant->enemy_seen = false;
+                ant->colony->add_ants(&ants_, 1);
+                ant->steps_since_event = 0;
+            }
+        }
+        else if(world_[offset].type == AntType) {
+            Ant *a = static_cast<Ant*>(world_[offset].ptr);
+            if(a->colony != ant->colony) {
+                float roll1 = dist_(e2_);
+                float roll2 = dist_(e2_);
+                if(a->colony->enemy_encountered(a, ant, roll1, roll2)) {
+                    to_remove.push_back(ant);
+                    a->has_food = true;
+                    a->enemy_seen = true;
+                    overwrite_world = false;
+                }
+                if(ant->colony->enemy_encountered(ant, a, roll2, roll1)) {
+                    to_remove.push_back(a);
+                    ant->has_food = true;
+                    ant->enemy_seen = true;
+                }
+            }
+        }
+        if(overwrite_world) {
+            world_[offset].type = AntType;
+            world_[offset].ptr = ant;
+        }
+    }
+    for(Ant *ant: to_remove) {
+        ants_.remove(ant);
     }
 }
 
