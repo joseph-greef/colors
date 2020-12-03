@@ -39,14 +39,13 @@ class Ants : public Ruleset {
 
         WorldEntry *world_;
 
+        void add_new_colony(int x, int y, uint32_t color);
+        uint32_t generate_color();
         void reset();
 #ifdef USE_GPU
         void start_cuda();
         void stop_cuda();
 #endif
-
-        static uint32_t colony_colors[];
-        static int max_colonies;
 
     public:
         Ants(int width, int height);

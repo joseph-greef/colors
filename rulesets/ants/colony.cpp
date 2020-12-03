@@ -7,12 +7,11 @@
 #include "opencv2/opencv.hpp"
 #include "colony.h"
 
-Colony::Colony(int width, int height, int x, int y, int colony_number, int color) 
+Colony::Colony(int width, int height, int x, int y, uint32_t color) 
     : height_(height)
     , width_(width)
     , x_(x)
     , y_(y)
-    , colony_number_(colony_number)
     , color_(color)
     , e2_(rd_())
     , dist_(0, 1)
@@ -72,8 +71,8 @@ void Colony::add_ants(std::list<Ant*> *ants, int number) {
     for(int i = 0; i < number; i++) {
         ants->push_back(new Ant(x_ + rand() % 3 - 1,
                                 y_ + rand() % 3 - 1,
-                                colony_number_,
                                 this));
+        ants_.push_back(ants->back());
     }
 }
 
@@ -128,7 +127,6 @@ bool Colony::enemy_encountered(Ant *ant, Ant *enemy_ant,
     enemy_pheromones_[ant->y * width_ + ant->x] += enemy_encounter_amount_;
 
     if(enemy_ant->colony->get_aggression() + enemy_roll >= aggression_ + roll) {
-        delete ant;
         ants_.remove(ant);
         return false;
     }
@@ -141,6 +139,10 @@ std::list<Ant*>* Colony::get_ants() {
 
 float Colony::get_aggression() {
     return aggression_;
+}
+
+uint32_t Colony::get_color() {
+    return color_;
 }
 
 int Colony::get_offset() {
@@ -159,8 +161,8 @@ bool Colony::move_ant(Ant *ant) {
     ant->steps_since_event += 1;
     ant->total_steps += 1;
     if(ant->total_steps > max_total_steps_) {
-        delete ant;
         ants_.remove(ant);
+        delete ant;
         return false;
     }
 

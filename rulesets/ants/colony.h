@@ -16,7 +16,7 @@ class Colony {
         int x_;
         int y_;
         int colony_number_;
-        int color_;
+        uint32_t color_;
         std::list<Ant*> ants_;
         //DNA variables
         float aggression_;
@@ -42,7 +42,7 @@ class Colony {
         float *enemy_pheromones_;
         float *enemy_pheromones_buffer_;
     public:
-        Colony(int width, int height, int x, int y, int colony_number, int color);
+        Colony(int width, int height, int x, int y, uint32_t color);
         ~Colony();
         void add_ants(std::list<Ant*> *ants, int number);
         void add_enemy_smell(int x, int y, float amount);
@@ -53,6 +53,7 @@ class Colony {
                                float roll, float enemy_roll);
         std::list<Ant*> *get_ants();
         float get_aggression();
+        uint32_t get_color();
         int get_offset();
         int get_x();
         int get_y();

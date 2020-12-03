@@ -1,4 +1,5 @@
 
+#include <climits>
 #include <iostream>
 #include <stdlib.h>
 
@@ -7,7 +8,7 @@
 
 Ants::Ants(int width, int height)
     : Ruleset(width, height)
-    , colony_pheromone_display_(max_colonies)
+    , colony_pheromone_display_(0)
     , food_probability_(10)
     , num_colonies_(5)
     , starting_food_density_(1500)
@@ -25,9 +26,26 @@ Ants::~Ants() {
     delete world_;
 }
 
+uint32_t Ants::generate_color() {
+    uint8_t r = 0;
+    uint8_t b = 0;
+    uint8_t g = 0;
+    do {
+        r = rand();
+        b = rand();
+        g = rand();
+    } while(g > r + b && r + b + g > 200);
+
+    return (r << 0) |
+           (g << 8) |
+           (b << 16);
+}
+
 void Ants::get_pixels(uint32_t *pixels) {
-    if(colony_pheromone_display_ < num_colonies_) {
-        colonies_[colony_pheromone_display_]->draw_pheromones(pixels);
+    if(colony_pheromone_display_ > 0 &&
+       colony_pheromone_display_ <= static_cast<int>(colonies_.size()))
+    {
+        colonies_[colony_pheromone_display_ - 1]->draw_pheromones(pixels);
     }
     else {
         for(int j = 0; j < height_; j++) {
@@ -41,7 +59,7 @@ void Ants::get_pixels(uint32_t *pixels) {
     }
     for(Ant *ant: ants_) {
         int offset = ant->y * width_ + ant->x;                            
-        pixels[offset] = Ants::colony_colors[ant->colony_number];
+        pixels[offset] = ant->colony->get_color();
     }
     for(Food *food: foods_) {
         int offset = food->y * width_ + food->x;                            
@@ -82,7 +100,7 @@ void Ants::reset() {
     for(int i = 0; i < num_colonies_; i++) {
         colonies_.push_back(new Colony(width_, height_,
                                        rand() % width_, rand() % height_,
-                                       i+1, colony_colors[i+1]));
+                                       generate_color()));
         colonies_.back()->add_ants(&ants_, 25);
     }
     for(int i = 0; i < width_ * height_ / starting_food_density_; i++) {
@@ -103,7 +121,7 @@ void Ants::stop_cuda() {
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
-    InputManager::add_var_changer(&colony_pheromone_display_, SDLK_m, 0, max_colonies, "(Ants) Pheromone Display");
+    InputManager::add_var_changer(&colony_pheromone_display_, SDLK_m, 0, INT_MAX, "(Ants) Pheromone Display");
 }
 
 void Ants::stop() {
@@ -209,14 +227,3 @@ void Ants::tick() {
         ants_.remove(ant);
     }
 }
-
-uint32_t Ants::colony_colors[] = {
-    0x000000, //Junk color at 0, because we'll never use it
-    0xFFFFFF,
-    0x0000FF,
-    0xFFFF00,
-    0xFF00FF,
-    0xb06000,
-};
-
-int Ants::max_colonies = sizeof(colony_colors) / sizeof(colony_colors[0]);
