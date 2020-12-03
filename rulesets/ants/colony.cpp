@@ -29,12 +29,15 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
         y_ = height_ - 3;
     }
 
-    aggression_ = dist_(e2_);
+    aggression_ = dist_(e2_) * 2;
     enemy_encounter_amount_ = dist_(e2_) * 500 + 500;
     enemy_signal_strength_ = dist_(e2_) * 10 + 5;
+    enemy_smooth_amount_ = dist_(e2_);
     food_signal_strength_ = dist_(e2_) * 10 + 5;
-    home_signal_strength_ = dist_(e2_) * 70 + 35;
-    home_smell_amount_ = dist_(e2_) * 20 + 15;
+    food_smooth_amount_ = dist_(e2_);
+    home_signal_strength_ = dist_(e2_) * 7 + 3.5;
+    home_smell_amount_ = dist_(e2_) * 2 + 1.5;
+    home_smooth_amount_ = dist_(e2_) * 2;
     randomness_ = dist_(e2_) * 2;
     max_signal_steps_ = static_cast<int>(dist_(e2_) * 200 + 100);
     max_total_steps_ = static_cast<int>(dist_(e2_) * 500 + 1000);
@@ -184,20 +187,20 @@ bool Colony::move_ant(Ant *ant) {
                     move_value[j * 3 + i] += food_pheromones_[pheromone_offset];
                     move_value[j * 3 + i] += aggression_ *
                                              enemy_pheromones_[pheromone_offset];
-                    move_value[j * 3 + i] -= home_pheromones_[pheromone_offset]/10;
-                    //enemy_pheromones_[pheromone_offset] *= 0.9;
+                    move_value[j * 3 + i] -= home_pheromones_[pheromone_offset] / 5;
+                    enemy_pheromones_[pheromone_offset] *= 0.99;
                     food_pheromones_[pheromone_offset] *= 0.9;
                 }
                 else {
                     move_value[j * 3 + i] += home_pheromones_[pheromone_offset];
                 }
                 //std::cout << move_value[j * 3 + i] << " ";
-                if(j != 1 && i != 1) { //corner squares get sqrt(2) value decrease
+                if(j != 1 && i != 1) { //corner squares get a value decrease
                     if(move_value[j * 3 + i] > 0) {
-                        move_value[j * 3 + i] /= 1.075;
+                        move_value[j * 3 + i] /= 1.045;
                     }
                     else {
-                        move_value[j * 3 + i] *= 1.075;
+                        move_value[j * 3 + i] *= 1.045;
                     }
                 }    
             }
@@ -270,22 +273,22 @@ bool Colony::owns_ant(Ant *ant) {
 void Colony::update_pheromones() {
     float pheromone_decay = 0.999;
     home_pheromones_[y_ * width_ + x_] += home_smell_amount_;
+    food_pheromones_[y_ * width_ + x_] = 0;
 
-    home_pheromones_[y_ * width_ + x_] += max_signal_steps_ * home_signal_strength_;
     cv::Mat home(height_, width_, CV_32F, home_pheromones_);
+    home *= pheromone_decay;
     cv::Mat home_buffer(height_, width_, CV_32F, home_pheromones_buffer_);
-    cv::GaussianBlur(home, home_buffer, cv::Size(17, 17), 0);
-    home_buffer *= pheromone_decay;
+    cv::GaussianBlur(home, home_buffer, cv::Size(17, 17), home_smooth_amount_);
 
     cv::Mat food(height_, width_, CV_32F, food_pheromones_);
+    food *= pheromone_decay;
     cv::Mat food_buffer(height_, width_, CV_32F, food_pheromones_buffer_);
-    cv::GaussianBlur(food, food_buffer, cv::Size(5, 5), 0);
-    home_buffer *= pheromone_decay;
+    cv::GaussianBlur(food, food_buffer, cv::Size(5, 5), food_smooth_amount_);
 
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
+    enemy *= pheromone_decay;
     cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
-    cv::GaussianBlur(enemy, enemy_buffer, cv::Size(11, 11), 0);
-    home_buffer *= pheromone_decay;
+    cv::GaussianBlur(enemy, enemy_buffer, cv::Size(11, 11), enemy_smooth_amount_);
 
     float *tmp = home_pheromones_;
     home_pheromones_ = home_pheromones_buffer_;

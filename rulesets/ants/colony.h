@@ -22,9 +22,12 @@ class Colony {
         float aggression_;
         float enemy_encounter_amount_;
         float enemy_signal_strength_;
+        float enemy_smooth_amount_;
         float food_signal_strength_;
+        float food_smooth_amount_;
         float home_signal_strength_;
         float home_smell_amount_;
+        float home_smooth_amount_;
         float randomness_;
         int max_signal_steps_;
         int max_total_steps_;
@@ -41,6 +44,7 @@ class Colony {
 
         float *enemy_pheromones_;
         float *enemy_pheromones_buffer_;
+
     public:
         Colony(int width, int height, int x, int y, uint32_t color);
         ~Colony();
