@@ -23,7 +23,7 @@ Ants::~Ants() {
     for(Colony *colony: colonies_) {
         delete colony;
     }
-    delete world_;
+    delete [] world_;
 }
 
 uint32_t Ants::generate_color() {
@@ -138,14 +138,26 @@ void Ants::tick() {
     for(Ant *ant: to_remove) {
         ants_.remove(ant);
     }
-    for(Colony *colony: colonies_) {
-        colony->update_pheromones();
+    for(uint32_t i = 0; i < colonies_.size(); i++) {
+        if(colonies_[i]->get_num_ants() < 5) {
+            std::cout << "deleting colony " << i << std::endl;
+            for(Ant *ant: *colonies_[i]->get_ants()) {
+                ants_.remove(ant);
+            }
+            delete colonies_[i];
+            colonies_[i] = new Colony(width_, height_, 
+                                      rand() % width_, rand() % height_,
+                                      generate_color());
+            colonies_[i]->add_ants(&ants_, 5);
+
+        }
+        colonies_[i]->update_pheromones();
         for(Food *food: foods_) {
-            colony->add_food_smell(food->x, food->y, 10);
+            colonies_[i]->add_food_smell(food->x, food->y, 10);
         }
         for(Ant *ant: ants_) {
-            if(ant->colony != colony) {
-                colony->add_enemy_smell(ant->x, ant->y, 10);
+            if(ant->colony != colonies_[i]) {
+                colonies_[i]->add_enemy_smell(ant->x, ant->y, 10);
             }
         }
         /*for(Colony *c2: colonies_) {
@@ -209,12 +221,14 @@ void Ants::tick() {
                     to_remove.push_back(ant);
                     a->has_food = true;
                     a->enemy_seen = true;
+                    a->steps_since_event = 0;
                     overwrite_world = false;
                 }
                 if(ant->colony->enemy_encountered(ant, a, roll2, roll1)) {
                     to_remove.push_back(a);
                     ant->has_food = true;
                     ant->enemy_seen = true;
+                    ant->steps_since_event = 0;
                 }
             }
         }
@@ -225,5 +239,6 @@ void Ants::tick() {
     }
     for(Ant *ant: to_remove) {
         ants_.remove(ant);
+        delete ant;
     }
 }

@@ -55,6 +55,7 @@ class Colony {
         float get_aggression();
         uint32_t get_color();
         int get_offset();
+        uint32_t get_num_ants();
         int get_x();
         int get_y();
         bool move_ant(Ant *ant);

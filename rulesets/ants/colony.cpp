@@ -149,6 +149,10 @@ int Colony::get_offset() {
     return y_ * width_ + x_;
 }
 
+uint32_t Colony::get_num_ants() {
+    return ants_.size();
+}
+
 int Colony::get_x() {
     return x_;
 }

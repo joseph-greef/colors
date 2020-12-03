@@ -39,7 +39,6 @@ class Ants : public Ruleset {
 
         WorldEntry *world_;
 
-        void add_new_colony(int x, int y, uint32_t color);
         uint32_t generate_color();
         void reset();
 #ifdef USE_GPU
