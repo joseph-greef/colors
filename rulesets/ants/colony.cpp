@@ -41,6 +41,9 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
     DNA_.home_smell_amount_ = dist_positive_(e2_) * 50 + 60;
     DNA_.home_smooth_amount_ = dist_positive_(e2_) * 2;
     DNA_.randomness_ = dist_positive_(e2_) * 3;
+    DNA_.enemy_blur_size_ = static_cast<int>(dist_positive_(e2_) * 15 + 1) * 2 + 1;
+    DNA_.food_blur_size_ = static_cast<int>(dist_positive_(e2_) * 15 + 1) * 2 + 1;
+    DNA_.home_blur_size_ = static_cast<int>(dist_positive_(e2_) * 15 + 1) * 2 + 1;
     DNA_.max_signal_steps_ = static_cast<int>(dist_positive_(e2_) * 200 + 100);
     DNA_.max_total_steps_ = static_cast<int>(dist_positive_(e2_) * 500 + 1000);
 
@@ -334,8 +337,18 @@ Colony* Colony::make_child() {
     new_dna.home_smell_amount_ += dist_full_(e2_) * 5;
     new_dna.home_smooth_amount_ += dist_full_(e2_) * 0.2;
     new_dna.randomness_ += dist_full_(e2_) * 0.3;
+
+    new_dna.enemy_blur_size_ += static_cast<int>(dist_full_(e2_) * 2) * 2;
+    new_dna.enemy_blur_size_ = std::clamp(new_dna.enemy_blur_size_, 3, 31);
+    new_dna.food_blur_size_ += static_cast<int>(dist_full_(e2_) * 2) * 2;
+    new_dna.food_blur_size_ = std::clamp(new_dna.food_blur_size_, 3, 31);
+    new_dna.home_blur_size_ += static_cast<int>(dist_full_(e2_) * 2) * 2;
+    new_dna.home_blur_size_ = std::clamp(new_dna.home_blur_size_, 3, 31);
+
     new_dna.max_signal_steps_ += static_cast<int>(dist_full_(e2_) * 20);
     new_dna.max_total_steps_ += static_cast<int>(dist_full_(e2_) * 50);
+
+
 
     std::cout << "Creating child" << std::endl;
     //And return the new colony
@@ -354,17 +367,17 @@ void Colony::update_pheromones() {
     cv::Mat home(height_, width_, CV_32F, home_pheromones_);
     home *= pheromone_decay;
     cv::Mat home_buffer(height_, width_, CV_32F, home_pheromones_buffer_);
-    cv::GaussianBlur(home, home_buffer, cv::Size(27, 27), DNA_.home_smooth_amount_);
+    cv::GaussianBlur(home, home_buffer, cv::Size(DNA_.home_blur_size_, DNA_.home_blur_size_), DNA_.home_smooth_amount_);
 
     cv::Mat food(height_, width_, CV_32F, food_pheromones_);
     food *= pheromone_decay;
     cv::Mat food_buffer(height_, width_, CV_32F, food_pheromones_buffer_);
-    cv::GaussianBlur(food, food_buffer, cv::Size(5, 5), DNA_.food_smooth_amount_);
+    cv::GaussianBlur(food, food_buffer, cv::Size(DNA_.food_blur_size_, DNA_.food_blur_size_), DNA_.food_smooth_amount_);
 
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
     enemy *= pheromone_decay;
     cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
-    cv::GaussianBlur(enemy, enemy_buffer, cv::Size(11, 11), DNA_.enemy_smooth_amount_);
+    cv::GaussianBlur(enemy, enemy_buffer, cv::Size(DNA_.enemy_blur_size_, DNA_.enemy_blur_size_), DNA_.enemy_smooth_amount_);
 
     float *tmp = home_pheromones_;
     home_pheromones_ = home_pheromones_buffer_;

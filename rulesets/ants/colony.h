@@ -19,6 +19,9 @@ struct ColonyDNA {
     float home_smell_amount_;
     float home_smooth_amount_;
     float randomness_;
+    int enemy_blur_size_;
+    int food_blur_size_;
+    int home_blur_size_;
     int max_signal_steps_;
     int max_total_steps_;
 };
