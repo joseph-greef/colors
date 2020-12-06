@@ -23,6 +23,9 @@ Ants::~Ants() {
     for(Colony *colony: colonies_) {
         delete colony;
     }
+    for(Food *food: foods_) {
+        delete food;
+    }
     delete [] world_;
 }
 
@@ -96,9 +99,6 @@ void Ants::reset() {
         delete colony;
     }
     colonies_.clear();
-    for(Ant *ant: ants_) {
-        delete ant;
-    }
     ants_.clear();
     for(Food *food: foods_) {
         delete food;
@@ -135,6 +135,7 @@ void Ants::stop_cuda() {
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
     InputManager::add_var_changer(&colony_pheromone_display_, SDLK_m, 0, INT_MAX, "(Ants) Pheromone Display");
+    InputManager::add_var_changer(&num_colonies_, SDLK_n, 0, INT_MAX, "(Ants) Minimum Colonies");
 }
 
 void Ants::stop() {

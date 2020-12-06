@@ -152,8 +152,6 @@ bool Colony::enemy_encountered(Ant *ant, Ant *enemy_ant,
 
 void Colony::food_collected() {
     num_food_++;
-    if(num_food_ % 10 == 0)
-        std::cout << num_food_ << std::endl;
 }
 
 std::list<Ant*>* Colony::get_ants() {
@@ -221,10 +219,10 @@ bool Colony::move_ant(Ant *ant) {
                 //std::cout << move_value[j * 3 + i] << " ";
                 if(j != 1 && i != 1) { //corner squares get a value decrease
                     if(move_value[j * 3 + i] > 0) {
-                        move_value[j * 3 + i] /= 1.050;
+                        move_value[j * 3 + i] /= 1.060;
                     }
                     else {
-                        move_value[j * 3 + i] *= 1.050;
+                        move_value[j * 3 + i] *= 1.060;
                     }
                 }    
             }
@@ -245,7 +243,7 @@ bool Colony::move_ant(Ant *ant) {
     std::vector<int> max_i, max_j;
     for(int j = 0; j < 3; j++) {
         for(int i = 0; i < 3; i++) {
-            if(move_value[j * 3 + i] > max_value - DNA_.randomness_) {
+            if(move_value[j * 3 + i] >= max_value - DNA_.randomness_) {
                 max_i.push_back(i);
                 max_j.push_back(j);
             }
@@ -324,6 +322,7 @@ Colony* Colony::make_child() {
     new_dna.home_smell_amount_ += dist_full_(e2_) * 5;
     new_dna.home_smooth_amount_ += dist_full_(e2_) * 0.2;
     new_dna.randomness_ += dist_full_(e2_) * 0.3;
+    new_dna.randomness_ = std::clamp(new_dna.randomness_, 0.0f, 1000000.0f);
 
     new_dna.enemy_blur_size_ += static_cast<int>(dist_full_(e2_) * 2) * 2;
     new_dna.enemy_blur_size_ = std::clamp(new_dna.enemy_blur_size_, 3, 31);
@@ -334,7 +333,6 @@ Colony* Colony::make_child() {
 
     new_dna.max_signal_steps_ += static_cast<int>(dist_full_(e2_) * 20);
     new_dna.max_total_steps_ += static_cast<int>(dist_full_(e2_) * 50);
-
 
 
     std::cout << "Creating child" << std::endl;

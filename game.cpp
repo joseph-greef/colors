@@ -27,6 +27,7 @@ Game::Game(int width, int height)
 }
 
 Game::~Game() {
+    active_ruleset_->stop();
     for(Ruleset *ruleset: rulesets_) {
         delete ruleset;
     }
