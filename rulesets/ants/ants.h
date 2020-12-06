@@ -3,7 +3,6 @@
 
 #include <list>
 #include <random>
-#include <vector>
 
 #include "../ruleset.h"
 #include "colony.h"
@@ -26,7 +25,7 @@ struct WorldEntry {
 
 class Ants : public Ruleset {
     private:
-        std::vector<Colony*> colonies_;
+        std::list<Colony*> colonies_;
         std::list<Ant*> ants_;
         std::list<Food*> foods_;
         int colony_pheromone_display_;
@@ -41,6 +40,7 @@ class Ants : public Ruleset {
 
         uint32_t generate_color();
         void reset();
+        void restock_colonies(int num_ants);
 #ifdef USE_GPU
         void start_cuda();
         void stop_cuda();
