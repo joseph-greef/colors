@@ -31,10 +31,10 @@ uint32_t Ants::generate_color() {
     uint8_t b = 0;
     uint8_t g = 0;
     do {
-        r = rand();
-        b = rand();
-        g = rand();
-    } while(g > r + b && r + b + g > 200);
+        r = rand() % 245 + 5;
+        g = rand() % 245 + 5;
+        b = rand() % 245 + 5;
+    } while(g > r + b || r + g + b < 200);
 
     return (r << 0) |
            (g << 8) |

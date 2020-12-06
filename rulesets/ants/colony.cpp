@@ -221,10 +221,10 @@ bool Colony::move_ant(Ant *ant) {
                 //std::cout << move_value[j * 3 + i] << " ";
                 if(j != 1 && i != 1) { //corner squares get a value decrease
                     if(move_value[j * 3 + i] > 0) {
-                        move_value[j * 3 + i] /= 1.048;
+                        move_value[j * 3 + i] /= 1.050;
                     }
                     else {
-                        move_value[j * 3 + i] *= 1.048;
+                        move_value[j * 3 + i] *= 1.050;
                     }
                 }    
             }
@@ -294,37 +294,24 @@ Colony* Colony::make_child() {
     Ant *far_ant = new Ant(rand() % width_,
                            rand() % height_,
                            NULL);
-    //float max_dist = std::numeric_limits<float>::max();
     uint32_t new_color = color_;
     ColonyDNA new_dna(DNA_);
 
     //use stored food to make colony
     num_food_ = 0;
 
-    //find the furthest ant, that's where the new colony will go
-    //for(Ant *ant: ants_) {
-    //    float dist = std::pow(ant->x - x_, 2) + std::pow(ant->y - y_, 2);
-    //    if(dist > max_dist) {
-    //        max_dist = dist;
-    //        far_ant = ant;
-    //    }
-    //}
-    //ants_.remove(far_ant); //donating to new colony
-
     //Modify the color
-    if(0) {
-        uint8_t r = (color_ >> 0) & 0xFF;
-        uint8_t b = (color_ >> 8) & 0xFF;
-        uint8_t g = (color_ >> 16) & 0xFF;
+    uint8_t r = (color_ >> 0) & 0xFF;
+    uint8_t g = (color_ >> 8) & 0xFF;
+    uint8_t b = (color_ >> 16) & 0xFF;
 
-        r += static_cast<int>(dist_full_(e2_) * 5);
-        b += static_cast<int>(dist_full_(e2_) * 5);
-        g += static_cast<int>(dist_full_(e2_) * 5);
+    r += static_cast<int>(dist_full_(e2_) * 2);
+    b += static_cast<int>(dist_full_(e2_) * 2);
+    g += static_cast<int>(dist_full_(e2_) * 2);
 
-        new_color = (r << 0) |
-                    (g << 8) |
-                    (b << 16);
-    }
+    new_color = (r << 0) |
+                (g << 8) |
+                (b << 16);
 
     //And the DNA
     new_dna.aggression_ += dist_full_(e2_) * 0.2;
