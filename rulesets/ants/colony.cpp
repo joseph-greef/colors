@@ -365,7 +365,8 @@ bool Colony::owns_ant(Ant *ant) {
     return ant->colony == this;
 }
 
-void Colony::update_pheromones() {
+#ifdef USE_GPU
+void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
     float pheromone_decay = 0.99;
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
     cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
@@ -377,25 +378,35 @@ void Colony::update_pheromones() {
     food_pheromones_[y_ * width_ + x_] = 0;
     home_pheromones_[y_ * width_ + x_] += DNA_.home_smell_amount_;
 
-#ifdef USE_GPU
-    std::cout <<"adf" <<std::endl;
-    enemy_mat_.upload(enemy);
-    food_mat_.upload(food);
-    home_mat_.upload(home);
+    enemy_mat_.upload(enemy, stream);
+    food_mat_.upload(food, stream);
+    home_mat_.upload(home, stream);
 
-    enemy_mat_.convertTo(enemy_mat_buffer_, -1, pheromone_decay);
-    food_mat_.convertTo(food_mat_buffer_, -1, pheromone_decay);
-    home_mat_.convertTo(home_mat_buffer_, -1, pheromone_decay);
+    enemy_mat_.convertTo(enemy_mat_buffer_, -1, pheromone_decay, stream);
+    food_mat_.convertTo(food_mat_buffer_, -1, pheromone_decay, stream);
+    home_mat_.convertTo(home_mat_buffer_, -1, pheromone_decay, stream);
 
-    enemy_gauss_->apply(enemy_mat_buffer_, enemy_mat_);
-    //food_gauss_->apply(food_mat_buffer_, food_mat_);
-    //home_gauss_->apply(home_mat_buffer_, home_mat_);
+    enemy_gauss_->apply(enemy_mat_buffer_, enemy_mat_, stream);
+    food_gauss_->apply(food_mat_buffer_, food_mat_, stream);
+    home_gauss_->apply(home_mat_buffer_, home_mat_, stream);
 
-    enemy_mat_buffer_.download(enemy);
-    food_mat_buffer_.download(food);
-    home_mat_buffer_.download(home);
+    enemy_mat_.download(enemy, stream);
+    food_mat_.download(food, stream);
+    home_mat_.download(home, stream);
+}
+#endif //USE_GPU
 
-#else
+void Colony::update_pheromones() {
+    float pheromone_decay = 0.99;
+    cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
+    cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
+    cv::Mat food(height_, width_, CV_32F, food_pheromones_);
+    cv::Mat food_buffer(height_, width_, CV_32F, food_pheromones_buffer_);
+    cv::Mat home(height_, width_, CV_32F, home_pheromones_);
+    cv::Mat home_buffer(height_, width_, CV_32F, home_pheromones_buffer_);
+
+    food_pheromones_[y_ * width_ + x_] = 0;
+    home_pheromones_[y_ * width_ + x_] += DNA_.home_smell_amount_;
 
     enemy *= pheromone_decay;
     cv::GaussianBlur(enemy, enemy_buffer, cv::Size(DNA_.enemy_blur_size_, DNA_.enemy_blur_size_), DNA_.enemy_smooth_amount_);
@@ -417,5 +428,4 @@ void Colony::update_pheromones() {
     tmp = home_pheromones_;
     home_pheromones_ = home_pheromones_buffer_;
     home_pheromones_buffer_ = tmp;
-#endif //USE_GPU
 }

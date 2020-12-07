@@ -58,11 +58,11 @@ class Colony {
 
         cv::cuda::GpuMat food_mat_;
         cv::cuda::GpuMat food_mat_buffer_;
-        cv::cuda::Filter *food_gauss_;
+        cv::Ptr<cv::cuda::Filter> food_gauss_;
 
         cv::cuda::GpuMat home_mat_;
         cv::cuda::GpuMat home_mat_buffer_;
-        cv::cuda::Filter *home_gauss_;
+        cv::Ptr<cv::cuda::Filter> home_gauss_;
 #endif //USE_GPU
 
         float *enemy_pheromones_;
@@ -99,6 +99,10 @@ class Colony {
         Colony* make_child();
         bool owns_ant(Ant *ant);
         void update_pheromones();
+
+#ifdef USE_GPU
+        void queue_cuda_ops(cv::cuda::Stream stream);
+#endif //USE_GPU
 
 };
 
