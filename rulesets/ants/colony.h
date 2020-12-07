@@ -4,6 +4,12 @@
 #include <list>
 #include <random>
 
+#include <opencv2/core.hpp>
+#include <opencv2/core/utility.hpp>
+
+#include <opencv2/cudaarithm.hpp>
+#include <opencv2/cudafilters.hpp>
+
 class Colony;
 
 #include "ant.h"
@@ -45,14 +51,28 @@ class Colony {
         std::uniform_real_distribution<> dist_full_;
         std::uniform_real_distribution<> dist_positive_;
 
+#ifdef USE_GPU
+        cv::cuda::GpuMat enemy_mat_;
+        cv::cuda::GpuMat enemy_mat_buffer_;
+        cv::Ptr<cv::cuda::Filter> enemy_gauss_;
+
+        cv::cuda::GpuMat food_mat_;
+        cv::cuda::GpuMat food_mat_buffer_;
+        cv::cuda::Filter *food_gauss_;
+
+        cv::cuda::GpuMat home_mat_;
+        cv::cuda::GpuMat home_mat_buffer_;
+        cv::cuda::Filter *home_gauss_;
+#endif //USE_GPU
+
+        float *enemy_pheromones_;
+        float *enemy_pheromones_buffer_;
+
         float *food_pheromones_;
         float *food_pheromones_buffer_;
 
         float *home_pheromones_;
         float *home_pheromones_buffer_;
-
-        float *enemy_pheromones_;
-        float *enemy_pheromones_buffer_;
 
     public:
         Colony(int width, int height, int x, int y, uint32_t color);

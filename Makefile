@@ -6,13 +6,13 @@ CXX=g++
 CC=gcc
 CFLAGS = -g -DUSE_GPU -Wall -Werror -Wpedantic -Wextra -Wno-unused-parameter
 CXXFLAGS = $(CFLAGS) -std=c++17
-LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image -lopencv_core -lopencv_imgproc
+LDFLAGS = -lpthread -lcuda -lcublas -lcurand -lcudart -lSDL2 -lSDL2_image -lopencv_core -lopencv_imgproc -lopencv_cudafilters
 MKFILE_PATH := $(abspath $(lastword $(MAKEFILE_LIST)))
 CURRENT_DIR := $(patsubst %/,%,$(dir $(MKFILE_PATH)))
 
 # Common includes and paths for CUDA/SDL2
-INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I$(CURRENT_DIR) -Imoviemaker-cpp/include
-LIBRARIES := -L$(CUDA_PATH)/lib64
+INCLUDES  := -I/usr/include/SDL2 -I$(CUDA_PATH)/include -I$(CURRENT_DIR) -Imoviemaker-cpp/include -I/usr/local/include/opencv4
+LIBRARIES := -L$(CUDA_PATH)/lib64 -L/usr/local/lib
 
 SUBDIRS := $(wildcard */.)
 
