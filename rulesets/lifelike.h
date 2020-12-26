@@ -12,6 +12,7 @@ class LifeLike : public Ruleset {
         int *board_;
         int *board_buffer_;
         bool born_[9];
+        int current_tick_;
         Initializer initializer_;
         int num_faders_;
         Rainbows rainbows_;

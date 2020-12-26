@@ -4,6 +4,8 @@
 #include "device_launch_parameters.h"
 
 
-void call_cuda_lifelike(int *board, int *board_buffer, bool *born, bool *stay_alive, int num_faders, int width, int height);
+void call_cuda_lifelike(int *board, int *board_buffer, bool *born,
+                        bool *stay_alive, int num_faders, int current_tick,
+                        int width, int height);
 
 

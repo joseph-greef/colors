@@ -14,7 +14,6 @@
 
 Hodge::Hodge(int width, int height)
     : Ruleset(width, height)
-    , changing_background_(false)
     , death_threshold_(260)
     , infection_rate_(30)
     , infection_threshold_(2)
@@ -22,7 +21,7 @@ Hodge::Hodge(int width, int height)
     , k1_(2)
     , k2_(5)
     , podge_(true)
-    , rainbows_(width, height)
+    , rainbows_(width, height, 1)
 {
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
@@ -75,9 +74,6 @@ void Hodge::handle_input(SDL_Event event, bool control, bool shift) {
 
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
-            case SDLK_b:
-                changing_background_ = !changing_background_;
-                break;
             case SDLK_e:
                 initializer_.init_center_square(board_);
                 board_changed = true;
@@ -237,12 +233,12 @@ void Hodge::tick() {
         if(podge_) {
             call_cuda_hodgepodge(cudev_board_, cudev_board_buffer_, death_threshold_,
                                  infection_rate_, k1_, k2_,
-                                 width_, height_, changing_background_);
+                                 width_, height_);
         }
         else {
             call_cuda_hodge(cudev_board_, cudev_board_buffer_, death_threshold_,
                             infection_rate_, infection_threshold_,
-                            width_, height_, changing_background_);
+                            width_, height_);
         }
 
         cudaMemcpy(board_, cudev_board_buffer_, 
@@ -281,9 +277,6 @@ void Hodge::update_hodge() {
 
             if(board_[offset] <= 0) {
                 board_buffer_[offset] = (int)(get_sum_neighbors(i, j) >= infection_threshold_);
-                if(changing_background_ && board_buffer_[offset] == 0) {
-                    board_buffer_[offset] = board_[offset] - 1;
-                }
             }
             else if(board_[offset] < death_threshold_) {
                 board_buffer_[offset] = get_sum_neighbors(i, j) / 9;
@@ -302,9 +295,6 @@ void Hodge::update_hodgepodge() {
             int offset = j * width_ + i;
             if(board_[offset] <= 0) {
                 board_buffer_[offset] = get_next_value_healthy(i, j);
-                if(changing_background_ && board_buffer_[offset] == 0) {
-                    board_buffer_[offset] = board_[offset] - 1;
-                }
             }
             else if(board_[offset] < death_threshold_) {
                 board_buffer_[offset] = get_next_value_infected(i, j);

@@ -63,7 +63,7 @@ __device__ int get_sum_neighbors(int x, int y, int *board,
 
 __global__ void cuda_hodge(int* board, int* board_buffer, int death_threshold,
                            int infection_rate, int infection_threshold,
-                           int width, int height, bool changing_background) {
+                           int width, int height) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < height * width) {
         
@@ -74,9 +74,6 @@ __global__ void cuda_hodge(int* board, int* board_buffer, int death_threshold,
             board_buffer[index] = (int)(get_sum_neighbors(i, j, board,
                                                           width, height) >= 
                                         infection_threshold);
-            if(changing_background && board_buffer[index] == 0) {
-                board_buffer[index] = board[index] - 1;
-            }
         }
         else if(board[index] < death_threshold) {
             board_buffer[index] = get_sum_neighbors(i, j, board, width, height) / 
@@ -93,7 +90,7 @@ __global__ void cuda_hodge(int* board, int* board_buffer, int death_threshold,
 
 __global__ void cuda_hodgepodge(int* board, int* board_buffer, int death_threshold,
                                 int infection_rate, int k1, int k2,
-                                int width, int height, bool changing_background) {
+                                int width, int height) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < height * width) {
         
@@ -104,9 +101,6 @@ __global__ void cuda_hodgepodge(int* board, int* board_buffer, int death_thresho
             board_buffer[index] = get_next_value_healthy(i, j, board, 
                                                          death_threshold, k1, k2,
                                                          width, height);
-            if(changing_background && board_buffer[index] == 0) {
-                board_buffer[index] = board[index] - 1;
-            }
         }
         else if(board[index] < death_threshold) {
             board_buffer[index] = get_next_value_infected(i, j, board,
@@ -124,17 +118,17 @@ __global__ void cuda_hodgepodge(int* board, int* board_buffer, int death_thresho
 
 void call_cuda_hodge(int *board, int *board_buffer, int death_threshold,
                      int infection_rate, int infection_threshold, 
-                     int width, int height, bool changing_background) {
+                     int width, int height) {
     cuda_hodge<<<512, 128>>>(board, board_buffer, death_threshold,
                              infection_rate, infection_threshold,
-                             width, height, changing_background);
+                             width, height);
 }
 
 void call_cuda_hodgepodge(int *board, int *board_buffer, int death_threshold,
                      int infection_rate, int k1, int k2, 
-                     int width, int height, bool changing_background) {
+                     int width, int height) {
     cuda_hodgepodge<<<512, 128>>>(board, board_buffer, death_threshold,
                                   infection_rate, k1, k2,
-                                  width, height, changing_background);
+                                  width, height);
 }
 

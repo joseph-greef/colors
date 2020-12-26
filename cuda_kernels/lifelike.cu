@@ -41,7 +41,9 @@ __device__ int get_num_alive_neighbors(int x, int y, int *board,
 
 
 
-__global__ void cuda_lifelike(int* board, int* board_buffer, bool *born, bool *stay_alive, int num_faders, int width, int height) {
+__global__ void cuda_lifelike(int* board, int* board_buffer, bool *born,
+                              bool *stay_alive, int num_faders, int current_tick,
+                              int width, int height) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < height * width) {
         
@@ -51,25 +53,24 @@ __global__ void cuda_lifelike(int* board, int* board_buffer, bool *born, bool *s
         //get how many alive neighbors it has
         int neighbors = get_num_alive_neighbors(i, j, board, width, height);
 
-        if (board[index] <= -num_faders || board[index] == 0) {
-            if (born[neighbors]) {
-                board_buffer[index] = 1;
+        if(board[index] > 0) {
+            if(stay_alive[neighbors]) {
+                board_buffer[index] = board[index] + 1;
             }
-            else if (board[index] == 0) {
-                board_buffer[index] = 0;
-            }
-            else if (board[index] < 0) {
-                board_buffer[index] = board[index] - 1;
+            else {
+                board_buffer[index] = -current_tick;
             }
         }
-        else if (board[index] > 0) {
-            if (stay_alive[neighbors])
-                board_buffer[index] = board[index] + 1;
-            else
-                board_buffer[index] = -1;
+        else if(board[index] + current_tick >= num_faders) {
+            if(born[neighbors]) {
+                board_buffer[index] = current_tick;
+            }
+            else {
+                board_buffer[index] = board[index];
+            }
         }
         else {
-            board_buffer[index] = board[index] - 1;
+            board_buffer[index] = board[index];
         }
 
 
@@ -79,6 +80,10 @@ __global__ void cuda_lifelike(int* board, int* board_buffer, bool *born, bool *s
 }
 
 
-void call_cuda_lifelike(int *board, int *board_buffer, bool *born, bool *stay_alive, int num_faders, int width, int height) {
-    cuda_lifelike<<<512, 128>>>(board, board_buffer, born, stay_alive, num_faders, width, height);
+void call_cuda_lifelike(int *board, int *board_buffer, bool *born,
+                        bool *stay_alive, int num_faders, int current_tick,
+                        int width, int height) {
+    cuda_lifelike<<<512, 128>>>(board, board_buffer, born,
+                                stay_alive, num_faders, current_tick,
+                                width, height);
 }

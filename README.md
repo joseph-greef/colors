@@ -17,6 +17,10 @@ Key     | Effect
 c       | Save the currect color schemes and load the previous saved schemes
 m + NUM | Set the dead color scheme
 n + NUM | Set the alive color scheme
+, + NUM | Set the dead offset
+. + NUM | Set the alive offset
+/ + NUM | Set the color changing speed
+
 
 #### Global Initialization Controls
 Key     | Effect

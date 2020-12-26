@@ -16,7 +16,7 @@ LifeLike::LifeLike(int width, int height)
     : Ruleset(width, height)
     , initializer_(1, 54, width, height)
     , num_faders_(0)
-    , rainbows_(width, height)
+    , rainbows_(width, height, 1)
 {
     //Random pretty pattern
     //bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
@@ -26,6 +26,13 @@ LifeLike::LifeLike(int width, int height)
     bool born_tmp[9] = {0, 0, 1, 0, 0, 0 ,0 ,0, 0};
     bool stay_alive_tmp[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
     num_faders_ = 4;
+
+    //life
+    //bool born_tmp[9] = {0, 0, 0, 1, 0, 0 ,0 ,0, 0};
+    //bool stay_alive_tmp[9] = {0, 0, 1, 1, 0, 0, 0, 0, 0};
+    //num_faders_ = 0;
+
+    current_tick_ = num_faders_;
 
     memcpy(born_, born_tmp, sizeof(born_));
     memcpy(stay_alive_, stay_alive_tmp, sizeof(stay_alive_));
@@ -114,13 +121,14 @@ void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
 
          }
     }
-#ifdef USE_GPU
     if(board_changed) {
+        current_tick_ = num_faders_;
+#ifdef USE_GPU
         if(use_gpu_) {
             copy_board_to_gpu();
         }
-    }
 #endif
+    }
 }
 
 void LifeLike::print_controls() {
@@ -185,7 +193,8 @@ void LifeLike::tick() {
         int *temp = NULL;
 
         call_cuda_lifelike(cudev_board_, cudev_board_buffer_, cudev_born_,
-                           cudev_stay_alive_, num_faders_, width_, height_);
+                           cudev_stay_alive_, num_faders_, current_tick_,
+                           width_, height_);
 
         cudaMemcpy(board_, cudev_board_buffer_, 
                    width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
@@ -200,6 +209,7 @@ void LifeLike::tick() {
     else {
         update_board();
     }
+    current_tick_++;
 }
 
 void LifeLike::update_board() {
@@ -212,26 +222,26 @@ void LifeLike::update_board() {
 
             if(board_[offset] > 0) {
                 if(stay_alive_[neighbors]) {
-                    board_buffer_[offset] = board_[offset] + 1;
+                    board_buffer_[offset] = board_[offset];
                 }
                 else {
-                    board_buffer_[offset] = -1;
+                    board_buffer_[offset] = -current_tick_;
                 }
 
             }
-            else if(board_[offset] <= -num_faders_ || board_[offset] == 0) {
+            //board_ + current_tick_ is the number of ticks since state change
+            //so this block is when the cell is allowed to be born
+            else if(board_[offset] + current_tick_ >= num_faders_) {
                 if(born_[neighbors]) {
-                    board_buffer_[offset] = 1;
-                }
-                else if(board_[offset] == 0) {
-                    board_buffer_[offset] = 0;
+                    board_buffer_[offset] = current_tick_;
                 }
                 else {
-                    board_buffer_[offset] = board_[offset] - 1;
+                    board_buffer_[offset] = board_[offset];
                 }
             }
+            //this block is the refractory states, just chill
             else {
-                board_buffer_[offset] = board_[offset] - 1;
+                board_buffer_[offset] = board_[offset];
             }
         }
     }

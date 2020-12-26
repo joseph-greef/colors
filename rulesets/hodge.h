@@ -11,7 +11,6 @@ class Hodge : public Ruleset {
     private:
         int *board_;
         int *board_buffer_;
-        bool changing_background_;
         int death_threshold_;
         int infection_rate_;
         int infection_threshold_;

@@ -8,9 +8,13 @@
 #include "input_manager.h"
 #include "rainbows.h"
 
-Rainbows::Rainbows(int width, int height)
+Rainbows::Rainbows(int width, int height, int color_speed)
     : alive_color_scheme_(1)
     , alive_offset_(0)
+    , changing_background_(false)
+    , color_counter_(0)
+    , color_offset_(0)
+    , color_speed_(color_speed)
     , dead_color_scheme_(0)
     , dead_offset_(0)
     , gif_(NULL)
@@ -26,18 +30,26 @@ Rainbows::~Rainbows() {
 }
 
 void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
+
     for(int j = 0; j < height_; j++) {
         for(int i = 0; i < width_; i++) {
             int offset = j * width_ + i;
             if(age_board[offset] > 0) {
                 pixels[offset] =
-                          colors[alive_color_scheme_]
-                                [((age_board[offset] + alive_offset_)) & 255];
+                    colors[alive_color_scheme_]
+                        [(age_board[offset] + alive_offset_ + color_offset_) &
+                         255];
+            }
+            else if(changing_background_ || age_board[offset] < 0) {
+                pixels[offset] =
+                    colors[dead_color_scheme_]
+                        [(-age_board[offset] + dead_offset_ + color_offset_) &
+                         255];
             }
             else {
                 pixels[offset] =
-                          colors[dead_color_scheme_]
-                                [((-age_board[offset] + dead_offset_)) & 255];
+                    colors[dead_color_scheme_]
+                        [(-age_board[offset] + dead_offset_) & 255];
             }
         }
     }
@@ -45,11 +57,23 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
     if(gif_) {
         save_gif_frame(age_board);
     }
+
+    color_counter_++;
+    if(color_speed_ > 0 && color_counter_ >= color_speed_) {
+        color_counter_ = 0;
+        color_offset_--;
+    }
+    else if (color_speed_ < 0) {
+        color_offset_ += (color_speed_);
+    }
 }
 
 void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
+            case SDLK_b:
+                changing_background_ = !changing_background_;
+                break;
             case SDLK_c:
                 {
                     int tmp_alive = alive_color_scheme_;
@@ -59,6 +83,12 @@ void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
                     saved_alive_color_scheme_ = tmp_alive;
                     saved_dead_color_scheme_ = tmp_dead;
                 }
+                break;
+            case SDLK_v:
+                randomize_colors();
+                break;
+            case SDLK_u:
+                reset_colors();
                 break;
             case SDLK_BACKSLASH:
                 if(gif_) {
@@ -81,13 +111,25 @@ void Rainbows::print_rules() {
 
 void Rainbows::randomize_colors() {
     alive_offset_ = rand() % RAINBOW_LENGTH;                                    
+    color_offset_ = 0;
     dead_offset_ = rand() % RAINBOW_LENGTH;
+}
+
+void Rainbows::reset_colors() {
+    alive_offset_ = 0;                                    
+    color_offset_ = 0;
+    dead_offset_ = 0;
 }
 
 void Rainbows::save_gif_frame(int *age_board) {
     for(int i = 0; i < width_ * height_; i++) {
         if(age_board[i] > 0) {
-            gif_->frame[i] = (age_board[i] + alive_offset_) & 255;
+            gif_->frame[i] = (age_board[i] + alive_offset_ + color_offset_) &
+                             255;
+        }
+        if(age_board[i] > 0) {
+            gif_->frame[i] = (-age_board[i] + dead_offset_ + color_offset_) &
+                             255;
         }
         else {
             gif_->frame[i] = (-age_board[i] + dead_offset_) & 255;
@@ -133,6 +175,7 @@ void Rainbows::start() {
     InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
     InputManager::add_var_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "(RnBw) Dead Offset");
     InputManager::add_var_changer(&alive_offset_, SDLK_PERIOD, INT_MIN, INT_MAX, "(RnBw) Alive Offset");
+    InputManager::add_var_changer(&color_speed_, SDLK_SLASH, INT_MIN, INT_MAX, "(RnBw) Color Speed");
 }
 
 void Rainbows::stop() { 
@@ -140,6 +183,7 @@ void Rainbows::stop() {
     InputManager::remove_var_changer(SDLK_n);
     InputManager::remove_var_changer(SDLK_COMMA);
     InputManager::remove_var_changer(SDLK_PERIOD);
+    InputManager::remove_var_changer(SDLK_SLASH);
 }
 
 uint32_t Rainbows::colors[][RAINBOW_LENGTH] = {
