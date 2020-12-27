@@ -4,7 +4,8 @@
 #include <iostream>
 
 
-std::set<IntChangeEntry*> InputManager::int_changes_ = std::set<IntChangeEntry*>();
+std::list<BoolTogglerEntry*> InputManager::bool_toggles_ = std::list<BoolTogglerEntry*>();
+std::list<IntChangeEntry*> InputManager::int_changes_ = std::list<IntChangeEntry*>();
 
 std::set<SDL_Keycode> InputManager::used_keys_ = std::set<SDL_Keycode>();
 
@@ -12,13 +13,22 @@ std::vector<IntChangeEntry*> InputManager::left_mouse_vars_ = std::vector<IntCha
 
 std::vector<IntChangeEntry*> InputManager::right_mouse_vars_ = std::vector<IntChangeEntry*>();
 
+void InputManager::add_bool_toggler(bool *variable, SDL_Keycode key,
+                                    std::string name) {
+    if(!check_and_insert_key(key, name)) {
+        return;
+    }
+
+    BoolTogglerEntry *entry = new BoolTogglerEntry;
+    entry->key = key;
+    entry->name = name;
+    entry->variable = variable;
+    bool_toggles_.push_back(entry);
+}
+
 void InputManager::add_int_changer(int *variable, SDL_Keycode key,
                                    int min_value, int max_value, std::string name) {
-    if(!used_keys_.insert(key).second) {
-        std::cout << "Warning: Attempted rebind on "
-                  << SDL_GetKeyName(key) 
-                  << " for function " << name 
-                  << " not registered." << std::endl;
+    if(!check_and_insert_key(key, name)) {
         return;
     }
 
@@ -31,13 +41,35 @@ void InputManager::add_int_changer(int *variable, SDL_Keycode key,
     entry->overridden = false;
     entry->name = name;
     entry->variable = variable;
-    int_changes_.insert(entry);
+    int_changes_.push_back(entry);
+}
+
+bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
+    if(!used_keys_.insert(key).second) {
+        std::cout << "Warning: Attempted rebind on "
+                  << SDL_GetKeyName(key) 
+                  << " for function " << name 
+                  << " not registered." << std::endl;
+        return false;
+    }
+    return true;
 }
 
 void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
+    handle_bool_events(event, control, shift);
     handle_int_events(event, control, shift);
 }
-    
+
+void InputManager::handle_bool_events(SDL_Event event, bool control, bool shift) {
+    if(event.type == SDL_KEYDOWN) {
+        for(BoolTogglerEntry *entry: bool_toggles_) {
+            if(event.key.keysym.sym == entry->key) {
+                *entry->variable = !(*entry->variable);
+            }
+        }
+    }
+}
+
 void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) {
     int override_value = -1;
     int modify_value = 0;
@@ -154,13 +186,14 @@ void InputManager::print_controls() {
 }
 
 void InputManager::remove_var_changer(SDL_Keycode key) {
-    IntChangeEntry *toErase = NULL;
+    VarChangeEntry *toErase = NULL;
 
     if(used_keys_.erase(key) == 0) {
         std::cout << "Attempted to remove key "
                   << SDL_GetKeyName(key) 
                   << " which wasn't added." << std::endl;
     }
+
     for(IntChangeEntry *entry: int_changes_) {
         if(key == entry->key) {
             toErase = entry;
@@ -168,10 +201,24 @@ void InputManager::remove_var_changer(SDL_Keycode key) {
         }
     }
     if(toErase) {
-        int_changes_.erase(toErase);
+        int_changes_.remove((IntChangeEntry*)toErase);
         delete(toErase);
+		return;
     }
-    else {
+
+    for(BoolTogglerEntry *entry: bool_toggles_) {
+        if(key == entry->key) {
+            toErase = entry;
+            break;
+        }
+    }
+    if(toErase) {
+        bool_toggles_.remove((BoolTogglerEntry*)toErase);
+        delete(toErase);
+		return;
+    }
+
+    if(toErase == NULL) {
         std::cout << "Didn't find "
                   << SDL_GetKeyName(key) 
                   << " in int_changes_" << std::endl;

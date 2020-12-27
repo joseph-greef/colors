@@ -71,9 +71,6 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
 void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
-            case SDLK_b:
-                changing_background_ = !changing_background_;
-                break;
             case SDLK_c:
                 {
                     int tmp_alive = alive_color_scheme_;
@@ -171,6 +168,8 @@ void Rainbows::start_gif(bool control) {
 }
 
 void Rainbows::start() { 
+    InputManager::add_bool_toggler(&changing_background_, SDLK_b, "(RnBw) Changing Background");
+
     InputManager::add_int_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "(RnBw) Dead Scheme");
     InputManager::add_int_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
     InputManager::add_int_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "(RnBw) Dead Offset");
@@ -179,6 +178,8 @@ void Rainbows::start() {
 }
 
 void Rainbows::stop() { 
+    InputManager::remove_var_changer(SDLK_b);
+
     InputManager::remove_var_changer(SDLK_m);
     InputManager::remove_var_changer(SDLK_n);
     InputManager::remove_var_changer(SDLK_COMMA);

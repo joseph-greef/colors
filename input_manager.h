@@ -4,6 +4,7 @@
 
 #include <SDL.h>
 
+#include <list>
 #include <set>
 #include <string>
 #include <vector>
@@ -27,18 +28,27 @@ struct IntChangeEntry: public VarChangeEntry{
     int *variable;
 };
 
+struct BoolTogglerEntry: public VarChangeEntry{
+    bool *variable;
+};
+
 class InputManager {
     private:
         static std::set<SDL_Keycode> used_keys_;
 
-        static std::set<IntChangeEntry*> int_changes_;
+        static std::list<BoolTogglerEntry*> bool_toggles_;
+
+        static std::list<IntChangeEntry*> int_changes_;
         static std::vector<IntChangeEntry*> left_mouse_vars_;
         static std::vector<IntChangeEntry*> right_mouse_vars_;
 
+        static bool check_and_insert_key(SDL_Keycode key, std::string name);
+        static void handle_bool_events(SDL_Event event, bool control, bool shift);
         static void handle_int_events(SDL_Event event, bool control, bool shift);
         static void modify_int_entry(IntChangeEntry *entry, int override_value,
                                      int modify_entry);
     public:
+        static void add_bool_toggler(bool *variable, SDL_Keycode key, std::string name);
         static void add_int_changer(int *variable, SDL_Keycode key,
                                     int min_value, int max_value, std::string name);
         static void handle_input(SDL_Event event, bool control, bool shift);

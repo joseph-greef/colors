@@ -82,9 +82,6 @@ void Hodge::handle_input(SDL_Event event, bool control, bool shift) {
                 initializer_.init_board(board_);
                 board_changed = true;
                 break;
-            case SDLK_o:
-                podge_ = !podge_;
-                break;
             case SDLK_r:
                 randomize_ruleset();
                 break;
@@ -204,6 +201,8 @@ void Hodge::randomize_ruleset() {
 void Hodge::start() { 
     std::cout << "Starting Hodge" << std::endl;
 
+    InputManager::add_bool_toggler(&podge_, SDLK_o, "(Hoge) Toggle between Hodgepodge and Hodge");
+
     InputManager::add_int_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "(Hoge) Death Threshold");
     InputManager::add_int_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
     InputManager::add_int_changer(&infection_threshold_, SDLK_j, 0, INT_MAX, "(Hoge) Infection Theshold");
@@ -215,6 +214,8 @@ void Hodge::start() {
 }
 
 void Hodge::stop() { 
+    InputManager::remove_var_changer(SDLK_o);
+
     InputManager::remove_var_changer(SDLK_g);
     InputManager::remove_var_changer(SDLK_h);
     InputManager::remove_var_changer(SDLK_j);

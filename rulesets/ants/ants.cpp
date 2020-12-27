@@ -98,9 +98,6 @@ void Ants::handle_input(SDL_Event event, bool control, bool shift) {
                                                generate_color()));
                 colonies_.back()->add_ants(&ants_, 5);
                 break;
-            case SDLK_t:
-                rainbow_view_ = !rainbow_view_;
-                break;
         }
     }
 }
@@ -154,6 +151,9 @@ void Ants::stop_cuda() {
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
+
+    InputManager::add_bool_toggler(&rainbow_view_, SDLK_t, "(Ants) Toggle rainbow view");
+
     InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
     InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
     InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
@@ -162,6 +162,8 @@ void Ants::start() {
 }
 
 void Ants::stop() {
+    InputManager::remove_var_changer(SDLK_t);
+
     InputManager::remove_var_changer(SDLK_a);
     InputManager::remove_var_changer(SDLK_s);
     InputManager::remove_var_changer(SDLK_d);
