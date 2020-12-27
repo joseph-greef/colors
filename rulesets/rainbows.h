@@ -15,7 +15,6 @@ class Rainbows {
         Rainbows(int width, int height, int color_speed);
         ~Rainbows();
         void age_to_pixels(int *age_board, uint32_t *pixels); 
-        void print_rules();
         void randomize_colors(bool control, bool shift);
         void reset_colors(bool control, bool shift);
         void start();

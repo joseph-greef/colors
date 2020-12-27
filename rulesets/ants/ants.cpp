@@ -91,9 +91,6 @@ void Ants::get_pixels(uint32_t *pixels) {
     }
 }
 
-void Ants::print_controls() {
-}
-
 void Ants::print_rules() {
 }
 

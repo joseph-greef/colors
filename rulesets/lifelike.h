@@ -37,7 +37,6 @@ class LifeLike : public Ruleset {
         LifeLike(int width, int height);
         ~LifeLike();
         void get_pixels(uint32_t *pixels);
-        void print_controls();
         void print_rules();
         void start();
         void stop();

@@ -28,6 +28,7 @@ void InputManager::add_bool_toggler(bool *variable, SDL_Keycode key,
     entry->name = name;
     entry->variable = variable;
     bool_toggles_.push_back(entry);
+    bool_toggles_.sort();
 }
 
 void InputManager::add_function_caller(std::function<void(bool, bool)> function,
@@ -41,6 +42,7 @@ void InputManager::add_function_caller(std::function<void(bool, bool)> function,
     entry->name = name;
     entry->function = function;
     function_callers_.push_back(entry);
+    function_callers_.sort();
 }
 
 void InputManager::add_int_changer(int *variable, SDL_Keycode key,
@@ -59,6 +61,7 @@ void InputManager::add_int_changer(int *variable, SDL_Keycode key,
     entry->name = name;
     entry->variable = variable;
     int_changes_.push_back(entry);
+    int_changes_.sort();
 }
 
 bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
@@ -225,9 +228,29 @@ void InputManager::modify_int_entry(IntChangeEntry *entry, int override_value,
 }
 
 void InputManager::print_controls() {
-    std::cout << std::endl << "Input Managed Controls:" << std::endl;
+    std::cout << std::endl << "Toggle Keys:" << std::endl;
+    for(BoolTogglerEntry *entry: bool_toggles_) {
+        std::cout << "  "
+                  << SDL_GetKeyName(entry->key)
+                  << ": "
+                  << entry->name
+                  << std::endl;
+    }
+    std::cout << std::endl << "Function Keys:" << std::endl;
+    for(FunctionCallerEntry *entry: function_callers_) {
+        std::cout << "  "
+                  << SDL_GetKeyName(entry->key)
+                  << ": "
+                  << entry->name
+                  << std::endl;
+    }
+    std::cout << std::endl << "Integer Keys:" << std::endl;
     for(IntChangeEntry *entry: int_changes_) {
-        std::cout << SDL_GetKeyName(entry->key) << ": " << entry->name << std::endl;
+        std::cout << "  "
+                  << SDL_GetKeyName(entry->key)
+                  << ": "
+                  << entry->name
+                  << std::endl;
     }
 }
 

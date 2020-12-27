@@ -67,12 +67,6 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
     }
 }
 
-void Rainbows::print_rules() {
-    std::cout << std::endl << "Rainbows Controls:" << std::endl;
-    std::cout << "C: Toggle color" << std::endl;
-    std::cout << "\\: Start/Stop gif recording" << std::endl;
-}
-
 void Rainbows::randomize_colors(bool control, bool shift) {
     alive_offset_ = rand() % RAINBOW_LENGTH;                                    
     color_offset_ = 0;
@@ -109,7 +103,7 @@ void Rainbows::save_gif_frame(int *age_board) {
 }
 
 void Rainbows::start() { 
-    InputManager::add_bool_toggler(&changing_background_, SDLK_b, "(RnBw) Changing Background");
+    InputManager::add_bool_toggler(&changing_background_, SDLK_b, "(RnBw) Toggle Changing Background");
 
     ADD_FUNCTION_CALLER(&Rainbows::toggle_gif, SDLK_BACKSLASH,
                         "(RnBw) Toggle gif recording");

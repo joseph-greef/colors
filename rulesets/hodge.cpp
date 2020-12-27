@@ -120,19 +120,6 @@ int Hodge::get_sum_neighbors(int x, int y) {
     return sum;
 }
 
-void Hodge::print_controls() {
-    std::cout << std::endl << "Hodge Controls:" << std::endl;
-    std::cout << "B: Toggle changing background" << std::endl;
-    std::cout << "E: Initialize center square" << std::endl;
-    std::cout << "I: Initialixe random board" << std::endl;
-    std::cout << "O: Toggle between Hodge and HodgePodge" << std::endl;
-    std::cout << "R: Randomize ruleset" << std::endl;
-    std::cout << "W: Initialize center diamond" << std::endl;
-    std::cout << "X: Initialize center cross" << std::endl;
-
-    rainbows_.print_rules();
-}
-
 void Hodge::print_rules() {
     std::cout << "Hodge";
     if(podge_) {

@@ -145,11 +145,10 @@ int main(int argc, char * argv[])
                         break;
                     case SDLK_QUOTE:
                         std::cout << std::endl << "Game Controls:" << std::endl;
-                        std::cout << "escape: Quit program" << std::endl;
-                        std::cout << "[     : Take Screenshot" << std::endl;
-                        std::cout << "]     : Start/Stop video capture" << std::endl;
-                        std::cout << "'     : Print help message" << std::endl;
-                        game.print_controls();
+                        std::cout << "  escape: Quit program" << std::endl;
+                        std::cout << "  [     : Take Screenshot" << std::endl;
+                        std::cout << "  ]     : Start/Stop video capture" << std::endl;
+                        std::cout << "  '     : Print help message" << std::endl;
                         InputManager::print_controls();
                         break;
                 }

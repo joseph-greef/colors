@@ -92,17 +92,6 @@ void LifeLike::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
 }
 
-void LifeLike::print_controls() {
-    std::cout << std::endl << "LifeLike Controls:" << std::endl;
-    std::cout << "E: Initialize center square" << std::endl;
-    std::cout << "I: Initialixe random board" << std::endl;
-    std::cout << "R: Randomize ruleset" << std::endl;
-    std::cout << "W: Initialize center diamond" << std::endl;
-    std::cout << "X: Initialize center cross" << std::endl;
-
-    rainbows_.print_rules();
-}
-
 void LifeLike::print_rules() {
     std::cout << "Born: {";
     for(int i = 0; i < 9; i++) {

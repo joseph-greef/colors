@@ -45,12 +45,6 @@ void Game::draw_board(uint32_t *board) {
     active_ruleset_->get_pixels(board);
 }
 
-void Game::print_controls() {
-    std::cout << "F     : Toggle CUDA processing" << std::endl;
-    std::cout << "P     : Print current ruleset info" << std::endl;
-    active_ruleset_->print_controls();
-}
-
 void Game::tick(void) {
     if(last_ruleset_ != current_ruleset_) {
         change_ruleset(current_ruleset_);

@@ -56,7 +56,6 @@ class Ants : public Ruleset {
         Ants(int width, int height);
         ~Ants();
         void get_pixels(uint32_t *pixels);
-        void print_controls();
         void print_rules();
         void start();
         void stop();
