@@ -22,7 +22,7 @@ Ants::Ants(int width, int height)
 {
     rainbow_board_ = new int[width * height];
     world_ = new WorldEntry[width_ * height_];
-    reset();
+    reset(false, false);
 }
 
 Ants::~Ants() {
@@ -34,6 +34,13 @@ Ants::~Ants() {
     }
     delete [] rainbow_board_;
     delete [] world_;
+}
+
+void Ants::add_colony(bool shift, bool control, int num_ants) {
+    colonies_.push_back(new Colony(width_, height_,
+                                   rand() % width_, rand() % height_,
+                                   generate_color()));
+    colonies_.back()->add_ants(&ants_, num_ants);
 }
 
 uint32_t Ants::generate_color() {
@@ -84,30 +91,13 @@ void Ants::get_pixels(uint32_t *pixels) {
     }
 }
 
-void Ants::handle_input(SDL_Event event, bool control, bool shift) {
-
-    if(event.type == SDL_KEYDOWN) {
-        switch(event.key.keysym.sym) {
-            case SDLK_e:
-                reset();
-                break;
-            case SDLK_r:
-                colonies_.push_back(new Colony(width_, height_,
-                                               rand() % width_, rand() % height_,
-                                               generate_color()));
-                colonies_.back()->add_ants(&ants_, 5);
-                break;
-        }
-    }
-}
-
 void Ants::print_controls() {
 }
 
 void Ants::print_rules() {
 }
 
-void Ants::reset() {
+void Ants::reset(bool control, bool shift) {
     for(Colony *colony: colonies_) {
         delete colony;
     }
@@ -132,10 +122,7 @@ void Ants::reset() {
 void Ants::restock_colonies(int num_ants) {
     while(static_cast<int>(colonies_.size()) < num_colonies_) {
         std::cout << "restocking" << std::endl;
-        colonies_.push_back(new Colony(width_, height_,
-                                       rand() % width_, rand() % height_,
-                                       generate_color()));
-        colonies_.back()->add_ants(&ants_, num_ants);
+        add_colony(false, false, num_ants);
     }
 }
 
@@ -153,6 +140,11 @@ void Ants::start() {
 
     InputManager::add_bool_toggler(&rainbow_view_, SDLK_t, "(Ants) Toggle rainbow view");
 
+    ADD_FUNCTION_CALLER(&Ants::reset, SDLK_e,
+                        "(Ants) Reset simulation");
+    ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDLK_r,
+                               "(Ants) Reset simulation", 5);
+
     InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
     InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
     InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
@@ -162,6 +154,9 @@ void Ants::start() {
 
 void Ants::stop() {
     InputManager::remove_var_changer(SDLK_t);
+
+    InputManager::remove_var_changer(SDLK_e);
+    InputManager::remove_var_changer(SDLK_r);
 
     InputManager::remove_var_changer(SDLK_a);
     InputManager::remove_var_changer(SDLK_s);

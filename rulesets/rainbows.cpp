@@ -128,12 +128,12 @@ void Rainbows::start() {
 }
 
 void Rainbows::stop() { 
+    InputManager::remove_var_changer(SDLK_b);
+
     InputManager::remove_var_changer(SDLK_BACKSLASH);
     InputManager::remove_var_changer(SDLK_c);
     InputManager::remove_var_changer(SDLK_u);
     InputManager::remove_var_changer(SDLK_v);
-
-    InputManager::remove_var_changer(SDLK_b);
 
     InputManager::remove_var_changer(SDLK_m);
     InputManager::remove_var_changer(SDLK_n);

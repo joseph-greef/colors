@@ -92,16 +92,6 @@ void LifeLike::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
 }
 
-void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
-    if(event.type == SDL_KEYDOWN) {
-        switch(event.key.keysym.sym) {
-            case SDLK_r:
-                randomize_ruleset();
-                break;
-         }
-    }
-}
-
 void LifeLike::print_controls() {
     std::cout << std::endl << "LifeLike Controls:" << std::endl;
     std::cout << "E: Initialize center square" << std::endl;
@@ -127,14 +117,14 @@ void LifeLike::print_rules() {
     std::cout << "}" << std::endl;
 }
 
-void LifeLike::randomize_ruleset() {
+void LifeLike::randomize_ruleset(bool control, bool shift) {
     for(int i = 0; i < 9; i++) {
         born_[i] = (rand()%100>20 ? 1 : 0);
         stay_alive_[i] = (rand()%100>20 ? 1 : 0);
     }
     born_[0] = false;
 
-    rainbows_.randomize_colors(false, false);
+    rainbows_.randomize_colors(control, shift);
 
 #ifdef USE_GPU
     if(use_gpu_) {
@@ -145,6 +135,9 @@ void LifeLike::randomize_ruleset() {
 
 void LifeLike::start() { 
     std::cout << "Starting LifeLike" << std::endl;
+    ADD_FUNCTION_CALLER(&LifeLike::randomize_ruleset, SDLK_r,
+                        "(Life) Randomize Ruleset");
+
     InputManager::add_int_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
 
     initializer_.start();
@@ -152,6 +145,8 @@ void LifeLike::start() {
 }
 
 void LifeLike::stop() { 
+    InputManager::remove_var_changer(SDLK_r);
+
     InputManager::remove_var_changer(SDLK_a);
 
     initializer_.stop();

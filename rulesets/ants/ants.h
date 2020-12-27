@@ -21,7 +21,6 @@ struct WorldEntry {
     void *ptr;
     int index;
 };
-    
 
 class Ants : public Ruleset {
     private:
@@ -44,8 +43,9 @@ class Ants : public Ruleset {
 
         WorldEntry *world_;
 
+        void add_colony(bool shift, bool control, int num_ants);
         uint32_t generate_color();
-        void reset();
+        void reset(bool control, bool shift);
         void restock_colonies(int num_ants);
 #ifdef USE_GPU
         void start_cuda();
@@ -56,7 +56,6 @@ class Ants : public Ruleset {
         Ants(int width, int height);
         ~Ants();
         void get_pixels(uint32_t *pixels);
-        void handle_input(SDL_Event event, bool control, bool shift);
         void print_controls();
         void print_rules();
         void start();

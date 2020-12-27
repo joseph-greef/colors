@@ -56,7 +56,6 @@ void Game::handle_input(SDL_Event event, bool control, bool shift) {
                 break;
         }
     }
-    active_ruleset_->handle_input(event, control, shift);
 }
 
 void Game::print_controls() {

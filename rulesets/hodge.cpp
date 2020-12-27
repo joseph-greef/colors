@@ -67,16 +67,6 @@ void Hodge::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
 }
 
-void Hodge::handle_input(SDL_Event event, bool control, bool shift) {
-    if(event.type == SDL_KEYDOWN) {
-        switch(event.key.keysym.sym) {
-            case SDLK_r:
-                randomize_ruleset();
-                break;
-         }
-    }
-}
-
 int Hodge::get_next_value_healthy(int x, int y) {
     int check_x = 0, check_y = 0, offset = 0;
     int ill = 0, infected = 0;
@@ -159,20 +149,23 @@ void Hodge::print_rules() {
     std::cout << "Death threshold=" << death_threshold_ << " " << std::endl;
 }
 
-void Hodge::randomize_ruleset() {
+void Hodge::randomize_ruleset(bool control, bool shift) {
     death_threshold_ = rand() % 400;
     k1_ = rand() % 5 + 1;
     k2_ = rand() % 5 + 1;
     infection_rate_ = rand() % 80;
     infection_threshold_ = rand() % 4 + 1;
 
-    rainbows_.randomize_colors(false, false);
+    rainbows_.randomize_colors(control, shift);
 }
 
 void Hodge::start() { 
     std::cout << "Starting Hodge" << std::endl;
 
     InputManager::add_bool_toggler(&podge_, SDLK_o, "(Hoge) Toggle between Hodgepodge and Hodge");
+
+    ADD_FUNCTION_CALLER(&Hodge::randomize_ruleset, SDLK_r,
+                        "(Hoge) Randomize Ruleset");
 
     InputManager::add_int_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "(Hoge) Death Threshold");
     InputManager::add_int_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
@@ -186,6 +179,8 @@ void Hodge::start() {
 
 void Hodge::stop() { 
     InputManager::remove_var_changer(SDLK_o);
+
+    InputManager::remove_var_changer(SDLK_r);
 
     InputManager::remove_var_changer(SDLK_g);
     InputManager::remove_var_changer(SDLK_h);

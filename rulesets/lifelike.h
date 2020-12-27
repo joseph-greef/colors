@@ -18,7 +18,7 @@ class LifeLike : public Ruleset {
         Rainbows rainbows_;
         bool stay_alive_[9];
 
-        void randomize_ruleset();
+        void randomize_ruleset(bool control, bool shift);
         void update_board();
 #ifdef USE_GPU
         int *cudev_board_;
@@ -37,7 +37,6 @@ class LifeLike : public Ruleset {
         LifeLike(int width, int height);
         ~LifeLike();
         void get_pixels(uint32_t *pixels);
-        void handle_input(SDL_Event event, bool control, bool shift);
         void print_controls();
         void print_rules();
         void start();

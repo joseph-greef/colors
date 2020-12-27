@@ -63,10 +63,28 @@ void InputManager::add_int_changer(int *variable, SDL_Keycode key,
 
 bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
     if(!used_keys_.insert(key).second) {
-        std::cout << "Warning: Attempted rebind on "
+        std::cout << std::endl
+                  << "Warning: Attempted rebind on "
                   << SDL_GetKeyName(key) 
                   << " for function " << name 
                   << " not registered." << std::endl;
+
+        std::cout << "Previously registered input is ";
+        for(BoolTogglerEntry *entry: bool_toggles_) {
+            if(entry->key == key) {
+                std::cout << entry->name << std::endl;
+            }
+        }
+        for(FunctionCallerEntry *entry: function_callers_) {
+            if(entry->key == key) {
+                std::cout << entry->name << std::endl;
+            }
+        }
+        for(IntChangeEntry *entry: int_changes_) {
+            if(entry->key == key) {
+                std::cout << entry->name << std::endl;
+            }
+        }
         return false;
     }
     return true;

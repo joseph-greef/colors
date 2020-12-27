@@ -34,7 +34,7 @@ class Hodge : public Ruleset {
         int get_next_value_infected(int x, int y);
         int get_sum_neighbors(int x, int y);
 
-        void randomize_ruleset();
+        void randomize_ruleset(bool control, bool shift);
         void update_board();
         void update_hodge();
         void update_hodgepodge();
@@ -47,7 +47,6 @@ class Hodge : public Ruleset {
         static std::string Name;
 
         void get_pixels(uint32_t *pixels);
-        void handle_input(SDL_Event event, bool control, bool shift);
         void print_controls();
         void print_rules();
         void start();
