@@ -154,7 +154,6 @@ int main(int argc, char * argv[])
                         break;
                 }
             }
-            game.handle_input(event, control, shift);
             InputManager::handle_input(event, control, shift);
         }
 

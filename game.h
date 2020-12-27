@@ -22,7 +22,6 @@ class Game {
         Game(int width, int height);
         ~Game();
         void draw_board(uint32_t *board);
-        void handle_input(SDL_Event event, bool control, bool shift);
         void print_controls();
         void tick(void);
 };

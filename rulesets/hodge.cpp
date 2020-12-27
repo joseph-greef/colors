@@ -1,4 +1,3 @@
-
 #include <climits>
 #include <iostream>
 #include <stdlib.h>
@@ -161,6 +160,7 @@ void Hodge::randomize_ruleset(bool control, bool shift) {
 
 void Hodge::start() { 
     std::cout << "Starting Hodge" << std::endl;
+    Ruleset::start();
 
     InputManager::add_bool_toggler(&podge_, SDLK_o, "(Hoge) Toggle between Hodgepodge and Hodge");
 
@@ -178,6 +178,8 @@ void Hodge::start() {
 }
 
 void Hodge::stop() { 
+    Ruleset::stop();
+
     InputManager::remove_var_changer(SDLK_o);
 
     InputManager::remove_var_changer(SDLK_r);

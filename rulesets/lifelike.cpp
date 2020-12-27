@@ -135,6 +135,8 @@ void LifeLike::randomize_ruleset(bool control, bool shift) {
 
 void LifeLike::start() { 
     std::cout << "Starting LifeLike" << std::endl;
+    Ruleset::start();
+
     ADD_FUNCTION_CALLER(&LifeLike::randomize_ruleset, SDLK_r,
                         "(Life) Randomize Ruleset");
 
@@ -145,6 +147,8 @@ void LifeLike::start() {
 }
 
 void LifeLike::stop() { 
+    Ruleset::stop();
+
     InputManager::remove_var_changer(SDLK_r);
 
     InputManager::remove_var_changer(SDLK_a);

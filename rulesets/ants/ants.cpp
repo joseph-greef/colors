@@ -137,6 +137,7 @@ void Ants::stop_cuda() {
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
+    Ruleset::start();
 
     InputManager::add_bool_toggler(&rainbow_view_, SDLK_t, "(Ants) Toggle rainbow view");
 
@@ -153,6 +154,8 @@ void Ants::start() {
 }
 
 void Ants::stop() {
+    Ruleset::stop();
+
     InputManager::remove_var_changer(SDLK_t);
 
     InputManager::remove_var_changer(SDLK_e);

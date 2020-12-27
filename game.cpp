@@ -45,19 +45,6 @@ void Game::draw_board(uint32_t *board) {
     active_ruleset_->get_pixels(board);
 }
 
-void Game::handle_input(SDL_Event event, bool control, bool shift) {
-    if(event.type == SDL_KEYDOWN) {
-        switch(event.key.keysym.sym) {
-            case SDLK_f:
-                active_ruleset_->toggle_gpu();
-                break;
-            case SDLK_p:
-                active_ruleset_->print_rules();
-                break;
-        }
-    }
-}
-
 void Game::print_controls() {
     std::cout << "F     : Toggle CUDA processing" << std::endl;
     std::cout << "P     : Print current ruleset info" << std::endl;

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 
+#include "input_manager.h"
 #include "ruleset.h"
 #include "rainbows.h"
 
@@ -56,7 +57,16 @@ int Ruleset::get_num_alive_neighbors(int *board, int x, int y,
     return count;
 }
 
-void Ruleset::toggle_gpu() {
+void Ruleset::start() {
+    ADD_FUNCTION_CALLER(&Ruleset::toggle_gpu, SDLK_f,
+                        "(Game) Toggle CUDA processing");
+}
+
+void Ruleset::stop() {
+    InputManager::remove_var_changer(SDLK_f);
+}
+
+void Ruleset::toggle_gpu(bool control, bool shift) {
     use_gpu_ = !use_gpu_;
     if(use_gpu_) {
         start_cuda();
