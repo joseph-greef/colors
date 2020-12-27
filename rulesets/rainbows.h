@@ -15,10 +15,9 @@ class Rainbows {
         Rainbows(int width, int height, int color_speed);
         ~Rainbows();
         void age_to_pixels(int *age_board, uint32_t *pixels); 
-        void handle_input(SDL_Event event, bool control, bool shift);
         void print_rules();
-        void randomize_colors();
-        void reset_colors();
+        void randomize_colors(bool control, bool shift);
+        void reset_colors(bool control, bool shift);
         void start();
         void stop();
     private: 
@@ -43,7 +42,8 @@ class Rainbows {
         static int num_colors;
 
         void save_gif_frame(int *age_board);
-        void start_gif(bool control);
+        void toggle_colors(bool control, bool shift);
+        void toggle_gif(bool control, bool shift);
 };
 
 #endif //_RAINBOW_H

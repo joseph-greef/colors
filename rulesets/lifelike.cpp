@@ -94,8 +94,6 @@ void LifeLike::get_pixels(uint32_t *pixels) {
 
 void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
     bool board_changed = false;
-    
-    rainbows_.handle_input(event, control, shift);
 
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
@@ -163,7 +161,7 @@ void LifeLike::randomize_ruleset() {
     }
     born_[0] = false;
 
-    rainbows_.randomize_colors();
+    rainbows_.randomize_colors(false, false);
 
 #ifdef USE_GPU
     if(use_gpu_) {

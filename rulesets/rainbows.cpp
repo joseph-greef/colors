@@ -30,7 +30,6 @@ Rainbows::~Rainbows() {
 }
 
 void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
-
     for(int j = 0; j < height_; j++) {
         for(int i = 0; i < width_; i++) {
             int offset = j * width_ + i;
@@ -68,51 +67,19 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
     }
 }
 
-void Rainbows::handle_input(SDL_Event event, bool control, bool shift) {
-    if(event.type == SDL_KEYDOWN) {
-        switch(event.key.keysym.sym) {
-            case SDLK_c:
-                {
-                    int tmp_alive = alive_color_scheme_;
-                    int tmp_dead = dead_color_scheme_;
-                    alive_color_scheme_ = saved_alive_color_scheme_;
-                    dead_color_scheme_ = saved_dead_color_scheme_;
-                    saved_alive_color_scheme_ = tmp_alive;
-                    saved_dead_color_scheme_ = tmp_dead;
-                }
-                break;
-            case SDLK_v:
-                randomize_colors();
-                break;
-            case SDLK_u:
-                reset_colors();
-                break;
-            case SDLK_BACKSLASH:
-                if(gif_) {
-                    ge_close_gif(gif_);
-                    gif_ = NULL;
-                }
-                else {
-                    start_gif(control);
-                }
-                break;
-        }
-    }
-}
-
 void Rainbows::print_rules() {
     std::cout << std::endl << "Rainbows Controls:" << std::endl;
     std::cout << "C: Toggle color" << std::endl;
     std::cout << "\\: Start/Stop gif recording" << std::endl;
 }
 
-void Rainbows::randomize_colors() {
+void Rainbows::randomize_colors(bool control, bool shift) {
     alive_offset_ = rand() % RAINBOW_LENGTH;                                    
     color_offset_ = 0;
     dead_offset_ = rand() % RAINBOW_LENGTH;
 }
 
-void Rainbows::reset_colors() {
+void Rainbows::reset_colors(bool control, bool shift) {
     alive_offset_ = 0;                                    
     color_offset_ = 0;
     dead_offset_ = 0;
@@ -141,34 +108,17 @@ void Rainbows::save_gif_frame(int *age_board) {
     }
 }
 
-void Rainbows::start_gif(bool control) {
-    static uint8_t rainbow_no_alpha[GIF_COLOR_LEN * 3] = { 0 };
-    std::time_t t = std::time(nullptr);
-    std::tm tm = *std::localtime(&t);
-    std::ostringstream oss;
-    oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S.gif");
-    std::string str = oss.str();
-
-    for(int i = 0; i < GIF_COLOR_LEN; i++) {
-        int nai = 3 * i;
-        uint32_t color = colors[alive_color_scheme_][i];
-        uint8_t *components = (uint8_t*)&color;
-        rainbow_no_alpha[nai] = components[2];
-        rainbow_no_alpha[nai + 1] = components[1];
-        rainbow_no_alpha[nai + 2] = components[0];
-    }
-
-    gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8, 0);
-    if(control) {
-        gif_frames_ = 256;
-    }
-    else {
-        gif_frames_ = 0;
-    }
-}
-
 void Rainbows::start() { 
     InputManager::add_bool_toggler(&changing_background_, SDLK_b, "(RnBw) Changing Background");
+
+    ADD_FUNCTION_CALLER(&Rainbows::toggle_gif, SDLK_BACKSLASH,
+                        "(RnBw) Toggle gif recording");
+    ADD_FUNCTION_CALLER(&Rainbows::toggle_colors, SDLK_c,
+                        "(RnBw) Toggle colors");
+    ADD_FUNCTION_CALLER(&Rainbows::reset_colors, SDLK_u,
+                        "(RnBw) Reset colors");
+    ADD_FUNCTION_CALLER(&Rainbows::randomize_colors, SDLK_v,
+                        "(RnBw) Randomize colors");
 
     InputManager::add_int_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "(RnBw) Dead Scheme");
     InputManager::add_int_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
@@ -178,6 +128,11 @@ void Rainbows::start() {
 }
 
 void Rainbows::stop() { 
+    InputManager::remove_var_changer(SDLK_BACKSLASH);
+    InputManager::remove_var_changer(SDLK_c);
+    InputManager::remove_var_changer(SDLK_u);
+    InputManager::remove_var_changer(SDLK_v);
+
     InputManager::remove_var_changer(SDLK_b);
 
     InputManager::remove_var_changer(SDLK_m);
@@ -185,6 +140,47 @@ void Rainbows::stop() {
     InputManager::remove_var_changer(SDLK_COMMA);
     InputManager::remove_var_changer(SDLK_PERIOD);
     InputManager::remove_var_changer(SDLK_SLASH);
+}
+
+void Rainbows::toggle_colors(bool control, bool shift) {
+    int tmp_alive = alive_color_scheme_;
+    int tmp_dead = dead_color_scheme_;
+    alive_color_scheme_ = saved_alive_color_scheme_;
+    dead_color_scheme_ = saved_dead_color_scheme_;
+    saved_alive_color_scheme_ = tmp_alive;
+    saved_dead_color_scheme_ = tmp_dead;
+}
+
+void Rainbows::toggle_gif(bool control, bool shift) {
+    if(gif_) {
+        ge_close_gif(gif_);
+        gif_ = NULL;
+    }
+    else {
+        static uint8_t rainbow_no_alpha[GIF_COLOR_LEN * 3] = { 0 };
+        std::time_t t = std::time(nullptr);
+        std::tm tm = *std::localtime(&t);
+        std::ostringstream oss;
+        oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S.gif");
+        std::string str = oss.str();
+
+        for(int i = 0; i < GIF_COLOR_LEN; i++) {
+            int nai = 3 * i;
+            uint32_t color = colors[alive_color_scheme_][i];
+            uint8_t *components = (uint8_t*)&color;
+            rainbow_no_alpha[nai] = components[2];
+            rainbow_no_alpha[nai + 1] = components[1];
+            rainbow_no_alpha[nai + 2] = components[0];
+        }
+
+        gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8, 0);
+        if(control) {
+            gif_frames_ = 256;
+        }
+        else {
+            gif_frames_ = 0;
+        }
+    }
 }
 
 uint32_t Rainbows::colors[][RAINBOW_LENGTH] = {

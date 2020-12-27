@@ -70,8 +70,6 @@ void Hodge::get_pixels(uint32_t *pixels) {
 void Hodge::handle_input(SDL_Event event, bool control, bool shift) {
     bool board_changed = false;
 
-    rainbows_.handle_input(event, control, shift);
-
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
             case SDLK_e:
@@ -195,7 +193,7 @@ void Hodge::randomize_ruleset() {
     infection_rate_ = rand() % 80;
     infection_threshold_ = rand() % 4 + 1;
 
-    rainbows_.randomize_colors();
+    rainbows_.randomize_colors(false, false);
 }
 
 void Hodge::start() { 
