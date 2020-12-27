@@ -14,7 +14,7 @@
 
 LifeLike::LifeLike(int width, int height)
     : Ruleset(width, height)
-    , initializer_(1, 54, width, height)
+    , initializer_(&board_, 1, 54, width, height)
     , num_faders_(0)
     , rainbows_(width, height, 1)
 {
@@ -48,7 +48,7 @@ LifeLike::LifeLike(int width, int height)
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
 #endif //USE_GPU
 
-    initializer_.init_center_cross(board_);
+    initializer_.init_center_cross(false, false);
 }
 
 LifeLike::~LifeLike() {
@@ -93,39 +93,12 @@ void LifeLike::get_pixels(uint32_t *pixels) {
 }
 
 void LifeLike::handle_input(SDL_Event event, bool control, bool shift) {
-    bool board_changed = false;
-
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
-            case SDLK_e:
-                initializer_.init_center_square(board_);
-                board_changed = true;
-                break;
-            case SDLK_i:
-                initializer_.init_board(board_);
-                board_changed = true;
-                break;
             case SDLK_r:
                 randomize_ruleset();
                 break;
-            case SDLK_w:
-                initializer_.init_center_diamond(board_);
-                board_changed = true;
-                break;
-            case SDLK_x:
-                initializer_.init_center_cross(board_);
-                board_changed = true;
-                break;
-
          }
-    }
-    if(board_changed) {
-        current_tick_ = num_faders_;
-#ifdef USE_GPU
-        if(use_gpu_) {
-            copy_board_to_gpu();
-        }
-#endif
     }
 }
 
@@ -186,6 +159,15 @@ void LifeLike::stop() {
 }
 
 void LifeLike::tick() {
+    if(initializer_.was_board_changed()) {
+        current_tick_ = num_faders_;
+#ifdef USE_GPU
+        if(use_gpu_) {
+            copy_board_to_gpu();
+        }
+#endif
+    }
+
     if(use_gpu_) {
 #if USE_GPU
         int *temp = NULL;

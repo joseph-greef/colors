@@ -263,7 +263,7 @@ void InputManager::remove_var_changer(SDL_Keycode key) {
     if(toErase == NULL) {
         std::cout << "Didn't find "
                   << SDL_GetKeyName(key) 
-                  << " in int_changes_" << std::endl;
+                  << " in lists." << std::endl;
     }
 }
 

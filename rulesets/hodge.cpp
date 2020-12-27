@@ -17,7 +17,7 @@ Hodge::Hodge(int width, int height)
     , death_threshold_(260)
     , infection_rate_(30)
     , infection_threshold_(2)
-    , initializer_(2, 5, width, height)
+    , initializer_(&board_, 2, 5, width, height)
     , k1_(2)
     , k2_(5)
     , podge_(true)
@@ -32,7 +32,7 @@ Hodge::Hodge(int width, int height)
     cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
 #endif //USE_GPU
 
-    initializer_.init_center_square(board_);
+    initializer_.init_center_square(false, false);
 }
 
 Hodge::~Hodge() {
@@ -68,40 +68,13 @@ void Hodge::get_pixels(uint32_t *pixels) {
 }
 
 void Hodge::handle_input(SDL_Event event, bool control, bool shift) {
-    bool board_changed = false;
-
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
-            case SDLK_e:
-                initializer_.init_center_square(board_);
-                board_changed = true;
-                break;
-            case SDLK_i:
-                initializer_.init_board(board_);
-                board_changed = true;
-                break;
             case SDLK_r:
                 randomize_ruleset();
                 break;
-            case SDLK_w:
-                initializer_.init_center_diamond(board_);
-                board_changed = true;
-                break;
-            case SDLK_x:
-                initializer_.init_center_cross(board_);
-                board_changed = true;
-                break;
          }
     }
-
-#ifdef USE_GPU
-    if(board_changed) {
-
-        if(use_gpu_) {
-            copy_board_to_gpu();
-        }
-    }
-#endif
 }
 
 int Hodge::get_next_value_healthy(int x, int y) {
@@ -228,7 +201,9 @@ void Hodge::tick() {
     if(use_gpu_) {
 #if USE_GPU
         int *temp = NULL;
-
+        if(initializer_.was_board_changed()) {
+            copy_board_to_gpu();
+        }
         if(podge_) {
             call_cuda_hodgepodge(cudev_board_, cudev_board_buffer_, death_threshold_,
                                  infection_rate_, k1_, k2_,

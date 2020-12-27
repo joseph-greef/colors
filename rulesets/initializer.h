@@ -6,6 +6,8 @@
 
 class Initializer {
 private:
+    int **board_ptr_;
+    bool board_changed_;
     int density_;
     int dot_radius_;
     int height_;
@@ -13,14 +15,16 @@ private:
     
 public:
     //Initializer(Board *b);
-    Initializer(int density, int dot_radius, int width, int height);
+    Initializer(int **board, int density, int dot_radius, int width, int height);
     ~Initializer();
 
-    void clear_board(int* board);
-    void init_board(int *board);
-    void init_center_cross(int *board);
-    void init_center_diamond(int *board);
-    void init_center_square(int *board);
+    void clear_board(bool control, bool shift);
+    void init_center_cross(bool control, bool shift);
+    void init_center_diamond(bool control, bool shift);
+    void init_center_square(bool control, bool shift);
+    void init_random_board(bool control, bool shift);
+
+    bool was_board_changed();
 
     void start();
     void stop();
