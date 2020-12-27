@@ -4,8 +4,12 @@
 #include <iostream>
 
 
-std::list<BoolTogglerEntry*> InputManager::bool_toggles_ = std::list<BoolTogglerEntry*>();
-std::list<IntChangeEntry*> InputManager::int_changes_ = std::list<IntChangeEntry*>();
+std::list<BoolTogglerEntry*> InputManager::bool_toggles_ =
+                                            std::list<BoolTogglerEntry*>();
+std::list<FunctionCallerEntry*> InputManager::function_callers_ =
+                                            std::list<FunctionCallerEntry*>();
+std::list<IntChangeEntry*> InputManager::int_changes_ =
+                                            std::list<IntChangeEntry*>();
 
 std::set<SDL_Keycode> InputManager::used_keys_ = std::set<SDL_Keycode>();
 
@@ -24,6 +28,19 @@ void InputManager::add_bool_toggler(bool *variable, SDL_Keycode key,
     entry->name = name;
     entry->variable = variable;
     bool_toggles_.push_back(entry);
+}
+
+void InputManager::add_function_caller(std::function<void(bool, bool)> function,
+                                       SDL_Keycode key, std::string name) {
+    if(!check_and_insert_key(key, name)) {
+        return;
+    }
+
+    FunctionCallerEntry *entry = new FunctionCallerEntry;
+    entry->key = key;
+    entry->name = name;
+    entry->function = function;
+    function_callers_.push_back(entry);
 }
 
 void InputManager::add_int_changer(int *variable, SDL_Keycode key,
@@ -57,6 +74,7 @@ bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
 
 void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
     handle_bool_events(event, control, shift);
+    handle_function_events(event, control, shift);
     handle_int_events(event, control, shift);
 }
 
@@ -65,6 +83,16 @@ void InputManager::handle_bool_events(SDL_Event event, bool control, bool shift)
         for(BoolTogglerEntry *entry: bool_toggles_) {
             if(event.key.keysym.sym == entry->key) {
                 *entry->variable = !(*entry->variable);
+            }
+        }
+    }
+}
+
+void InputManager::handle_function_events(SDL_Event event, bool control, bool shift) {
+    if(event.type == SDL_KEYDOWN) {
+        for(FunctionCallerEntry *entry: function_callers_) {
+            if(event.key.keysym.sym == entry->key) {
+                entry->function(control, shift);
             }
         }
     }
@@ -205,6 +233,20 @@ void InputManager::remove_var_changer(SDL_Keycode key) {
         delete(toErase);
 		return;
     }
+
+
+    for(FunctionCallerEntry *entry: function_callers_) {
+        if(key == entry->key) {
+            toErase = entry;
+            break;
+        }
+    }
+    if(toErase) {
+        function_callers_.remove((FunctionCallerEntry*)toErase);
+        delete(toErase);
+		return;
+    }
+
 
     for(BoolTogglerEntry *entry: bool_toggles_) {
         if(key == entry->key) {
