@@ -4,18 +4,15 @@
 #include <iostream>
 
 
-std::set<VarChangeEntry*, decltype(InputManager::compare_entries)*> 
-    InputManager::int_changes_ = 
-        std::set<VarChangeEntry*, decltype(InputManager::compare_entries)*>
-            (InputManager::compare_entries);
+std::set<IntChangeEntry*> InputManager::int_changes_ = std::set<IntChangeEntry*>();
 
 std::set<SDL_Keycode> InputManager::used_keys_ = std::set<SDL_Keycode>();
 
-std::vector<VarChangeEntry*> InputManager::left_mouse_vars_ = std::vector<VarChangeEntry*>();
+std::vector<IntChangeEntry*> InputManager::left_mouse_vars_ = std::vector<IntChangeEntry*>();
 
-std::vector<VarChangeEntry*> InputManager::right_mouse_vars_ = std::vector<VarChangeEntry*>();
+std::vector<IntChangeEntry*> InputManager::right_mouse_vars_ = std::vector<IntChangeEntry*>();
 
-void InputManager::add_var_changer(int *variable, SDL_Keycode key,
+void InputManager::add_int_changer(int *variable, SDL_Keycode key,
                                    int min_value, int max_value, std::string name) {
     if(!used_keys_.insert(key).second) {
         std::cout << "Warning: Attempted rebind on "
@@ -25,7 +22,7 @@ void InputManager::add_var_changer(int *variable, SDL_Keycode key,
         return;
     }
 
-    VarChangeEntry *entry = new VarChangeEntry;
+    IntChangeEntry *entry = new IntChangeEntry;
     entry->key = key;
     entry->key_pressed = false;
     entry->max_value = max_value;
@@ -37,21 +34,21 @@ void InputManager::add_var_changer(int *variable, SDL_Keycode key,
     int_changes_.insert(entry);
 }
 
-bool InputManager::compare_entries(VarChangeEntry *a, VarChangeEntry *b) {
-    return (a->key) < (b->key);
-}
-
 void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
+    handle_int_events(event, control, shift);
+}
+    
+void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) {
     int override_value = -1;
     int modify_value = 0;
     int mul = (control ? 2 : 1) * (shift ? 5 : 1);
 
     if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-        for(VarChangeEntry *entry: int_changes_) {
+        for(IntChangeEntry *entry: int_changes_) {
             if(event.key.keysym.sym == entry->key) {
                 entry->key_pressed = (event.type == SDL_KEYDOWN);
                 if(event.type == SDL_KEYUP && entry->overridden) {
-                    modify_entry(entry, entry->override_value, 0);
+                    modify_int_entry(entry, entry->override_value, 0);
                 }
                 entry->override_value = 0;
                 entry->overridden = false;
@@ -62,13 +59,13 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
 
     if(event.type == SDL_MOUSEMOTION) {
         if(event.motion.state & SDL_BUTTON_LMASK) {
-            for(VarChangeEntry *entry: left_mouse_vars_) {
-                modify_entry(entry, -1, event.motion.xrel);
+            for(IntChangeEntry *entry: left_mouse_vars_) {
+                modify_int_entry(entry, -1, event.motion.xrel);
             }
         }
         if(event.motion.state & SDL_BUTTON_RMASK) {
-            for(VarChangeEntry *entry: right_mouse_vars_) {
-                modify_entry(entry, -1, event.motion.yrel);
+            for(IntChangeEntry *entry: right_mouse_vars_) {
+                modify_int_entry(entry, -1, event.motion.yrel);
             }
         }
 
@@ -76,7 +73,7 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
     else if(event.type == SDL_MOUSEBUTTONDOWN) {
         if(control && (event.button.button == SDL_BUTTON_LEFT ||
                        event.button.button == SDL_BUTTON_RIGHT )) {
-            std::vector<VarChangeEntry*> *active;
+            std::vector<IntChangeEntry*> *active;
             if(event.button.button == SDL_BUTTON_LEFT) {
                 active = &left_mouse_vars_;
             }
@@ -84,7 +81,7 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
                 active = &right_mouse_vars_;
             }
             active->clear();
-            for(VarChangeEntry *entry: int_changes_) {
+            for(IntChangeEntry *entry: int_changes_) {
                 if(entry->key_pressed) {
                     active->push_back(entry);
                 }
@@ -110,14 +107,14 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
         modify_value = event.wheel.y * mul;
     }
     if(modify_value) {
-        for(VarChangeEntry *entry: int_changes_) {
+        for(IntChangeEntry *entry: int_changes_) {
             if(entry->key_pressed) {
-                modify_entry(entry, -1, modify_value);
+                modify_int_entry(entry, -1, modify_value);
             }
         }
     }
     if(override_value != -1) {
-        for(VarChangeEntry *entry: int_changes_) {
+        for(IntChangeEntry *entry: int_changes_) {
             if(entry->key_pressed) {
                 entry->override_value *= 10;
                 entry->override_value += override_value;
@@ -127,7 +124,8 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
     }
 }
 
-void InputManager::modify_entry(VarChangeEntry *entry, int override_value, int modify_value) {
+void InputManager::modify_int_entry(IntChangeEntry *entry, int override_value,
+                                    int modify_value) {
     if(override_value != -1) {
         *(entry->variable) = override_value;
     }
@@ -150,20 +148,20 @@ void InputManager::modify_entry(VarChangeEntry *entry, int override_value, int m
 
 void InputManager::print_controls() {
     std::cout << std::endl << "Input Managed Controls:" << std::endl;
-    for(VarChangeEntry *entry: int_changes_) {
+    for(IntChangeEntry *entry: int_changes_) {
         std::cout << SDL_GetKeyName(entry->key) << ": " << entry->name << std::endl;
     }
 }
 
 void InputManager::remove_var_changer(SDL_Keycode key) {
-    VarChangeEntry *toErase = NULL;
+    IntChangeEntry *toErase = NULL;
 
     if(used_keys_.erase(key) == 0) {
         std::cout << "Attempted to remove key "
                   << SDL_GetKeyName(key) 
                   << " which wasn't added." << std::endl;
     }
-    for(VarChangeEntry *entry: int_changes_) {
+    for(IntChangeEntry *entry: int_changes_) {
         if(key == entry->key) {
             toErase = entry;
             break;

@@ -9,30 +9,37 @@
 #include <vector>
 
 
-typedef struct var_change_entry {
+struct VarChangeEntry{
     SDL_Keycode key;
+    std::string name;
+
+    bool operator <(const VarChangeEntry & otherVar) const {
+        return key < otherVar.key;
+    }
+};
+
+struct IntChangeEntry: public VarChangeEntry{
     bool key_pressed;
     int max_value;
     int min_value;
     int override_value;
     bool overridden;
-    std::string name;
     int *variable;
-} VarChangeEntry;
+};
 
 class InputManager {
     private:
-        static bool compare_entries(VarChangeEntry *a, VarChangeEntry *b);
-
         static std::set<SDL_Keycode> used_keys_;
-        static std::set<VarChangeEntry*, 
-                        decltype(InputManager::compare_entries)*> int_changes_;
-        static std::vector<VarChangeEntry*> left_mouse_vars_;
-        static std::vector<VarChangeEntry*> right_mouse_vars_;
 
-        static void modify_entry(VarChangeEntry *entry, int override_value, int modify_entry);
+        static std::set<IntChangeEntry*> int_changes_;
+        static std::vector<IntChangeEntry*> left_mouse_vars_;
+        static std::vector<IntChangeEntry*> right_mouse_vars_;
+
+        static void handle_int_events(SDL_Event event, bool control, bool shift);
+        static void modify_int_entry(IntChangeEntry *entry, int override_value,
+                                     int modify_entry);
     public:
-        static void add_var_changer(int *variable, SDL_Keycode key,
+        static void add_int_changer(int *variable, SDL_Keycode key,
                                     int min_value, int max_value, std::string name);
         static void handle_input(SDL_Event event, bool control, bool shift);
         static void print_controls();

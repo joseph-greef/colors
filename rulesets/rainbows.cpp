@@ -171,11 +171,11 @@ void Rainbows::start_gif(bool control) {
 }
 
 void Rainbows::start() { 
-    InputManager::add_var_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "(RnBw) Dead Scheme");
-    InputManager::add_var_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
-    InputManager::add_var_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "(RnBw) Dead Offset");
-    InputManager::add_var_changer(&alive_offset_, SDLK_PERIOD, INT_MIN, INT_MAX, "(RnBw) Alive Offset");
-    InputManager::add_var_changer(&color_speed_, SDLK_SLASH, INT_MIN, INT_MAX, "(RnBw) Color Speed");
+    InputManager::add_int_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "(RnBw) Dead Scheme");
+    InputManager::add_int_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
+    InputManager::add_int_changer(&dead_offset_,  SDLK_COMMA, INT_MIN, INT_MAX, "(RnBw) Dead Offset");
+    InputManager::add_int_changer(&alive_offset_, SDLK_PERIOD, INT_MIN, INT_MAX, "(RnBw) Alive Offset");
+    InputManager::add_int_changer(&color_speed_, SDLK_SLASH, INT_MIN, INT_MAX, "(RnBw) Color Speed");
 }
 
 void Rainbows::stop() { 

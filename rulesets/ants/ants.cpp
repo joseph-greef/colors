@@ -154,10 +154,10 @@ void Ants::stop_cuda() {
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
-    InputManager::add_var_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
-    InputManager::add_var_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
-    InputManager::add_var_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
-    InputManager::add_var_changer(&rainbow_train_len_, SDLK_f, 0, INT_MAX, "(Ants) Trail Length");
+    InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
+    InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
+    InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
+    InputManager::add_int_changer(&rainbow_train_len_, SDLK_f, 0, INT_MAX, "(Ants) Trail Length");
     rainbows_.start();
 }
 

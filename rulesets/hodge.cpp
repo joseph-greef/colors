@@ -204,11 +204,11 @@ void Hodge::randomize_ruleset() {
 void Hodge::start() { 
     std::cout << "Starting Hodge" << std::endl;
 
-    InputManager::add_var_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "(Hoge) Death Threshold");
-    InputManager::add_var_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
-    InputManager::add_var_changer(&infection_threshold_, SDLK_j, 0, INT_MAX, "(Hoge) Infection Theshold");
-    InputManager::add_var_changer(&k1_, SDLK_k, 0, INT_MAX, "(Hoge) k1");
-    InputManager::add_var_changer(&k2_, SDLK_l, 0, INT_MAX, "(Hoge) k2");
+    InputManager::add_int_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "(Hoge) Death Threshold");
+    InputManager::add_int_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
+    InputManager::add_int_changer(&infection_threshold_, SDLK_j, 0, INT_MAX, "(Hoge) Infection Theshold");
+    InputManager::add_int_changer(&k1_, SDLK_k, 0, INT_MAX, "(Hoge) k1");
+    InputManager::add_int_changer(&k2_, SDLK_l, 0, INT_MAX, "(Hoge) k2");
 
     initializer_.start();
     rainbows_.start();

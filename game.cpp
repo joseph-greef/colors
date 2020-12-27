@@ -23,7 +23,7 @@ Game::Game(int width, int height)
     active_ruleset_ = rulesets_[current_ruleset_];
     active_ruleset_->start();
 
-    InputManager::add_var_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "(Game) Ruleset");
+    InputManager::add_int_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "(Game) Ruleset");
 }
 
 Game::~Game() {

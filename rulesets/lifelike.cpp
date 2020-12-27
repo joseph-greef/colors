@@ -174,7 +174,7 @@ void LifeLike::randomize_ruleset() {
 
 void LifeLike::start() { 
     std::cout << "Starting LifeLike" << std::endl;
-    InputManager::add_var_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
+    InputManager::add_int_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
 
     initializer_.start();
     rainbows_.start();

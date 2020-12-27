@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
     MovieWriter *writer = NULL;
     std::vector<uint8_t> writer_pixels(4 * width * height);
 
-    InputManager::add_var_changer(&fps_target, SDLK_v, 10, INT_MAX, "(Main) FPS Target");
+    InputManager::add_int_changer(&fps_target, SDLK_v, 10, INT_MAX, "(Main) FPS Target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
