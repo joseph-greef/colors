@@ -10,7 +10,7 @@
 
 Game::Game(int width, int height) 
     : active_ruleset_(NULL)
-    , current_ruleset_(2)
+    , current_ruleset_(0)
     , last_ruleset_(current_ruleset_)
     , lock_cursor_(false)
     , width_(width)
