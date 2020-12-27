@@ -28,9 +28,15 @@ class Ants : public Ruleset {
         std::list<Colony*> colonies_;
         std::list<Ant*> ants_;
         std::list<Food*> foods_;
+        int *rainbow_board_;
         int colony_pheromone_display_;
+        int color_speed_;
+        int current_tick_;
         int food_probability_;
         int num_colonies_;
+        Rainbows rainbows_;
+        int rainbow_train_len_;
+        bool rainbow_view_;
         int starting_food_density_;
         std::random_device rd_;
         std::mt19937 e2_;

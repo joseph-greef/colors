@@ -9,12 +9,18 @@
 Ants::Ants(int width, int height)
     : Ruleset(width, height)
     , colony_pheromone_display_(0)
+    , color_speed_(2)
+    , current_tick_(0)
     , food_probability_(10)
     , num_colonies_(8)
+    , rainbows_(width, height, 0)
+    , rainbow_train_len_(256)
+    , rainbow_view_(false)
     , starting_food_density_(1500)
     , e2_(rd_())
     , dist_(0, 1)
 {
+    rainbow_board_ = new int[width * height];
     world_ = new WorldEntry[width_ * height_];
     reset();
 }
@@ -26,6 +32,7 @@ Ants::~Ants() {
     for(Food *food: foods_) {
         delete food;
     }
+    delete [] rainbow_board_;
     delete [] world_;
 }
 
@@ -45,34 +52,41 @@ uint32_t Ants::generate_color() {
 }
 
 void Ants::get_pixels(uint32_t *pixels) {
-    if(colony_pheromone_display_ > 0 &&
-       colony_pheromone_display_ <= static_cast<int>(colonies_.size()))
-    {
-        auto colonies_it = colonies_.begin();
-        std::advance(colonies_it, colony_pheromone_display_ - 1);
-        (*colonies_it)->draw_pheromones(pixels);
+    if(rainbow_view_) {
+        rainbows_.age_to_pixels(rainbow_board_, pixels);
     }
     else {
-        for(int j = 0; j < height_; j++) {
-            for(int i = 0; i < width_; i++) {
-                pixels[j * width_ + i] = 0;
+        if(colony_pheromone_display_ > 0 &&
+           colony_pheromone_display_ <= static_cast<int>(colonies_.size()))
+        {
+            auto colonies_it = colonies_.begin();
+            std::advance(colonies_it, colony_pheromone_display_ - 1);
+            (*colonies_it)->draw_pheromones(pixels);
+        }
+        else {
+            for(int j = 0; j < height_; j++) {
+                for(int i = 0; i < width_; i++) {
+                    pixels[j * width_ + i] = 0;
+                }
             }
         }
-    }
-    for(Colony *colony: colonies_) {
-        colony->draw_self(pixels);
-    }
-    for(Ant *ant: ants_) {
-        int offset = ant->y * width_ + ant->x;                            
-        pixels[offset] = ant->colony->get_color();
-    }
-    for(Food *food: foods_) {
-        int offset = food->y * width_ + food->x;                            
-        pixels[offset] = 0x00FF00; //Green food
+        for(Colony *colony: colonies_) {
+            colony->draw_self(pixels);
+        }
+        for(Ant *ant: ants_) {
+            int offset = ant->y * width_ + ant->x;
+            pixels[offset] = ant->colony->get_color();
+        }
+        for(Food *food: foods_) {
+            int offset = food->y * width_ + food->x;
+            pixels[offset] = 0x00FF00; //Green food
+        }
     }
 }
 
 void Ants::handle_input(SDL_Event event, bool control, bool shift) {
+    rainbows_.handle_input(event, control, shift);
+
     if(event.type == SDL_KEYDOWN) {
         switch(event.key.keysym.sym) {
             case SDLK_e:
@@ -83,6 +97,9 @@ void Ants::handle_input(SDL_Event event, bool control, bool shift) {
                                                rand() % width_, rand() % height_,
                                                generate_color()));
                 colonies_.back()->add_ants(&ants_, 5);
+                break;
+            case SDLK_t:
+                rainbow_view_ = !rainbow_view_;
                 break;
         }
     }
@@ -111,6 +128,9 @@ void Ants::reset() {
                                   rand() % (height_ - 2) + 1, 
                                   rand() % 50));
     }
+
+    current_tick_ = 0;
+    memset(rainbow_board_, 0, width_ * height_ * sizeof(int));
 }
 
 void Ants::restock_colonies(int num_ants) {
@@ -134,12 +154,19 @@ void Ants::stop_cuda() {
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
-    InputManager::add_var_changer(&colony_pheromone_display_, SDLK_m, 0, INT_MAX, "(Ants) Pheromone Display");
-    InputManager::add_var_changer(&num_colonies_, SDLK_n, 0, INT_MAX, "(Ants) Minimum Colonies");
+    InputManager::add_var_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
+    InputManager::add_var_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
+    InputManager::add_var_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
+    InputManager::add_var_changer(&rainbow_train_len_, SDLK_f, 0, INT_MAX, "(Ants) Trail Length");
+    rainbows_.start();
 }
 
 void Ants::stop() {
-    InputManager::remove_var_changer(SDLK_m);
+    InputManager::remove_var_changer(SDLK_a);
+    InputManager::remove_var_changer(SDLK_s);
+    InputManager::remove_var_changer(SDLK_d);
+    InputManager::remove_var_changer(SDLK_f);
+    rainbows_.stop();
 }
 
 void Ants::tick() {
@@ -155,10 +182,23 @@ void Ants::tick() {
         if(!ant->colony->move_ant(ant)) {
             ant_to_remove.push_back(ant);
         }
+        else {
+            rainbow_board_[ant->y * width_ + ant->x] = rainbow_train_len_;
+        }
     }
     //Delete the ones that died
     for(Ant *ant: ant_to_remove) {
         ants_.remove(ant);
+    }
+
+    if(current_tick_ % color_speed_ == 0) {
+        for(int j = 0; j < height_; j++) {
+            for(int i = 0; i < width_; i++) {
+                if(rainbow_board_[j * width_ + i] > 0) {
+                    rainbow_board_[j * width_ + i]--;
+                }
+            }
+        }
     }
 
     //Update colony state
@@ -202,6 +242,8 @@ void Ants::tick() {
         colonies_.remove(colony);
         delete colony;
     }
+
+    //Check if we need to add more colonies, and init them with 5 ants
     restock_colonies(5);
 
     //Detect and handle events
@@ -278,4 +320,6 @@ void Ants::tick() {
         ants_.remove(ant);
         delete ant;
     }
-}
+
+    current_tick_++;
+} //tick()
