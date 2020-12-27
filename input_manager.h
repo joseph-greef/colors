@@ -25,6 +25,11 @@ using std::placeholders::_2;
 typedef void (*ManagerFunc)(bool control, bool shift);
 
 struct VarChangeEntry {
+    VarChangeEntry(SDL_Keycode key_, std::string name_)
+        : key(key_)
+        , name(name_)
+    {}
+
     SDL_Keycode key;
     std::string name;
 
@@ -33,15 +38,37 @@ struct VarChangeEntry {
     }
 };
 
-struct BoolTogglerEntry: public VarChangeEntry{
+struct BoolTogglerEntry: public VarChangeEntry {
+    BoolTogglerEntry(SDL_Keycode key_, std::string name_, bool *variable_)
+        : VarChangeEntry(key_, name_)
+        , variable(variable_)
+    {}
+
     bool *variable;
 };
 
 struct FunctionCallerEntry: public VarChangeEntry {
+    FunctionCallerEntry(SDL_Keycode key_, std::string name_, 
+                        std::function<void(bool, bool)> function_)
+        : VarChangeEntry(key_, name_)
+        , function(function_)
+    {}
+
     std::function<void(bool, bool)> function;
 };
 
 struct IntChangeEntry: public VarChangeEntry {
+    IntChangeEntry(SDL_Keycode key_, std::string name_, int max_value,
+                     int min_value, int *variable)
+        : VarChangeEntry(key_, name_)
+        , key_pressed(0)
+        , max_value(max_value)
+        , min_value(min_value)
+        , override_value(0)
+        , overridden(false)
+        , variable(variable)
+    {}
+
     bool key_pressed;
     int max_value;
     int min_value;

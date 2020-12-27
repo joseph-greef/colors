@@ -23,10 +23,7 @@ void InputManager::add_bool_toggler(bool *variable, SDL_Keycode key,
         return;
     }
 
-    BoolTogglerEntry *entry = new BoolTogglerEntry;
-    entry->key = key;
-    entry->name = name;
-    entry->variable = variable;
+    BoolTogglerEntry *entry = new BoolTogglerEntry(key, name, variable);
     bool_toggles_.push_back(entry);
     bool_toggles_.sort();
 }
@@ -37,10 +34,7 @@ void InputManager::add_function_caller(std::function<void(bool, bool)> function,
         return;
     }
 
-    FunctionCallerEntry *entry = new FunctionCallerEntry;
-    entry->key = key;
-    entry->name = name;
-    entry->function = function;
+    FunctionCallerEntry *entry = new FunctionCallerEntry(key, name, function);
     function_callers_.push_back(entry);
     function_callers_.sort();
 }
@@ -51,15 +45,8 @@ void InputManager::add_int_changer(int *variable, SDL_Keycode key,
         return;
     }
 
-    IntChangeEntry *entry = new IntChangeEntry;
-    entry->key = key;
-    entry->key_pressed = false;
-    entry->max_value = max_value;
-    entry->min_value = min_value;
-    entry->override_value = 0;
-    entry->overridden = false;
-    entry->name = name;
-    entry->variable = variable;
+    IntChangeEntry *entry = new IntChangeEntry(key, name, max_value, min_value,
+                                               variable);
     int_changes_.push_back(entry);
     int_changes_.sort();
 }
