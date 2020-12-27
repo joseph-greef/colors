@@ -15,6 +15,7 @@ z + NUM | Change rulesets
 Key     | Effect
 ------- | ------
 c       | Save the currect color schemes and load the previous saved schemes
+b       | Toggle changing background colors
 m + NUM | Set the dead color scheme
 n + NUM | Set the alive color scheme
 , + NUM | Set the dead offset
@@ -28,10 +29,21 @@ Key     | Effect
 d + NUM | Set the density of random generation, and the width of lines
 s + NUM | Set the radius of drawn structures
 
+#### Ants Controls
+Key     | Effect
+------- | ------
+e       | Reset the board, respawn colonies
+r       | Add new random colony
+t       | Toggle rainbow view
+a + NUM | Set from which colony to display pheromones
+s + NUM | Set the minimum number of colonies on the board
+d + NUM | Set the speed the color trails degrade
+f + NUM | Set the length of the color trails
+
+
 #### Hodge Controls
 Key     | Effect
 ------- | ------
-b       | Toggle changing background colors
 e       | Initialize a square in the center of the board of width 2 $radius
 i       | Randomly initialize the board, cells have a $density % chance of being alive
 o       | Toggle Hodge vs Hodgepodge
