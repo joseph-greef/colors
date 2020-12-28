@@ -149,16 +149,16 @@ void Hodge::start() {
     std::cout << "Starting Hodge" << std::endl;
     Ruleset::start();
 
-    InputManager::add_bool_toggler(&podge_, SDLK_o, "(Hoge) Toggle between Hodgepodge and Hodge");
+    InputManager::add_bool_toggler(&podge_, SDLK_t, "(Hoge) Toggle between Hodgepodge and Hodge");
 
     ADD_FUNCTION_CALLER(&Hodge::randomize_ruleset, SDLK_r,
                         "(Hoge) Randomize Ruleset");
 
-    InputManager::add_int_changer(&death_threshold_, SDLK_g, 0, INT_MAX, "(Hoge) Death Threshold");
-    InputManager::add_int_changer(&infection_rate_, SDLK_h, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
-    InputManager::add_int_changer(&infection_threshold_, SDLK_j, 0, INT_MAX, "(Hoge) Infection Theshold");
-    InputManager::add_int_changer(&k1_, SDLK_k, 0, INT_MAX, "(Hoge) k1");
-    InputManager::add_int_changer(&k2_, SDLK_l, 0, INT_MAX, "(Hoge) k2");
+    InputManager::add_int_changer(&infection_rate_, SDLK_a, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
+    InputManager::add_int_changer(&death_threshold_, SDLK_d, 0, INT_MAX, "(Hoge) Death Threshold");
+    InputManager::add_int_changer(&infection_threshold_, SDLK_s, 0, INT_MAX, "(Hoge) Infection Theshold");
+    InputManager::add_int_changer(&k1_, SDLK_q, 0, INT_MAX, "(Hoge) k1");
+    InputManager::add_int_changer(&k2_, SDLK_w, 0, INT_MAX, "(Hoge) k2");
 
     initializer_.start();
     rainbows_.start();
@@ -167,15 +167,15 @@ void Hodge::start() {
 void Hodge::stop() { 
     Ruleset::stop();
 
-    InputManager::remove_var_changer(SDLK_o);
+    InputManager::remove_var_changer(SDLK_t);
 
     InputManager::remove_var_changer(SDLK_r);
 
-    InputManager::remove_var_changer(SDLK_g);
-    InputManager::remove_var_changer(SDLK_h);
-    InputManager::remove_var_changer(SDLK_j);
-    InputManager::remove_var_changer(SDLK_k);
-    InputManager::remove_var_changer(SDLK_l);
+    InputManager::remove_var_changer(SDLK_a);
+    InputManager::remove_var_changer(SDLK_d);
+    InputManager::remove_var_changer(SDLK_q);
+    InputManager::remove_var_changer(SDLK_s);
+    InputManager::remove_var_changer(SDLK_w);
 
     initializer_.stop();
     rainbows_.stop();

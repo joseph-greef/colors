@@ -105,14 +105,14 @@ void Rainbows::save_gif_frame(int *age_board) {
 void Rainbows::start() { 
     InputManager::add_bool_toggler(&changing_background_, SDLK_b, "(RnBw) Toggle Changing Background");
 
+    ADD_FUNCTION_CALLER(&Rainbows::randomize_colors, SDLK_BACKQUOTE,
+                        "(RnBw) Randomize colors");
     ADD_FUNCTION_CALLER(&Rainbows::toggle_gif, SDLK_BACKSLASH,
                         "(RnBw) Toggle gif recording");
     ADD_FUNCTION_CALLER(&Rainbows::toggle_colors, SDLK_c,
                         "(RnBw) Toggle colors");
-    ADD_FUNCTION_CALLER(&Rainbows::reset_colors, SDLK_u,
+    ADD_FUNCTION_CALLER(&Rainbows::reset_colors, SDLK_l,
                         "(RnBw) Reset colors");
-    ADD_FUNCTION_CALLER(&Rainbows::randomize_colors, SDLK_v,
-                        "(RnBw) Randomize colors");
 
     InputManager::add_int_changer(&dead_color_scheme_,  SDLK_m, 0, Rainbows::num_colors-1, "(RnBw) Dead Scheme");
     InputManager::add_int_changer(&alive_color_scheme_, SDLK_n, 0, Rainbows::num_colors-1, "(RnBw) Alive Scheme");
@@ -124,10 +124,10 @@ void Rainbows::start() {
 void Rainbows::stop() { 
     InputManager::remove_var_changer(SDLK_b);
 
+    InputManager::remove_var_changer(SDLK_BACKQUOTE);
     InputManager::remove_var_changer(SDLK_BACKSLASH);
     InputManager::remove_var_changer(SDLK_c);
-    InputManager::remove_var_changer(SDLK_u);
-    InputManager::remove_var_changer(SDLK_v);
+    InputManager::remove_var_changer(SDLK_l);
 
     InputManager::remove_var_changer(SDLK_m);
     InputManager::remove_var_changer(SDLK_n);

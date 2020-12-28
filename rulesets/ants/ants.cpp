@@ -141,12 +141,12 @@ void Ants::start() {
     ADD_FUNCTION_CALLER(&Ants::reset, SDLK_e,
                         "(Ants) Reset simulation");
     ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDLK_r,
-                               "(Ants) Reset simulation", 5);
+                               "(Ants) Add ant colony with random DNA", 5);
 
     InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
     InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
     InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
-    InputManager::add_int_changer(&rainbow_train_len_, SDLK_f, 0, INT_MAX, "(Ants) Trail Length");
+    InputManager::add_int_changer(&rainbow_train_len_, SDLK_q, 0, INT_MAX, "(Ants) Trail Length");
     rainbows_.start();
 }
 
@@ -161,7 +161,7 @@ void Ants::stop() {
     InputManager::remove_var_changer(SDLK_a);
     InputManager::remove_var_changer(SDLK_s);
     InputManager::remove_var_changer(SDLK_d);
-    InputManager::remove_var_changer(SDLK_f);
+    InputManager::remove_var_changer(SDLK_q);
     rainbows_.stop();
 }
 

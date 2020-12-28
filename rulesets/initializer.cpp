@@ -80,30 +80,30 @@ void Initializer::init_random_board(bool control, bool shift) {
 }
 
 void Initializer::start() { 
-    ADD_FUNCTION_CALLER(&Initializer::init_center_square, SDLK_e,
-                        "(Init) Initialize center square");
     ADD_FUNCTION_CALLER(&Initializer::init_random_board, SDLK_i,
                         "(Init) Initialize random board");
-    ADD_FUNCTION_CALLER(&Initializer::clear_board, SDLK_l,
+    ADD_FUNCTION_CALLER(&Initializer::clear_board, SDLK_k,
                         "(Init) Clear board");
-    ADD_FUNCTION_CALLER(&Initializer::init_center_diamond, SDLK_w,
+    ADD_FUNCTION_CALLER(&Initializer::init_center_square, SDLK_o,
+                        "(Init) Initialize center square");
+    ADD_FUNCTION_CALLER(&Initializer::init_center_diamond, SDLK_u,
                         "(Init) Initialize center diamond");
-    ADD_FUNCTION_CALLER(&Initializer::init_center_cross, SDLK_x,
+    ADD_FUNCTION_CALLER(&Initializer::init_center_cross, SDLK_y,
                         "(Init) Initialize center cross");
 
-    InputManager::add_int_changer(&density_,    SDLK_d, 0, 100, "(Init) Density");
-    InputManager::add_int_changer(&dot_radius_, SDLK_s, 0, INT_MAX, "(Init) Dot Size");
+    InputManager::add_int_changer(&density_,    SDLK_h, 0, 100, "(Init) Density");
+    InputManager::add_int_changer(&dot_radius_, SDLK_j, 0, INT_MAX, "(Init) Dot Size");
 }
 
 void Initializer::stop() { 
-    InputManager::remove_var_changer(SDLK_e);
     InputManager::remove_var_changer(SDLK_i);
-    InputManager::remove_var_changer(SDLK_l);
-    InputManager::remove_var_changer(SDLK_w);
-    InputManager::remove_var_changer(SDLK_x);
+    InputManager::remove_var_changer(SDLK_k);
+    InputManager::remove_var_changer(SDLK_o);
+    InputManager::remove_var_changer(SDLK_u);
+    InputManager::remove_var_changer(SDLK_y);
 
-    InputManager::remove_var_changer(SDLK_d);
-    InputManager::remove_var_changer(SDLK_s);
+    InputManager::remove_var_changer(SDLK_h);
+    InputManager::remove_var_changer(SDLK_j);
 }
 
 bool Initializer::was_board_changed() {
