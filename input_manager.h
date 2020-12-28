@@ -33,8 +33,11 @@ struct VarChangeEntry {
     SDL_Keycode key;
     std::string name;
 
-    bool operator <(const VarChangeEntry & otherVar) const {
-        return key < otherVar.key;
+    bool operator <(const VarChangeEntry & other_var) const {
+        return key < other_var.key;
+    }
+    bool operator ==(const SDL_Keycode & other_key) const {
+        return key == other_key;
     }
 };
 
@@ -81,9 +84,9 @@ class InputManager {
     private:
         static std::set<SDL_Keycode> used_keys_;
 
-        static std::list<BoolTogglerEntry*> bool_toggles_;
-        static std::list<FunctionCallerEntry*> function_callers_;
-        static std::list<IntChangeEntry*> int_changes_;
+        static std::list<BoolTogglerEntry> bool_toggles_;
+        static std::list<FunctionCallerEntry> function_callers_;
+        static std::list<IntChangeEntry> int_changes_;
 
         static std::vector<IntChangeEntry*> left_mouse_vars_;
         static std::vector<IntChangeEntry*> right_mouse_vars_;

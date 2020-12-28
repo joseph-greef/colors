@@ -4,12 +4,12 @@
 #include <iostream>
 
 
-std::list<BoolTogglerEntry*> InputManager::bool_toggles_ =
-                                            std::list<BoolTogglerEntry*>();
-std::list<FunctionCallerEntry*> InputManager::function_callers_ =
-                                            std::list<FunctionCallerEntry*>();
-std::list<IntChangeEntry*> InputManager::int_changes_ =
-                                            std::list<IntChangeEntry*>();
+std::list<BoolTogglerEntry> InputManager::bool_toggles_ =
+                                            std::list<BoolTogglerEntry>();
+std::list<FunctionCallerEntry> InputManager::function_callers_ =
+                                            std::list<FunctionCallerEntry>();
+std::list<IntChangeEntry> InputManager::int_changes_ =
+                                            std::list<IntChangeEntry>();
 
 std::set<SDL_Keycode> InputManager::used_keys_ = std::set<SDL_Keycode>();
 
@@ -23,7 +23,7 @@ void InputManager::add_bool_toggler(bool *variable, SDL_Keycode key,
         return;
     }
 
-    BoolTogglerEntry *entry = new BoolTogglerEntry(key, name, variable);
+    BoolTogglerEntry entry(key, name, variable);
     bool_toggles_.push_back(entry);
     bool_toggles_.sort();
 }
@@ -34,7 +34,7 @@ void InputManager::add_function_caller(std::function<void(bool, bool)> function,
         return;
     }
 
-    FunctionCallerEntry *entry = new FunctionCallerEntry(key, name, function);
+    FunctionCallerEntry entry(key, name, function);
     function_callers_.push_back(entry);
     function_callers_.sort();
 }
@@ -45,8 +45,7 @@ void InputManager::add_int_changer(int *variable, SDL_Keycode key,
         return;
     }
 
-    IntChangeEntry *entry = new IntChangeEntry(key, name, max_value, min_value,
-                                               variable);
+    IntChangeEntry entry(key, name, max_value, min_value, variable);
     int_changes_.push_back(entry);
     int_changes_.sort();
 }
@@ -60,19 +59,19 @@ bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
                   << " not registered." << std::endl;
 
         std::cout << "Previously registered input is ";
-        for(BoolTogglerEntry *entry: bool_toggles_) {
-            if(entry->key == key) {
-                std::cout << entry->name << std::endl;
+        for(BoolTogglerEntry entry: bool_toggles_) {
+            if(entry.key == key) {
+                std::cout << entry.name << std::endl;
             }
         }
-        for(FunctionCallerEntry *entry: function_callers_) {
-            if(entry->key == key) {
-                std::cout << entry->name << std::endl;
+        for(FunctionCallerEntry entry: function_callers_) {
+            if(entry.key == key) {
+                std::cout << entry.name << std::endl;
             }
         }
-        for(IntChangeEntry *entry: int_changes_) {
-            if(entry->key == key) {
-                std::cout << entry->name << std::endl;
+        for(IntChangeEntry entry: int_changes_) {
+            if(entry.key == key) {
+                std::cout << entry.name << std::endl;
             }
         }
         return false;
@@ -88,9 +87,9 @@ void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
 
 void InputManager::handle_bool_events(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
-        for(BoolTogglerEntry *entry: bool_toggles_) {
-            if(event.key.keysym.sym == entry->key) {
-                *entry->variable = !(*entry->variable);
+        for(BoolTogglerEntry entry: bool_toggles_) {
+            if(event.key.keysym.sym == entry.key) {
+                *(entry.variable)= !(*(entry.variable));
             }
         }
     }
@@ -98,9 +97,9 @@ void InputManager::handle_bool_events(SDL_Event event, bool control, bool shift)
 
 void InputManager::handle_function_events(SDL_Event event, bool control, bool shift) {
     if(event.type == SDL_KEYDOWN) {
-        for(FunctionCallerEntry *entry: function_callers_) {
-            if(event.key.keysym.sym == entry->key) {
-                entry->function(control, shift);
+        for(FunctionCallerEntry entry: function_callers_) {
+            if(event.key.keysym.sym == entry.key) {
+                entry.function(control, shift);
             }
         }
     }
@@ -112,16 +111,14 @@ void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) 
     int mul = (control ? 2 : 1) * (shift ? 5 : 1);
 
     if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-        for(IntChangeEntry *entry: int_changes_) {
-            if(event.key.keysym.sym == entry->key) {
-                entry->key_pressed = (event.type == SDL_KEYDOWN);
-                if(event.type == SDL_KEYUP && entry->overridden) {
-                    modify_int_entry(entry, entry->override_value, 0);
-                }
-                entry->override_value = 0;
-                entry->overridden = false;
-                break;
+        auto entry = find(int_changes_.begin(), int_changes_.end(), event.key.keysym.sym);
+        if(entry != int_changes_.end()) {
+            entry->key_pressed = (event.type == SDL_KEYDOWN);
+            if(event.type == SDL_KEYUP && entry->overridden) {
+                modify_int_entry(&*entry, entry->override_value, 0);
             }
+            entry->override_value = 0;
+            entry->overridden = false;
         }
     }
 
@@ -149,9 +146,10 @@ void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) 
                 active = &right_mouse_vars_;
             }
             active->clear();
-            for(IntChangeEntry *entry: int_changes_) {
+            for(std::list<IntChangeEntry>::iterator entry = int_changes_.begin();
+                    entry != int_changes_.end(); ++entry) {
                 if(entry->key_pressed) {
-                    active->push_back(entry);
+                    active->push_back(&*entry);
                 }
             }
         }
@@ -175,14 +173,16 @@ void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) 
         modify_value = event.wheel.y * mul;
     }
     if(modify_value) {
-        for(IntChangeEntry *entry: int_changes_) {
+        for(std::list<IntChangeEntry>::iterator entry = int_changes_.begin();
+                entry != int_changes_.end(); ++entry) {
             if(entry->key_pressed) {
-                modify_int_entry(entry, -1, modify_value);
+                modify_int_entry(&*entry, -1, modify_value);
             }
         }
     }
     if(override_value != -1) {
-        for(IntChangeEntry *entry: int_changes_) {
+        for(std::list<IntChangeEntry>::iterator entry = int_changes_.begin();
+                entry != int_changes_.end(); ++entry) {
             if(entry->key_pressed) {
                 entry->override_value *= 10;
                 entry->override_value += override_value;
@@ -194,6 +194,7 @@ void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) 
 
 void InputManager::modify_int_entry(IntChangeEntry *entry, int override_value,
                                     int modify_value) {
+    std::cout << "asdfasdf" << std::endl;
     if(override_value != -1) {
         *(entry->variable) = override_value;
     }
@@ -216,83 +217,42 @@ void InputManager::modify_int_entry(IntChangeEntry *entry, int override_value,
 
 void InputManager::print_controls() {
     std::cout << std::endl << "Toggle Keys:" << std::endl;
-    for(BoolTogglerEntry *entry: bool_toggles_) {
+    for(BoolTogglerEntry entry: bool_toggles_) {
         std::cout << "  "
-                  << SDL_GetKeyName(entry->key)
+                  << SDL_GetKeyName(entry.key)
                   << ": "
-                  << entry->name
+                  << entry.name
                   << std::endl;
     }
     std::cout << std::endl << "Function Keys:" << std::endl;
-    for(FunctionCallerEntry *entry: function_callers_) {
+    for(FunctionCallerEntry entry: function_callers_) {
         std::cout << "  "
-                  << SDL_GetKeyName(entry->key)
+                  << SDL_GetKeyName(entry.key)
                   << ": "
-                  << entry->name
+                  << entry.name
                   << std::endl;
     }
     std::cout << std::endl << "Integer Keys:" << std::endl;
-    for(IntChangeEntry *entry: int_changes_) {
+    for(IntChangeEntry entry: int_changes_) {
         std::cout << "  "
-                  << SDL_GetKeyName(entry->key)
+                  << SDL_GetKeyName(entry.key)
                   << ": "
-                  << entry->name
+                  << entry.name
                   << std::endl;
     }
 }
 
 void InputManager::remove_var_changer(SDL_Keycode key) {
-    VarChangeEntry *toErase = NULL;
-
     if(used_keys_.erase(key) == 0) {
         std::cout << "Attempted to remove key "
                   << SDL_GetKeyName(key) 
                   << " which wasn't added." << std::endl;
+        return;
     }
 
-    for(IntChangeEntry *entry: int_changes_) {
-        if(key == entry->key) {
-            toErase = entry;
-            break;
-        }
-    }
-    if(toErase) {
-        int_changes_.remove((IntChangeEntry*)toErase);
-        delete(toErase);
-		return;
-    }
-
-
-    for(FunctionCallerEntry *entry: function_callers_) {
-        if(key == entry->key) {
-            toErase = entry;
-            break;
-        }
-    }
-    if(toErase) {
-        function_callers_.remove((FunctionCallerEntry*)toErase);
-        delete(toErase);
-		return;
-    }
-
-
-    for(BoolTogglerEntry *entry: bool_toggles_) {
-        if(key == entry->key) {
-            toErase = entry;
-            break;
-        }
-    }
-    if(toErase) {
-        bool_toggles_.remove((BoolTogglerEntry*)toErase);
-        delete(toErase);
-		return;
-    }
-
-    if(toErase == NULL) {
-        std::cout << "Didn't find "
-                  << SDL_GetKeyName(key) 
-                  << " in lists." << std::endl;
-    }
+    bool_toggles_.remove_if([key](BoolTogglerEntry b){ return b.key == key; });
+    function_callers_.remove_if([key](FunctionCallerEntry f){ return f.key == key; });
+    int_changes_.remove_if([key](IntChangeEntry i){ return i.key == key; });
 }
 
 void InputManager::reset() {
