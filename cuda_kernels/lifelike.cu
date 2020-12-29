@@ -55,7 +55,7 @@ __global__ void cuda_lifelike(int* board, int* board_buffer, bool *born,
 
         if(board[index] > 0) {
             if(stay_alive[neighbors]) {
-                board_buffer[index] = board[index] + 1;
+                board_buffer[index] = board[index];
             }
             else {
                 board_buffer[index] = -current_tick;
