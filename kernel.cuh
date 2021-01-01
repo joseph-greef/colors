@@ -3,7 +3,7 @@
 #include "device_launch_parameters.h"
 #include "board_constants.h"
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <iostream>
 #include <stdio.h>
 

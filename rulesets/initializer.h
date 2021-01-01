@@ -2,7 +2,7 @@
 #define _INITIALIZER_H
 
 #include <random>
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 class Initializer {
 private:

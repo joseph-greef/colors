@@ -1,7 +1,6 @@
 #include <ctime>
 #include <iomanip>
 #include <iostream>
-#include <SDL_image.h>
 #include <sstream>
 
 #include "game.h"

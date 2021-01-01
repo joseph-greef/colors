@@ -1,8 +1,14 @@
 To build colors you need OpenCV4, SDL2, and CUDA (10.2? I dunno, I've only tested 10 but I don't use anything fancy).
 
-On Linux if you're using CUDA 10.2, and have the other dependencies installed in the standard locations it should build with `make`.
+On Linux if you're using CUDA 10.2, and have the other dependencies installed in the standard locations it should build with.
 
-If you're not using CUDA 10.2, adjust the CUDA_PATH variable in the root Makefile accordingly.
+```
+cd colors
+mkdir build
+cd build
+cmake ..
+make
+```
 
 In game, press `escape` to quit, and `'` to print the current controls.
 

@@ -68,6 +68,7 @@ void Ruleset::stop() {
 
 void Ruleset::toggle_gpu(bool control, bool shift) {
     use_gpu_ = !use_gpu_;
+#ifdef USE_GPU
     if(use_gpu_) {
         start_cuda();
         std::cout << "Starting CUDA" << std::endl;
@@ -76,5 +77,6 @@ void Ruleset::toggle_gpu(bool control, bool shift) {
         stop_cuda();
         std::cout << "Stopping CUDA" << std::endl;
     } 
+#endif //USE_GPU
 }
 

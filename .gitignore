@@ -4,6 +4,6 @@
 *.gif
 *.png
 *.mp4
-moviemaker-cpp_build
+build
 colors
 readme.pdf

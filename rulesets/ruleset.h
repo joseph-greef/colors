@@ -1,7 +1,7 @@
 #ifndef _RULESET_H
 #define _RULESET_H
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <stdint.h>
 #include <string>
 #include <vector>
@@ -17,8 +17,10 @@ class Ruleset {
         bool use_gpu_;
         int width_;
 
+#ifdef USE_GPU
         virtual void start_cuda() = 0;
         virtual void stop_cuda() = 0;
+#endif //USE_GPU
 
     public:
         Ruleset(int width, int height);

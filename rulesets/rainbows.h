@@ -2,9 +2,9 @@
 #define _RAINBOW_H
 
 extern "C" {
-#include "gifenc/gifenc.h"
+#include "gifenc.h"
 }
-#include <SDL.h>
+#include <SDL2/SDL.h>
 #include <stdint.h>
 
 #define RAINBOW_LENGTH 256
