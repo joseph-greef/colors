@@ -21,7 +21,6 @@ include_directories(
 
 add_definitions(-DUSE_GPU)
 
-add_subdirectory(cuda_kernels)
 add_subdirectory(rulesets)
 
 add_subdirectory(moviemaker-cpp)
@@ -51,7 +50,6 @@ target_link_libraries(colors PRIVATE
 
 # Add general purpose libraries
 target_link_libraries(colors PRIVATE
-  cuda_kernels
   curand
   gifenc
   moviemaker-cpp

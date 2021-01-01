@@ -5,5 +5,10 @@ add_library(hodge STATIC
   hodge.h
 )
 
-target_compile_features(hodge PUBLIC cxx_std_17)
+add_library(hodge_cu STATIC
+  hodge.cu
+  hodge.cuh
+)
+
+target_link_libraries(hodge PRIVATE hodge_cu)
 

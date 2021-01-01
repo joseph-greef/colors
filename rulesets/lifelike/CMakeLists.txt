@@ -5,5 +5,10 @@ add_library(lifelike STATIC
   lifelike.h
 )
 
-target_compile_features(lifelike PUBLIC cxx_std_17)
+add_library(lifelike_cu STATIC
+  lifelike.cu
+  lifelike.cuh
+)
+
+target_link_libraries(lifelike PRIVATE lifelike_cu)
 

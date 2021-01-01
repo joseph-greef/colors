@@ -10,4 +10,3 @@ add_library(ants STATIC
 )
 
 target_compile_features(ants PUBLIC cxx_std_17)
-
