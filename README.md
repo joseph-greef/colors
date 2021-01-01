@@ -1,3 +1,12 @@
+To build colors you need OpenCV4, SDL2, and CUDA (10.2? I dunno, I've only tested 10 but I don't use anything fancy).
+
+On Linux if you're using CUDA 10.2, and have the other dependencies installed in the standard locations it should build with `make`.
+
+If you're not using CUDA 10.2, adjust the CUDA_PATH variable in the root Makefile accordingly.
+
+In game, press `escape` to quit, and `'` to print the current controls.
+
+<!---
 
 #### General Controls 
 Key     | Effect
@@ -65,7 +74,6 @@ w       | Initialize a diamond in the center of the board with a long axis of 2 
 x       | Initialize a cross in the center of the board with width 2 $radius and line width 2 $density
 a + NUM | Set the number of refractory generations after a cell dies
 
-<!---
 ------------------------------- Simulation Controls -------------------------------
 
 q:                      Quits simulation
