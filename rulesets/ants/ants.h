@@ -33,6 +33,7 @@ class Ants : public Ruleset {
         int current_tick_;
         int food_probability_;
         int num_colonies_;
+        int num_food_for_child_;
         Rainbows rainbows_;
         int rainbow_train_len_;
         bool rainbow_view_;

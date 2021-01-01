@@ -24,6 +24,7 @@ struct ColonyDNA {
     float home_signal_strength_;
     float home_smell_amount_;
     float home_smooth_amount_;
+    float pheromone_decay_rate_;
     float randomness_;
     int enemy_blur_size_;
     int food_blur_size_;
@@ -92,7 +93,7 @@ class Colony {
         uint32_t get_color();
         int get_offset();
         uint32_t get_num_ants();
-        uint32_t get_num_food_collected();
+        int get_num_food_collected();
         int get_x();
         int get_y();
         bool move_ant(Ant *ant);

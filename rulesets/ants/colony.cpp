@@ -47,6 +47,7 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
     DNA_.home_signal_strength_ = dist_positive_(e2_) * 7 + 3.5;
     DNA_.home_smell_amount_ = dist_positive_(e2_) * 50 + 60;
     DNA_.home_smooth_amount_ = dist_positive_(e2_) * 2;
+    DNA_.pheromone_decay_rate_ = dist_full_(e2_) * 0.001 + 0.995;
     DNA_.randomness_ = dist_positive_(e2_) * 3;
     DNA_.enemy_blur_size_ = static_cast<int>(dist_positive_(e2_) * 15 + 1) * 2 + 1;
     DNA_.food_blur_size_ = static_cast<int>(dist_positive_(e2_) * 15 + 1) * 2 + 1;
@@ -76,10 +77,6 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
             cv::Size(DNA_.home_blur_size_, DNA_.home_blur_size_),
             DNA_.home_smooth_amount_);
 #endif //USE_GPU
-
-    std::cout << "New colony at " << x_ << ", " << y_ << std::endl;
-    std::cout << "Food Signal: " << DNA_.food_signal_strength_ << std::endl;
-    std::cout << "Home Signal: " << DNA_.home_signal_strength_ << std::endl;
 }
 
 Colony::Colony(int width, int height, uint32_t color, ColonyDNA *DNA,
@@ -187,7 +184,7 @@ uint32_t Colony::get_color() {
     return color_;
 }
 
-uint32_t Colony::get_num_food_collected() {
+int Colony::get_num_food_collected() {
     return num_food_;
 }
 
@@ -342,6 +339,7 @@ Colony* Colony::make_child() {
     new_dna.home_signal_strength_ += dist_full_(e2_) * 0.7;
     new_dna.home_smell_amount_ += dist_full_(e2_) * 5;
     new_dna.home_smooth_amount_ += dist_full_(e2_) * 0.2;
+    new_dna.pheromone_decay_rate_ += dist_full_(e2_) * 0.001;
     new_dna.randomness_ += dist_full_(e2_) * 0.3;
     new_dna.randomness_ = std::clamp(new_dna.randomness_, 0.0f, 1000000.0f);
 
@@ -367,7 +365,6 @@ bool Colony::owns_ant(Ant *ant) {
 
 #ifdef USE_GPU
 void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
-    float pheromone_decay = 0.99;
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
     cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
     cv::Mat food(height_, width_, CV_32F, food_pheromones_);
@@ -382,9 +379,9 @@ void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
     food_mat_.upload(food, stream);
     home_mat_.upload(home, stream);
 
-    enemy_mat_.convertTo(enemy_mat_buffer_, -1, pheromone_decay, stream);
-    food_mat_.convertTo(food_mat_buffer_, -1, pheromone_decay, stream);
-    home_mat_.convertTo(home_mat_buffer_, -1, pheromone_decay, stream);
+    enemy_mat_.convertTo(enemy_mat_buffer_, -1, DNA_.pheromone_decay_rate_, stream);
+    food_mat_.convertTo(food_mat_buffer_, -1, DNA_.pheromone_decay_rate_, stream);
+    home_mat_.convertTo(home_mat_buffer_, -1, DNA_.pheromone_decay_rate_, stream);
 
     enemy_gauss_->apply(enemy_mat_buffer_, enemy_mat_, stream);
     food_gauss_->apply(food_mat_buffer_, food_mat_, stream);
@@ -397,7 +394,6 @@ void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
 #endif //USE_GPU
 
 void Colony::update_pheromones() {
-    float pheromone_decay = 0.99;
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
     cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
     cv::Mat food(height_, width_, CV_32F, food_pheromones_);
@@ -408,13 +404,13 @@ void Colony::update_pheromones() {
     food_pheromones_[y_ * width_ + x_] = 0;
     home_pheromones_[y_ * width_ + x_] += DNA_.home_smell_amount_;
 
-    enemy *= pheromone_decay;
+    enemy *= DNA_.pheromone_decay_rate_;
     cv::GaussianBlur(enemy, enemy_buffer, cv::Size(DNA_.enemy_blur_size_, DNA_.enemy_blur_size_), DNA_.enemy_smooth_amount_);
 
-    food *= pheromone_decay;
+    food *= DNA_.pheromone_decay_rate_;
     cv::GaussianBlur(food, food_buffer, cv::Size(DNA_.food_blur_size_, DNA_.food_blur_size_), DNA_.food_smooth_amount_);
 
-    home *= pheromone_decay;
+    home *= DNA_.pheromone_decay_rate_;
     cv::GaussianBlur(home, home_buffer, cv::Size(DNA_.home_blur_size_, DNA_.home_blur_size_), DNA_.home_smooth_amount_);
 
     float *tmp = enemy_pheromones_;

@@ -13,6 +13,7 @@ Ants::Ants(int width, int height)
     , current_tick_(0)
     , food_probability_(10)
     , num_colonies_(8)
+    , num_food_for_child_(50)
     , rainbows_(width, height, 0)
     , rainbow_train_len_(256)
     , rainbow_view_(false)
@@ -147,6 +148,7 @@ void Ants::start() {
     InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
     InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
     InputManager::add_int_changer(&rainbow_train_len_, SDLK_q, 0, INT_MAX, "(Ants) Trail Length");
+    InputManager::add_int_changer(&num_food_for_child_, SDLK_w, 0, INT_MAX, "(Ants) Num Food to Spawn Child");
     rainbows_.start();
 }
 
@@ -203,7 +205,7 @@ void Ants::tick() {
             colonies_to_remove.push_back(colony);
         }
         else {
-            if(colony->get_num_food_collected() > 20 * colonies_.size()) {
+            if(colony->get_num_food_collected() > num_food_for_child_) {
                 colonies_to_add.push_back(colony->make_child());
             }
 
