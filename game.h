@@ -1,7 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 
-#include "rulesets/ruleset.h"
+#include "ruleset.h"
 
 class Game {
     private:

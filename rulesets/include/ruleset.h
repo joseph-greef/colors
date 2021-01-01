@@ -38,8 +38,8 @@ class Ruleset {
         void toggle_gpu(bool control, bool shift);
 };
 
-#include "lifelike.h"
-#include "hodge.h"
+#include "lifelike/lifelike.h"
+#include "hodge/hodge.h"
 #include "ants/ants.h"
 #define NUM_RULESETS 3
 

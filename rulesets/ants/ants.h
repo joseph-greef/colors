@@ -4,7 +4,7 @@
 #include <list>
 #include <random>
 
-#include "../ruleset.h"
+#include "ruleset.h"
 #include "colony.h"
 #include "food.h"
 
