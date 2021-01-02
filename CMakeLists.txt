@@ -6,12 +6,14 @@ project(colors LANGUAGES C CXX CUDA)
 find_package(CUDA REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(OpenCV REQUIRED)
+find_path(TCLAP_INCLUDE_DIRS "tclap/Arg.h")
 
 include_directories(
   .
   ${CUDA_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
   ${SDL2_INCLUDE_DIRS}
+  ${TCLAP_INCLUDE_DIRS}
   cuda_kernels
   gifenc
   moviemaker-cpp/include
@@ -38,6 +40,10 @@ target_compile_features(colors PUBLIC cxx_std_17)
 set_target_properties(colors
                       PROPERTIES CUDA_SEPARABLE_COMPILATION ON
 )
+
+find_library(SDL_LIB_PATH "SDL2.lib")
+get_filename_component(SDL_LIB_DIR ${SDL_LIB_PATH} DIRECTORY)
+target_link_directories(colors PUBLIC ${SDL_LIB_DIR})
 
 # Add rulesets
 target_link_libraries(colors PRIVATE
