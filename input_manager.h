@@ -2,7 +2,7 @@
 #ifndef _INPUT_MANAGER_H
 #define _INPUT_MANAGER_H
 
-#include <SDL2/SDL.h>
+#include "SDL2/SDL.h"
 
 #include <functional>
 #include <list>

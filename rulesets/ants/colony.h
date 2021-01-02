@@ -4,11 +4,11 @@
 #include <list>
 #include <random>
 
-#include <opencv2/core.hpp>
-#include <opencv2/core/utility.hpp>
+#include "opencv2/core.hpp"
+#include "opencv2/core/utility.hpp"
 
-#include <opencv2/cudaarithm.hpp>
-#include <opencv2/cudafilters.hpp>
+#include "opencv2/cudaarithm.hpp"
+#include "opencv2/cudafilters.hpp"
 
 class Colony;
 

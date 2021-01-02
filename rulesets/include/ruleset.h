@@ -1,7 +1,7 @@
 #ifndef _RULESET_H
 #define _RULESET_H
 
-#include <SDL2/SDL.h>
+#include "SDL2/SDL.h"
 #include <stdint.h>
 #include <string>
 #include <vector>
