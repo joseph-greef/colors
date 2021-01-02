@@ -1,4 +1,4 @@
-To build colors you need OpenCV4, SDL2, and CUDA (10.2? I dunno, I've only tested 10 but I don't use anything fancy).
+To build Colors you need OpenCV4, SDL2, TCLAP and CUDA (10.2? I dunno, I've only tested 10 but I don't use anything fancy).
 
 On Linux if you're using CUDA 10.2, and have the other dependencies installed in the standard locations it should build with.
 
@@ -9,6 +9,45 @@ cd build
 cmake ..
 make
 ```
+
+On Windows you need Visual Studio, to download and prepare SDL2, and download and compile OpenCV4 with CUDA, and install TCLAP with vcpkg.
+SDL2:
+* Download precompiled binaries for [SDL2](https://www.libsdl.org/download-2.0.php) and [SDL2_image](https://www.libsdl.org/projects/SDL_image/).
+* Extract them both, and combine them into the same folder. I.E. copy the contents of SDL2_image to SDL2.
+* Create a file in SDL2 folder named sdl2-config.cmake with the following contents
+* Set SDL_DIR to this folder in the CMakeLists settings.
+```
+set(SDL2_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/include")
+
+# Support both 32 and 64 bit builds
+if (${CMAKE_SIZEOF_VOID_P} MATCHES 8)
+  set(SDL2_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2.lib;${CMAKE_CURRENT_LIST_DIR}/lib/x64/SDL2main.lib")
+else ()
+  set(SDL2_LIBRARIES "${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2.lib;${CMAKE_CURRENT_LIST_DIR}/lib/x86/SDL2main.lib")
+endif ()
+
+string(STRIP "${SDL2_LIBRARIES}" SDL2_LIBRARIES)
+```
+SDL2 (Alternate):
+* Install vcpkg as in TCLAP.
+* run `vcpkg.exe install sdl2-image:x64-windows` which will install SDL2_image and it's dependency, SDL2.
+
+
+OpenCV4:
+* Download [OpenCV4](https://opencv.org/releases/) (Tested with 4.5).
+* Download [OpenCV_Contrib](https://github.com/opencv/opencv_contrib).
+* Open the CMakeLists.txt file with Visual Studio.
+* In the CMakeLists settings, set WITH_CUDA, and set OPENCV_EXTRA_MODULES_PATH to the opencv_contrib/modules directory
+* Compile OpenCV4
+* Install OpenCV4
+* Set OpenCV_DIR to the OpenCV4 Install Folder in the Colors CMakeLists settings.
+
+
+TCLAP:
+* Follow https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=msvc-160 to install vcpkg
+* run `vcpkg.exe install tclap:x64-windows`
+
+Then, compile Colors with Visual Studio.
 
 In game, press `escape` to quit, and `'` to print the current controls.
 
