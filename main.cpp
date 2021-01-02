@@ -14,8 +14,6 @@
 
 #include "game.h"
 #include "input_manager.h"
-#include "movie.h"
-
 
 int main(int argc, char * argv[])
 {
@@ -69,7 +67,6 @@ int main(int argc, char * argv[])
     bool running = true, shift = false, control = false;
     SDL_Event event;
 
-    MovieWriter *writer = NULL;
     std::vector<uint8_t> writer_pixels(4 * width * height);
 
     InputManager::add_int_changer(&fps_target, SDLK_v, 10, INT_MAX, "(Main) FPS Target");
@@ -88,11 +85,6 @@ int main(int argc, char * argv[])
 
         game.draw_board((uint32_t*)(SDL_GetWindowSurface(window)->pixels));
         SDL_UpdateWindowSurface(window);
-
-        if(writer) {
-            game.draw_board((uint32_t*)(&writer_pixels[0]));
-            writer->addFrame(&writer_pixels[0]);
-        }
 
         game.tick();
 
@@ -128,26 +120,11 @@ int main(int argc, char * argv[])
                         IMG_SavePNG(SDL_GetWindowSurface(window), str.c_str());
                         break;
                     }
-                    case SDLK_RIGHTBRACKET:
-                        if(writer) {
-                            std::cout << "Writing video file." << std::endl;
-                            delete writer;
-                            writer = NULL;
-                        }
-                        else {
-                            std::time_t t = std::time(nullptr);
-                            std::tm tm = *std::localtime(&t);
-                            std::ostringstream oss;
-                            oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S");
-                            std::string str = oss.str();
-                            writer = new MovieWriter(str, width, height);
-                        }
-                        break;
                     case SDLK_QUOTE:
                         std::cout << std::endl << "Game Controls:" << std::endl;
                         std::cout << "  escape: Quit program" << std::endl;
                         std::cout << "  [     : Take Screenshot" << std::endl;
-                        std::cout << "  ]     : Start/Stop video capture" << std::endl;
+                        //std::cout << "  ]     : Start/Stop video capture" << std::endl;
                         std::cout << "  '     : Print help message" << std::endl;
                         InputManager::print_controls();
                         break;

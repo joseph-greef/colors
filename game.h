@@ -12,7 +12,6 @@ class Game {
         SDL_Cursor *cursor_;
         std::vector<Ruleset*> rulesets_;
         SDL_Window *window_;
-        bool writingVideo_;
         const int width_;
         const int height_;
 

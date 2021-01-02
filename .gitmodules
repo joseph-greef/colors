@@ -1,6 +1,3 @@
-[submodule "moviemaker-cpp"]
-	path = moviemaker-cpp
-	url = git@github.com:apc-llc/moviemaker-cpp.git
 [submodule "gifenc"]
 	path = gifenc
 	url = git@github.com:lecram/gifenc.git

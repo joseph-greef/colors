@@ -23,8 +23,6 @@ add_definitions(-DUSE_GPU)
 
 add_subdirectory(rulesets)
 
-add_subdirectory(moviemaker-cpp)
-
 add_library(gifenc STATIC gifenc/gifenc.c gifenc/gifenc.h)
 
 add_executable(colors
@@ -52,7 +50,6 @@ target_link_libraries(colors PRIVATE
 target_link_libraries(colors PRIVATE
   curand
   gifenc
-  moviemaker-cpp
   rulesets
   SDL2
   SDL2_image
