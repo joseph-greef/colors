@@ -21,7 +21,11 @@ include_directories(
   rulesets/include
 )
 
-add_definitions(-DUSE_GPU)
+option(WITH_CUDA "Determines whether to compile and link CUDA implementations" ON)
+
+if(WITH_CUDA)
+  add_definitions(-DUSE_GPU)
+endif()
 
 add_subdirectory(rulesets)
 

@@ -1,14 +1,14 @@
 # rulesets/ants
 
+if(WITH_CUDA)
+  set(CUDA_FILES hodge.cu hodge.cuh)
+else()
+  set(CUDA_FILES "")
+endif()
+
 add_library(hodge STATIC
   hodge.cpp
   hodge.h
+  ${CUDA_FILES}
 )
-
-add_library(hodge_cu STATIC
-  hodge.cu
-  hodge.cuh
-)
-
-target_link_libraries(hodge PRIVATE hodge_cu)
 
