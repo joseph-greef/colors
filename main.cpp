@@ -9,7 +9,6 @@
 #include "SDL2/SDL_image.h"
 #include <sstream>
 #include <tclap/CmdLine.h>
-#include <time.h>
 #include <thread>
 #include <vector>
 
@@ -82,7 +81,7 @@ int main(int argc, char * argv[])
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
     while(running) {
-        auto start_time = std::chrono::steady_clock::now();
+        auto start_time = std::chrono::high_resolution_clock::now();
 
         game.draw_board((uint32_t*)(SDL_GetWindowSurface(window)->pixels));
         SDL_UpdateWindowSurface(window);
@@ -136,7 +135,7 @@ int main(int argc, char * argv[])
 
         std::chrono::microseconds frame_delay(1000000/fps_target);
         auto next_frame_time = start_time + frame_delay;
-        auto delay_time = next_frame_time - std::chrono::steady_clock::now();
+        auto delay_time = next_frame_time - std::chrono::high_resolution_clock::now();
         std::this_thread::sleep_for(delay_time);
     }
 
