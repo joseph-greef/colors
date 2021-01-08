@@ -131,6 +131,7 @@ void Rainbows::stop() {
 
     InputManager::remove_var_changer(SDL_SCANCODE_GRAVE, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_BACKSLASH, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_BACKSLASH, true, false);
     InputManager::remove_var_changer(SDL_SCANCODE_C, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_L, false, false);
 
