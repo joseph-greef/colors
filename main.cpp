@@ -69,8 +69,10 @@ int main(int argc, char * argv[])
 
     std::vector<uint8_t> writer_pixels(4 * width * height);
 
+    InputManager::add_input(InputManager::print_controls, SDL_SCANCODE_APOSTROPHE,
+                            false, false, "(Main) Print help message");
     InputManager::add_int_changer(&fps_target, SDL_SCANCODE_V, false, false,
-                                  10, INT_MAX, "(Main) FPS Target");
+                                  10, INT_MAX, "(Main) Set FPS target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
@@ -109,14 +111,6 @@ int main(int argc, char * argv[])
                         IMG_SavePNG(SDL_GetWindowSurface(window), str.c_str());
                         break;
                     }
-                    case SDLK_QUOTE:
-                        std::cout << std::endl << "Game Controls:" << std::endl;
-                        std::cout << "  escape: Quit program" << std::endl;
-                        std::cout << "  [     : Take Screenshot" << std::endl;
-                        //std::cout << "  ]     : Start/Stop video capture" << std::endl;
-                        std::cout << "  '     : Print help message" << std::endl;
-                        InputManager::print_controls();
-                        break;
                 }
             }
             InputManager::handle_input(event);

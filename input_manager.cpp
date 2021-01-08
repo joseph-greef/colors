@@ -129,7 +129,6 @@ void InputManager::handle_input(SDL_Event event) {
             switch(combo->func_type) {
                 case FunctionType::Void:
                     combo->void_func();
-                    std::cout << combo->name << std::endl;
                     break;
                 case FunctionType::Int:
                     mode_ = ManagerMode::IntAccumulator;
@@ -233,6 +232,30 @@ int InputManager::modify_int(IntEntry *entry, int override_value,
               << std::endl;
 
     return *(entry->variable);
+}
+
+void InputManager::print_controls() {
+    std::cout << "CTRL | SHIFT | KEY : Function" << std::endl;
+    for(int i = 0; i < SDL_NUM_SCANCODES; i++) {
+        const char *key_name = SDL_GetKeyName(
+                SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(i)));
+        if(key_functions_[i].no_mod.func_type != FunctionType::None) {
+            std::cout << "     |       | " << key_name << " : " <<
+                         key_functions_[i].no_mod.name << std::endl;
+        }
+        if(key_functions_[i].control.func_type != FunctionType::None) {
+            std::cout << "  *  |       | " << key_name << " : " <<
+                         key_functions_[i].control.name << std::endl;
+        }
+        if(key_functions_[i].shift.func_type != FunctionType::None) {
+            std::cout << "     |   *   | " << key_name << " : " <<
+                         key_functions_[i].shift.name << std::endl;
+        }
+        if(key_functions_[i].control_shift.func_type != FunctionType::None) {
+            std::cout << "  *  |   *   | " << key_name << " : " <<
+                         key_functions_[i].control.name << std::endl;
+        }
+    }
 }
 
 void InputManager::remove_var_changer(SDL_Scancode scancode, bool control, bool shift) {
@@ -444,8 +467,8 @@ void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) 
 
 
 
-void InputManager::print_controls() {
     /*
+void InputManager::print_controls() {
     std::cout << std::endl << "Toggle Keys:" << std::endl;
     for(BoolTogglerEntry entry: bool_toggles_) {
         std::cout << "  "
@@ -470,6 +493,6 @@ void InputManager::print_controls() {
                   << entry.name
                   << std::endl;
     }
-    */
 }
+    */
 
