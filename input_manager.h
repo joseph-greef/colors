@@ -3,7 +3,6 @@
 #define _INPUT_MANAGER_H
 
 #include "SDL2/SDL.h"
-#include "SDL2/SDL_scancode.h"
 
 #include <functional>
 #include <list>
@@ -132,6 +131,12 @@ class InputManager {
         static KeyFunction key_functions_[SDL_NUM_SCANCODES];
         static ManagerMode::ManagerMode mode_;
 
+        static std::list<ComboFunction*> mouse_left_combos_;
+        static FunctionType::FunctionType mouse_left_mode_;
+
+        static std::list<ComboFunction*> mouse_right_combos_;
+        static FunctionType::FunctionType mouse_right_mode_;
+
 
         static ComboFunction* get_combo_func(SDL_Scancode scancode, bool control,
                                              bool shift);
@@ -170,16 +175,16 @@ class InputManager {
                                     int min_value, int max_value, std::string name);
         static void add_bool_toggler(bool *variable, SDL_Scancode scancode,
                                      bool control, bool shift, std::string name);
+        static void handle_input(SDL_Event event);
         static void remove_var_changer(SDL_Scancode scancode, bool control, bool shift);
+        static void reset();
 
 
 
 
         static void add_function_caller(std::function<void(bool, bool)> function,
                                         SDL_Keycode key, std::string name);
-        static void handle_input(SDL_Event event);
         static void print_controls();
-        static void reset();
 };
 
 #endif //_INPUT_MANAGER_H
