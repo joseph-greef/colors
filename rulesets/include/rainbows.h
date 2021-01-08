@@ -15,8 +15,8 @@ class Rainbows {
         Rainbows(int width, int height, int color_speed);
         ~Rainbows();
         void age_to_pixels(int *age_board, uint32_t *pixels); 
-        void randomize_colors(bool control, bool shift);
-        void reset_colors(bool control, bool shift);
+        void randomize_colors();
+        void reset_colors();
         void start();
         void stop();
     private: 
@@ -41,8 +41,8 @@ class Rainbows {
         static int num_colors;
 
         void save_gif_frame(int *age_board);
-        void toggle_colors(bool control, bool shift);
-        void toggle_gif(bool control, bool shift);
+        void toggle_colors();
+        void toggle_gif(bool control);
 };
 
 #endif //_RAINBOW_H

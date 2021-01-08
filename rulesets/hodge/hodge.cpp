@@ -31,7 +31,7 @@ Hodge::Hodge(int width, int height)
     cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
 #endif //USE_GPU
 
-    initializer_.init_center_square(false, false);
+    initializer_.init_center_square();
 }
 
 Hodge::~Hodge() {
@@ -135,30 +135,31 @@ void Hodge::print_rules() {
     std::cout << "Death threshold=" << death_threshold_ << " " << std::endl;
 }
 
-void Hodge::randomize_ruleset(bool control, bool shift) {
+void Hodge::randomize_ruleset() {
     death_threshold_ = rand() % 400;
     k1_ = rand() % 5 + 1;
     k2_ = rand() % 5 + 1;
     infection_rate_ = rand() % 80;
     infection_threshold_ = rand() % 4 + 1;
 
-    rainbows_.randomize_colors(control, shift);
+    rainbows_.randomize_colors();
 }
 
 void Hodge::start() { 
     std::cout << "Starting Hodge" << std::endl;
     Ruleset::start();
 
-    InputManager::add_bool_toggler(&podge_, SDLK_t, "(Hoge) Toggle between Hodgepodge and Hodge");
+    InputManager::add_bool_toggler(&podge_, SDL_SCANCODE_T, false, false,
+                                   "(Hoge) Toggle between Hodgepodge and Hodge");
 
-    ADD_FUNCTION_CALLER(&Hodge::randomize_ruleset, SDLK_r,
+    ADD_FUNCTION_CALLER(&Hodge::randomize_ruleset, SDL_SCANCODE_R, false, false,
                         "(Hoge) Randomize Ruleset");
 
-    InputManager::add_int_changer(&infection_rate_, SDLK_a, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
-    InputManager::add_int_changer(&death_threshold_, SDLK_d, 0, INT_MAX, "(Hoge) Death Threshold");
-    InputManager::add_int_changer(&infection_threshold_, SDLK_s, 0, INT_MAX, "(Hoge) Infection Theshold");
-    InputManager::add_int_changer(&k1_, SDLK_q, 0, INT_MAX, "(Hoge) k1");
-    InputManager::add_int_changer(&k2_, SDLK_w, 0, INT_MAX, "(Hoge) k2");
+    //InputManager::add_int_changer(&infection_rate_, SDLK_a, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
+    //InputManager::add_int_changer(&death_threshold_, SDLK_d, 0, INT_MAX, "(Hoge) Death Threshold");
+    //InputManager::add_int_changer(&infection_threshold_, SDLK_s, 0, INT_MAX, "(Hoge) Infection Theshold");
+    //InputManager::add_int_changer(&k1_, SDLK_q, 0, INT_MAX, "(Hoge) k1");
+    //InputManager::add_int_changer(&k2_, SDLK_w, 0, INT_MAX, "(Hoge) k2");
 
     initializer_.start();
     rainbows_.start();
@@ -167,15 +168,15 @@ void Hodge::start() {
 void Hodge::stop() { 
     Ruleset::stop();
 
-    InputManager::remove_var_changer(SDLK_t);
+    InputManager::remove_var_changer(SDL_SCANCODE_T, false, false);
 
-    InputManager::remove_var_changer(SDLK_r);
+    InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
-    InputManager::remove_var_changer(SDLK_a);
-    InputManager::remove_var_changer(SDLK_d);
-    InputManager::remove_var_changer(SDLK_q);
-    InputManager::remove_var_changer(SDLK_s);
-    InputManager::remove_var_changer(SDLK_w);
+    //InputManager::remove_var_changer(SDLK_a);
+    //InputManager::remove_var_changer(SDLK_d);
+    //InputManager::remove_var_changer(SDLK_q);
+    //InputManager::remove_var_changer(SDLK_s);
+    //InputManager::remove_var_changer(SDLK_w);
 
     initializer_.stop();
     rainbows_.stop();

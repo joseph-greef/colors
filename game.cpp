@@ -24,10 +24,11 @@ Game::Game(int width, int height)
         frame_times_.push_back(std::chrono::high_resolution_clock::now());
     }
 
-    ADD_FUNCTION_CALLER(&Game::print_fps, SDLK_x,
+    ADD_FUNCTION_CALLER(&Game::print_fps, SDL_SCANCODE_X, false, false,
                         "(Game) Print Frames Per Second");
 
-    InputManager::add_int_changer(&current_ruleset_, SDLK_z, 0, NUM_RULESETS-1, "(Game) Ruleset");
+    InputManager::add_int_changer(&current_ruleset_, SDL_SCANCODE_Z, false, false,
+                                  0, NUM_RULESETS-1, "(Game) Ruleset");
 }
 
 Game::~Game() {
@@ -35,7 +36,7 @@ Game::~Game() {
     for(Ruleset *ruleset: rulesets_) {
         delete ruleset;
     }
-    InputManager::remove_var_changer(SDLK_z);
+    InputManager::remove_var_changer(SDL_SCANCODE_Z, false, false);
 }
 
 void Game::change_ruleset(int new_ruleset) {
@@ -49,7 +50,7 @@ void Game::draw_board(uint32_t *board) {
     active_ruleset_->get_pixels(board);
 }
 
-void Game::print_fps(bool control, bool shift) {
+void Game::print_fps(void) {
     auto total_time = frame_times_.back() - frame_times_.front();
     auto avg_frame_time = total_time / frame_times_.size();
     uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(avg_frame_time).count();

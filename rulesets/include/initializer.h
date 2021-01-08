@@ -18,11 +18,11 @@ public:
     Initializer(int **board, int density, int dot_radius, int width, int height);
     ~Initializer();
 
-    void clear_board(bool control, bool shift);
-    void init_center_cross(bool control, bool shift);
-    void init_center_diamond(bool control, bool shift);
-    void init_center_square(bool control, bool shift);
-    void init_random_board(bool control, bool shift);
+    void clear_board();
+    void init_center_cross();
+    void init_center_diamond();
+    void init_center_square();
+    void init_random_board();
 
     bool was_board_changed();
 

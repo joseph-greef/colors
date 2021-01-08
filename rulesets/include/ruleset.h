@@ -35,7 +35,7 @@ class Ruleset {
 
         int get_num_alive_neighbors(int *board, int x, int y, int radius,
                                     NeighborhoodType type);
-        void toggle_gpu(bool control, bool shift);
+        void toggle_gpu();
 };
 
 #include "lifelike/lifelike.h"

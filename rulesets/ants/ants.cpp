@@ -23,7 +23,7 @@ Ants::Ants(int width, int height)
 {
     rainbow_board_ = new int[width * height];
     world_ = new WorldEntry[width_ * height_];
-    reset(false, false);
+    reset();
 }
 
 Ants::~Ants() {
@@ -37,7 +37,7 @@ Ants::~Ants() {
     delete [] world_;
 }
 
-void Ants::add_colony(bool shift, bool control, int num_ants) {
+void Ants::add_colony(int num_ants) {
     colonies_.push_back(new Colony(width_, height_,
                                    rand() % width_, rand() % height_,
                                    generate_color()));
@@ -95,7 +95,7 @@ void Ants::get_pixels(uint32_t *pixels) {
 void Ants::print_rules() {
 }
 
-void Ants::reset(bool control, bool shift) {
+void Ants::reset() {
     for(Colony *colony: colonies_) {
         delete colony;
     }
@@ -120,7 +120,7 @@ void Ants::reset(bool control, bool shift) {
 void Ants::restock_colonies(int num_ants) {
     while(static_cast<int>(colonies_.size()) < num_colonies_) {
         std::cout << "restocking" << std::endl;
-        add_colony(false, false, num_ants);
+        add_colony(num_ants);
     }
 }
 
@@ -137,33 +137,34 @@ void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
     Ruleset::start();
 
-    InputManager::add_bool_toggler(&rainbow_view_, SDLK_t, "(Ants) Toggle rainbow view");
+    InputManager::add_bool_toggler(&rainbow_view_, SDL_SCANCODE_T, false, false,
+                                   "(Ants) Toggle rainbow view");
 
-    ADD_FUNCTION_CALLER(&Ants::reset, SDLK_e,
+    ADD_FUNCTION_CALLER(&Ants::reset, SDL_SCANCODE_E, false, false,
                         "(Ants) Reset simulation");
-    ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDLK_r,
+    ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDL_SCANCODE_R, false, false,
                                "(Ants) Add ant colony with random DNA", 5);
 
-    InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
-    InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
-    InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
-    InputManager::add_int_changer(&rainbow_train_len_, SDLK_q, 0, INT_MAX, "(Ants) Trail Length");
-    InputManager::add_int_changer(&num_food_for_child_, SDLK_w, 0, INT_MAX, "(Ants) Num Food to Spawn Child");
+    //InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
+    //InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
+    //InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
+    //InputManager::add_int_changer(&rainbow_train_len_, SDLK_q, 0, INT_MAX, "(Ants) Trail Length");
+    //InputManager::add_int_changer(&num_food_for_child_, SDLK_w, 0, INT_MAX, "(Ants) Num Food to Spawn Child");
     rainbows_.start();
 }
 
 void Ants::stop() {
     Ruleset::stop();
 
-    InputManager::remove_var_changer(SDLK_t);
+    InputManager::remove_var_changer(SDL_SCANCODE_T, false, false);
 
-    InputManager::remove_var_changer(SDLK_e);
-    InputManager::remove_var_changer(SDLK_r);
+    InputManager::remove_var_changer(SDL_SCANCODE_E, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
-    InputManager::remove_var_changer(SDLK_a);
-    InputManager::remove_var_changer(SDLK_s);
-    InputManager::remove_var_changer(SDLK_d);
-    InputManager::remove_var_changer(SDLK_q);
+    //InputManager::remove_var_changer(SDLK_a);
+    //InputManager::remove_var_changer(SDLK_s);
+    //InputManager::remove_var_changer(SDLK_d);
+    //InputManager::remove_var_changer(SDLK_q);
     rainbows_.stop();
 }
 

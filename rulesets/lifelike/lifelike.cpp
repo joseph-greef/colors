@@ -48,7 +48,7 @@ LifeLike::LifeLike(int width, int height)
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
 #endif //USE_GPU
 
-    initializer_.init_center_cross(false, false);
+    initializer_.init_center_cross();
 }
 
 LifeLike::~LifeLike() {
@@ -106,14 +106,14 @@ void LifeLike::print_rules() {
     std::cout << "}" << std::endl;
 }
 
-void LifeLike::randomize_ruleset(bool control, bool shift) {
+void LifeLike::randomize_ruleset() {
     for(int i = 0; i < 9; i++) {
         born_[i] = (rand()%100>20 ? 1 : 0);
         stay_alive_[i] = (rand()%100>20 ? 1 : 0);
     }
     born_[0] = false;
 
-    rainbows_.randomize_colors(control, shift);
+    rainbows_.randomize_colors();
 
 #ifdef USE_GPU
     if(use_gpu_) {
@@ -126,10 +126,10 @@ void LifeLike::start() {
     std::cout << "Starting LifeLike" << std::endl;
     Ruleset::start();
 
-    ADD_FUNCTION_CALLER(&LifeLike::randomize_ruleset, SDLK_r,
+    ADD_FUNCTION_CALLER(&LifeLike::randomize_ruleset, SDL_SCANCODE_R, false, false,
                         "(Life) Randomize Ruleset");
 
-    InputManager::add_int_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
+    //InputManager::add_int_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
 
     initializer_.start();
     rainbows_.start();
@@ -138,9 +138,9 @@ void LifeLike::start() {
 void LifeLike::stop() { 
     Ruleset::stop();
 
-    InputManager::remove_var_changer(SDLK_r);
+    InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
-    InputManager::remove_var_changer(SDLK_a);
+    //InputManager::remove_var_changer(SDLK_a);
 
     initializer_.stop();
     rainbows_.stop();

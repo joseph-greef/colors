@@ -44,9 +44,9 @@ class Ants : public Ruleset {
 
         WorldEntry *world_;
 
-        void add_colony(bool shift, bool control, int num_ants);
+        void add_colony(int num_ants);
         uint32_t generate_color();
-        void reset(bool control, bool shift);
+        void reset();
         void restock_colonies(int num_ants);
 #ifdef USE_GPU
         void start_cuda();

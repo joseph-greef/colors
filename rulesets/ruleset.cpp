@@ -58,15 +58,15 @@ int Ruleset::get_num_alive_neighbors(int *board, int x, int y,
 }
 
 void Ruleset::start() {
-    ADD_FUNCTION_CALLER(&Ruleset::toggle_gpu, SDLK_f,
+    ADD_FUNCTION_CALLER(&Ruleset::toggle_gpu, SDL_SCANCODE_F, false, false,
                         "(Game) Toggle CUDA processing");
 }
 
 void Ruleset::stop() {
-    InputManager::remove_var_changer(SDLK_f);
+    InputManager::remove_var_changer(SDL_SCANCODE_F, false, false);
 }
 
-void Ruleset::toggle_gpu(bool control, bool shift) {
+void Ruleset::toggle_gpu() {
     use_gpu_ = !use_gpu_;
 #ifdef USE_GPU
     if(use_gpu_) {

@@ -20,7 +20,7 @@ class Game {
         const int height_;
 
         void change_ruleset(int new_ruleset);
-        void print_fps(bool control, bool shift);
+        void print_fps(void);
 
     public:
         Game(int width, int height);

@@ -34,7 +34,7 @@ class Hodge : public Ruleset {
         int get_next_value_infected(int x, int y);
         int get_sum_neighbors(int x, int y);
 
-        void randomize_ruleset(bool control, bool shift);
+        void randomize_ruleset();
         void update_board();
         void update_hodge();
         void update_hodgepodge();

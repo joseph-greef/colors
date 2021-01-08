@@ -64,12 +64,13 @@ int main(int argc, char * argv[])
     Game game(width, height);
 
     //Main loop control/input variables
-    bool running = true, shift = false, control = false;
+    bool running = true;
     SDL_Event event;
 
     std::vector<uint8_t> writer_pixels(4 * width * height);
 
-    InputManager::add_int_changer(&fps_target, SDLK_v, 10, INT_MAX, "(Main) FPS Target");
+    InputManager::add_int_changer(&fps_target, SDL_SCANCODE_V, false, false,
+                                  10, INT_MAX, "(Main) FPS Target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
@@ -91,18 +92,6 @@ int main(int argc, char * argv[])
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
                 exit(0);
-            }
-            else if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
-                switch(event.key.keysym.sym) {
-                    case SDLK_LCTRL:
-                    case SDLK_RCTRL:
-                        control = event.type == SDL_KEYDOWN;
-                        break;
-                    case SDLK_LSHIFT:
-                    case SDLK_RSHIFT:
-                        shift = event.type == SDL_KEYDOWN;
-                        break;
-                }
             }
             if(event.type == SDL_KEYDOWN) {
                 switch(event.key.keysym.sym) {
@@ -130,7 +119,7 @@ int main(int argc, char * argv[])
                         break;
                 }
             }
-            InputManager::handle_input(event, control, shift);
+            InputManager::handle_input(event);
         }
 
         std::chrono::microseconds frame_delay(1000000/fps_target);
@@ -139,7 +128,7 @@ int main(int argc, char * argv[])
         std::this_thread::sleep_for(delay_time);
     }
 
-    InputManager::remove_var_changer(SDLK_v);
+    InputManager::remove_var_changer(SDL_SCANCODE_V, false, false);
 
     SDL_DestroyWindow(window);
     SDL_Quit();
