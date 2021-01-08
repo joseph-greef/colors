@@ -39,27 +39,58 @@ void InputManager::add_input(VoidFunc func,
                              SDL_Scancode scancode, bool control, bool shift,
                              std::string name) {
     ComboFunction *combo = get_combo_func(scancode, control, shift);
-    combo->func_type = FunctionType::Void;
-    combo->void_func = func;
-    combo->name = name;
+    if(combo->func_type == FunctionType::None) {
+        combo->func_type = FunctionType::Void;
+        combo->void_func = func;
+        combo->name = name;
+    }
+    else {
+        const char *key_name = SDL_GetKeyName(
+                SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
+        std::cout << key_name << " " << control << " " << shift <<
+                     " is already registered. Not double registering." << std::endl;
+        std::cout << "The current registration is " << combo->name << ". "
+                     "The attempted registration is  " << name << std::endl;
+    }
 }
 
 void InputManager::add_input(IntFunc func,
                              SDL_Scancode scancode, bool control, bool shift,
                              std::string name) {
     ComboFunction *combo = get_combo_func(scancode, control, shift);
-    combo->func_type = FunctionType::Int;
-    combo->int_func = func;
-    combo->name = name;
+    if(combo->func_type == FunctionType::None) {
+        combo->func_type = FunctionType::Int;
+        combo->int_func = func;
+        combo->name = name;
+    }
+    else {
+        const char *key_name = SDL_GetKeyName(
+                SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
+        std::cout << key_name << " " << control << " " << shift <<
+                     " is already registered. Not double registering." << std::endl;
+        std::cout << "The current registration is " << combo->name << ". "
+                     "The attempted registration is  " << name << std::endl;
+    }
 }
 
 void InputManager::add_input(StringFunc func,
                              SDL_Scancode scancode, bool control, bool shift,
                              std::string name) {
+
     ComboFunction *combo = get_combo_func(scancode, control, shift);
-    combo->func_type = FunctionType::String;
-    combo->string_func = func;
-    combo->name = name;
+    if(combo->func_type == FunctionType::None) {
+        combo->func_type = FunctionType::String;
+        combo->string_func = func;
+        combo->name = name;
+    }
+    else {
+        const char *key_name = SDL_GetKeyName(
+                SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
+        std::cout << key_name << " " << control << " " << shift <<
+                     " is already registered. Not double registering." << std::endl;
+        std::cout << "The current registration is " << combo->name << ". "
+                     "The attempted registration is " << name << std::endl;
+    }
 }
 
 void InputManager::add_int_changer(int *variable, SDL_Scancode scancode,
