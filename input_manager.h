@@ -3,6 +3,7 @@
 #define _INPUT_MANAGER_H
 
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_scancode.h"
 
 #include <functional>
 #include <list>
@@ -12,17 +13,51 @@
 
 using std::placeholders::_1;
 using std::placeholders::_2;
-#define ADD_FUNCTION_CALLER_W_ARGS(func, key, name, ...) \
-    InputManager::add_function_caller( \
-        std::bind((func), this, _1, _2, __VA_ARGS__), \
-        key, name)
+#define ADD_FUNCTION_CALLER_W_ARGS(func, scancode, control, shift, name, ...) \
+    InputManager::add_input(std::bind((func), this, __VA_ARGS__), \
+                            scancode, control, shift, name)
 
-#define ADD_FUNCTION_CALLER(func, key, name) \
-    InputManager::add_function_caller( \
-        std::bind((func), this, _1, _2), \
-        key, name)
+#define ADD_FUNCTION_CALLER(func, scancode, control, shift, name) \
+    InputManager::add_input(std::bind((func), this), \
+                            scancode, control, shift, name)
 
 typedef void (*ManagerFunc)(bool control, bool shift);
+
+namespace FunctionType {
+enum FunctionType {
+    None = 0,
+    Void,
+    Int,
+    String,
+};
+}
+
+namespace ManagerMode {
+enum ManagerMode {
+    Normal,
+    IntAccumulator,
+};
+}
+
+typedef std::function<void(void)> VoidFunc;
+typedef std::function<int(int, int)> IntFunc;
+typedef std::function<std::string(std::string)> StringFunc;
+
+struct ComboFunction {
+    FunctionType::FunctionType func_type;
+    VoidFunc void_func;
+    IntFunc int_func;
+    StringFunc string_func;
+    std::string name;
+};
+
+struct KeyFunction {
+    ComboFunction no_mod;
+    ComboFunction control;
+    ComboFunction shift;
+    ComboFunction control_shift;
+};
+
 
 struct VarChangeEntry {
     VarChangeEntry(SDL_Keycode key_, std::string name_)
@@ -39,6 +74,9 @@ struct VarChangeEntry {
     bool operator ==(const SDL_Keycode & other_key) const {
         return key == other_key;
     }
+};
+
+struct IntChangeEntry {
 };
 
 struct BoolTogglerEntry: public VarChangeEntry {
@@ -60,33 +98,54 @@ struct FunctionCallerEntry: public VarChangeEntry {
     std::function<void(bool, bool)> function;
 };
 
-struct IntChangeEntry: public VarChangeEntry {
-    IntChangeEntry(SDL_Keycode key_, std::string name_, int max_value,
-                     int min_value, int *variable)
-        : VarChangeEntry(key_, name_)
-        , key_pressed(0)
-        , max_value(max_value)
+struct IntEntry{
+    IntEntry(int max_value, int min_value, int *variable, SDL_Scancode scancode,
+             bool control, bool shift)
+        : max_value(max_value)
         , min_value(min_value)
-        , override_value(0)
-        , overridden(false)
         , variable(variable)
+        , scancode(scancode)
+        , control(control)
+        , shift(shift)
     {}
 
-    bool key_pressed;
     int max_value;
     int min_value;
-    int override_value;
-    bool overridden;
     int *variable;
+
+    SDL_Scancode scancode;
+    bool control;
+    bool shift;
+
+    bool operator ==(const IntEntry & other_entry) const {
+        return scancode == other_entry.scancode &&
+               control == other_entry.control &&
+               shift == other_entry.shift;
+    }
 };
 
 class InputManager {
     private:
+        static std::set<ComboFunction*> active_int_combos_;
+        static int int_accumulator_;
+        static std::list<IntEntry> int_entries_;
+        static KeyFunction key_functions_[SDL_NUM_SCANCODES];
+        static ManagerMode::ManagerMode mode_;
+
+
+        static ComboFunction* get_combo_func(SDL_Scancode scancode, bool control,
+                                             bool shift);
+        static int modify_int(IntEntry *entry, int override_value, int modify_entry);
+        static void toggle_bool(bool *var);
+
+
+
+
+
         static std::set<SDL_Keycode> used_keys_;
 
         static std::list<BoolTogglerEntry> bool_toggles_;
         static std::list<FunctionCallerEntry> function_callers_;
-        static std::list<IntChangeEntry> int_changes_;
 
         static std::vector<IntChangeEntry*> left_mouse_vars_;
         static std::vector<IntChangeEntry*> right_mouse_vars_;
@@ -95,18 +154,31 @@ class InputManager {
         static void handle_bool_events(SDL_Event event, bool control, bool shift);
         static void handle_function_events(SDL_Event event, bool control, bool shift);
         static void handle_int_events(SDL_Event event, bool control, bool shift);
-        static void modify_int_entry(IntChangeEntry *entry, int override_value,
-                                     int modify_entry);
     public:
-        static void add_bool_toggler(bool *variable, SDL_Keycode key, std::string name);
+        static void add_input(VoidFunc func,
+                              SDL_Scancode scancode, bool control, bool shift,
+                              std::string name);
+        static void add_input(IntFunc func,
+                              SDL_Scancode scancode, bool control, bool shift,
+                              std::string name);
+        static void add_input(StringFunc func,
+                              SDL_Scancode scancode, bool control, bool shift,
+                              std::string name);
+
+        static void add_int_changer(int *variable, SDL_Scancode,
+                                    bool control, bool shift,
+                                    int min_value, int max_value, std::string name);
+        static void add_bool_toggler(bool *variable, SDL_Scancode scancode,
+                                     bool control, bool shift, std::string name);
+        static void remove_var_changer(SDL_Scancode scancode, bool control, bool shift);
+
+
+
 
         static void add_function_caller(std::function<void(bool, bool)> function,
                                         SDL_Keycode key, std::string name);
-        static void add_int_changer(int *variable, SDL_Keycode key,
-                                    int min_value, int max_value, std::string name);
-        static void handle_input(SDL_Event event, bool control, bool shift);
+        static void handle_input(SDL_Event event);
         static void print_controls();
-        static void remove_var_changer(SDL_Keycode key);
         static void reset();
 };
 

@@ -1,15 +1,202 @@
 
+#include <climits>
+#include <iostream>
+
 #include "input_manager.h"
 
-#include <iostream>
+/*
+Fully static object, array of KeyBehaviors or something that have control,
+shift and control+shift behaviors. These can call functions, or turn the whole
+machine to accumulator mode where it will record strings or numbers.
+
+Need to figure out incrementing.
+
+Mouse control? Register mouse callbacks?
+*/
+
+std::set<ComboFunction*> InputManager::active_int_combos_ =
+        std::set<ComboFunction*>();
+std::list<IntEntry> InputManager::int_entries_ = std::list<IntEntry>();
+KeyFunction InputManager::key_functions_[SDL_NUM_SCANCODES] = { FunctionType::None };
+ManagerMode::ManagerMode InputManager::mode_ = ManagerMode::Normal;
+int InputManager::int_accumulator_ = INT_MIN;
+
+void InputManager::add_bool_toggler(bool *variable, SDL_Scancode scancode,
+                                    bool control, bool shift, std::string name) {
+    add_input(std::bind(InputManager::toggle_bool, variable), scancode,
+              control, shift, name);
+}
+
+void InputManager::add_input(VoidFunc func,
+                             SDL_Scancode scancode, bool control, bool shift,
+                             std::string name) {
+    ComboFunction *combo = get_combo_func(scancode, control, shift);
+    combo->func_type = FunctionType::Void;
+    combo->void_func = func;
+    combo->name = name;
+}
+
+void InputManager::add_input(IntFunc func,
+                             SDL_Scancode scancode, bool control, bool shift,
+                             std::string name) {
+    ComboFunction *combo = get_combo_func(scancode, control, shift);
+    combo->func_type = FunctionType::Int;
+    combo->int_func = func;
+    combo->name = name;
+}
+
+void InputManager::add_input(StringFunc func,
+                             SDL_Scancode scancode, bool control, bool shift,
+                             std::string name) {
+    ComboFunction *combo = get_combo_func(scancode, control, shift);
+    combo->func_type = FunctionType::String;
+    combo->string_func = func;
+    combo->name = name;
+}
+
+void InputManager::add_int_changer(int *variable, SDL_Scancode scancode,
+                                   bool control, bool shift,
+                                   int min_value, int max_value, std::string name) {
+    IntEntry entry(max_value, min_value, variable, scancode, control, shift);
+    int_entries_.push_back(entry);
+
+    auto perm_entry = find(int_entries_.begin(), int_entries_.end(), entry);
+    
+    add_input(std::bind(InputManager::modify_int, &*perm_entry, _1, _2), scancode,
+              control, shift, name);
+}
+
+ComboFunction* InputManager::get_combo_func(SDL_Scancode scancode,
+                                            bool control, bool shift) {
+    ComboFunction *combo = &key_functions_[scancode].no_mod;
+    if(control && shift) {
+        combo = &key_functions_[scancode].control_shift;
+    }
+    else if(control) {
+        combo = &key_functions_[scancode].control;
+    }
+    else if(shift) {
+        combo = &key_functions_[scancode].shift;
+    }
+
+    return combo;
+}
+
+void InputManager::handle_input(SDL_Event event) {
+    if(event.type == SDL_KEYDOWN) {
+        if(event.key.keysym.scancode == SDL_SCANCODE_RETURN ||
+           event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER) {
+            for(ComboFunction *combo: active_int_combos_) {
+                combo->int_func(int_accumulator_, 0);
+            }
+            int_accumulator_ = INT_MIN;
+            active_int_combos_.clear();
+        }
+        else if(mode_ == ManagerMode::Normal ||
+                mode_ == ManagerMode::IntAccumulator) {
+            ComboFunction *combo = 
+                    get_combo_func(event.key.keysym.scancode, 
+                                   event.key.keysym.mod & KMOD_CTRL,
+                                   event.key.keysym.mod & KMOD_SHIFT);
+            switch(combo->func_type) {
+                case FunctionType::Void:
+                    combo->void_func();
+                    std::cout << combo->name << std::endl;
+                    break;
+                case FunctionType::Int:
+                    mode_ = ManagerMode::IntAccumulator;
+                    active_int_combos_.insert(combo);
+                    break;
+            }
+        }
+        if(mode_ == ManagerMode::IntAccumulator) {
+            int modify_value = 0;
+            int mul = (event.key.keysym.mod & KMOD_CTRL ? 2 : 1) *
+                      (event.key.keysym.mod & KMOD_SHIFT ? 5 : 1);
+            std::cout << "checking keys" << std::endl;
+            if(event.key.keysym.sym >= SDLK_KP_1 && 
+               event.key.keysym.sym <= SDLK_KP_0) {
+                //order is KP_1, KP_2 ... KP_0
+                int num_val = event.key.keysym.sym - SDLK_KP_1 + 1;
+                num_val = (num_val % 10);
+                if(int_accumulator_ == INT_MIN) {
+                    int_accumulator_ = 0;
+                }
+                int_accumulator_ = int_accumulator_ * 10 + num_val;
+            }
+            else if(event.key.keysym.sym == SDLK_KP_PLUS) {
+                modify_value = mul;
+            }
+            else if(event.key.keysym.sym == SDLK_KP_MINUS) {
+                modify_value = -mul;
+            }
+            if(modify_value != 0) {
+                for(ComboFunction *combo: active_int_combos_) {
+                    combo->int_func(INT_MIN, modify_value);
+                }
+            }
+            std::cout << "done checking keys" << std::endl;
+        }
+
+    }
+}
+
+int InputManager::modify_int(IntEntry *entry, int override_value,
+                              int modify_value) {
+    if(override_value != INT_MIN) {
+        *(entry->variable) = override_value;
+    }
+    if(modify_value) {
+        *(entry->variable) += modify_value;
+    }
+    
+    if(*(entry->variable) < entry->min_value) {
+        *(entry->variable) = entry->min_value;
+    }
+    if(*(entry->variable) > entry->max_value) {
+        *(entry->variable) = entry->max_value;
+    }
+    
+    std::cout << get_combo_func(entry->scancode, entry->control, entry->shift)->name 
+              << ": " 
+              << *(entry->variable) 
+              << std::endl;
+
+    return *(entry->variable);
+}
+
+void InputManager::remove_var_changer(SDL_Scancode scancode, bool control, bool shift) {
+    ComboFunction *combo = get_combo_func(scancode, control, shift);
+    IntEntry tmp_entry(0, 0, NULL, scancode, control, shift);
+
+    combo->func_type = FunctionType::None;
+    int_entries_.remove(tmp_entry);
+    //Remove from int_entries_
+    //Overwrite 
+    /*
+    if(used_keys_.erase(key) == 0) {
+        std::cout << "Attempted to remove key "
+                  << SDL_GetKeyName(key) 
+                  << " which wasn't added." << std::endl;
+        return;
+    }
+
+    bool_toggles_.remove_if([key](BoolTogglerEntry b){ return b.key == key; });
+    function_callers_.remove_if([key](FunctionCallerEntry f){ return f.key == key; });
+    int_changes_.remove_if([key](IntChangeEntry i){ return i.key == key; });
+    */
+}
+
+void InputManager::toggle_bool(bool *var) {
+    *var = !*var;
+}
+
 
 
 std::list<BoolTogglerEntry> InputManager::bool_toggles_ =
                                             std::list<BoolTogglerEntry>();
 std::list<FunctionCallerEntry> InputManager::function_callers_ =
                                             std::list<FunctionCallerEntry>();
-std::list<IntChangeEntry> InputManager::int_changes_ =
-                                            std::list<IntChangeEntry>();
 
 std::set<SDL_Keycode> InputManager::used_keys_ = std::set<SDL_Keycode>();
 
@@ -17,19 +204,11 @@ std::vector<IntChangeEntry*> InputManager::left_mouse_vars_ = std::vector<IntCha
 
 std::vector<IntChangeEntry*> InputManager::right_mouse_vars_ = std::vector<IntChangeEntry*>();
 
-void InputManager::add_bool_toggler(bool *variable, SDL_Keycode key,
-                                    std::string name) {
-    if(!check_and_insert_key(key, name)) {
-        return;
-    }
 
-    BoolTogglerEntry entry(key, name, variable);
-    bool_toggles_.push_back(entry);
-    bool_toggles_.sort();
-}
 
 void InputManager::add_function_caller(std::function<void(bool, bool)> function,
                                        SDL_Keycode key, std::string name) {
+    /*
     if(!check_and_insert_key(key, name)) {
         return;
     }
@@ -37,20 +216,13 @@ void InputManager::add_function_caller(std::function<void(bool, bool)> function,
     FunctionCallerEntry entry(key, name, function);
     function_callers_.push_back(entry);
     function_callers_.sort();
+    */
 }
 
-void InputManager::add_int_changer(int *variable, SDL_Keycode key,
-                                   int min_value, int max_value, std::string name) {
-    if(!check_and_insert_key(key, name)) {
-        return;
-    }
 
-    IntChangeEntry entry(key, name, max_value, min_value, variable);
-    int_changes_.push_back(entry);
-    int_changes_.sort();
-}
 
 bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
+    /*
     if(!used_keys_.insert(key).second) {
         std::cout << std::endl
                   << "Warning: Attempted rebind on "
@@ -77,15 +249,12 @@ bool InputManager::check_and_insert_key(SDL_Keycode key, std::string name) {
         return false;
     }
     return true;
-}
-
-void InputManager::handle_input(SDL_Event event, bool control, bool shift) {
-    handle_bool_events(event, control, shift);
-    handle_function_events(event, control, shift);
-    handle_int_events(event, control, shift);
+    */
+    return true;
 }
 
 void InputManager::handle_bool_events(SDL_Event event, bool control, bool shift) {
+    /*
     if(event.type == SDL_KEYDOWN) {
         for(BoolTogglerEntry entry: bool_toggles_) {
             if(event.key.keysym.sym == entry.key) {
@@ -93,9 +262,11 @@ void InputManager::handle_bool_events(SDL_Event event, bool control, bool shift)
             }
         }
     }
+    */
 }
 
 void InputManager::handle_function_events(SDL_Event event, bool control, bool shift) {
+    /*
     if(event.type == SDL_KEYDOWN) {
         for(FunctionCallerEntry entry: function_callers_) {
             if(event.key.keysym.sym == entry.key) {
@@ -103,9 +274,11 @@ void InputManager::handle_function_events(SDL_Event event, bool control, bool sh
             }
         }
     }
+    */
 }
 
 void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) {
+    /*
     int override_value = -1;
     int modify_value = 0;
     int mul = (control ? 2 : 1) * (shift ? 5 : 1);
@@ -190,32 +363,13 @@ void InputManager::handle_int_events(SDL_Event event, bool control, bool shift) 
             }
         }
     }
+    */
 }
 
-void InputManager::modify_int_entry(IntChangeEntry *entry, int override_value,
-                                    int modify_value) {
-    std::cout << "asdfasdf" << std::endl;
-    if(override_value != -1) {
-        *(entry->variable) = override_value;
-    }
-    if(modify_value) {
-        *(entry->variable) += modify_value;
-    }
-    
-    if(*(entry->variable) < entry->min_value) {
-        *(entry->variable) = entry->min_value;
-    }
-    if(*(entry->variable) > entry->max_value) {
-        *(entry->variable) = entry->max_value;
-    }
-    
-    std::cout << entry->name 
-              << ": " 
-              << *(entry->variable) 
-              << std::endl;
-}
+
 
 void InputManager::print_controls() {
+    /*
     std::cout << std::endl << "Toggle Keys:" << std::endl;
     for(BoolTogglerEntry entry: bool_toggles_) {
         std::cout << "  "
@@ -240,22 +394,14 @@ void InputManager::print_controls() {
                   << entry.name
                   << std::endl;
     }
+    */
 }
 
-void InputManager::remove_var_changer(SDL_Keycode key) {
-    if(used_keys_.erase(key) == 0) {
-        std::cout << "Attempted to remove key "
-                  << SDL_GetKeyName(key) 
-                  << " which wasn't added." << std::endl;
-        return;
-    }
-
-    bool_toggles_.remove_if([key](BoolTogglerEntry b){ return b.key == key; });
-    function_callers_.remove_if([key](FunctionCallerEntry f){ return f.key == key; });
-    int_changes_.remove_if([key](IntChangeEntry i){ return i.key == key; });
-}
 
 void InputManager::reset() {
+    /*
     left_mouse_vars_.clear();
     right_mouse_vars_.clear();
+    */
 }
+
