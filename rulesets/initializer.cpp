@@ -125,8 +125,12 @@ void Initializer::start() {
     ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, SDL_SCANCODE_W, false, false,
                         "(Init) Initialize words on board", _1);
 
-    //InputManager::add_int_changer(&density_,    SDLK_h, 0, 100, "(Init) Density");
-    //InputManager::add_int_changer(&dot_radius_, SDLK_j, 0, INT_MAX, "(Init) Dot Size");
+    InputManager::add_int_changer(&density_, SDL_SCANCODE_H,
+                                  false, false, 0, 100,
+                                  "(Init) Initialization density and cross width");
+    InputManager::add_int_changer(&dot_radius_, SDL_SCANCODE_J,
+                                  false, false, 0, INT_MAX,
+                                  "(Init) Center dot radius");
 }
 
 void Initializer::stop() { 
@@ -137,8 +141,8 @@ void Initializer::stop() {
     InputManager::remove_var_changer(SDL_SCANCODE_Y, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_W, false, false);
 
-    //InputManager::remove_var_changer(SDLK_h);
-    //InputManager::remove_var_changer(SDLK_j);
+    InputManager::remove_var_changer(SDL_SCANCODE_H, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_J, false, false);
 }
 
 bool Initializer::was_board_changed() {

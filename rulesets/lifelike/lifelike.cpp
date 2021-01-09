@@ -23,9 +23,14 @@ LifeLike::LifeLike(int width, int height)
     //bool stay_alive_tmp[9] = {1, 0, 0, 1, 1, 1 ,1 ,1, 0};
 
     //star wars
-    bool born_tmp[9] = {0, 0, 1, 0, 0, 0 ,0 ,0, 0};
-    bool stay_alive_tmp[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
-    num_faders_ = 4;
+    //bool born_tmp[9] = {0, 0, 1, 0, 0, 0 ,0 ,0, 0};
+    //bool stay_alive_tmp[9] = {0, 0, 0, 1, 1, 1, 0, 0, 0};
+    //num_faders_ = 4;
+
+    //replicator
+    bool born_tmp[9] = {0, 1, 0, 1, 0, 1 ,0 ,1, 0};
+    bool stay_alive_tmp[9] = {0, 1, 0, 1, 0, 1, 0, 1, 0};
+    num_faders_ = 0;
 
     //life
     //bool born_tmp[9] = {0, 0, 0, 1, 0, 0 ,0 ,0, 0};
@@ -129,7 +134,9 @@ void LifeLike::start() {
     ADD_FUNCTION_CALLER(&LifeLike::randomize_ruleset, SDL_SCANCODE_R, false, false,
                         "(Life) Randomize Ruleset");
 
-    //InputManager::add_int_changer(&num_faders_, SDLK_a, 0, INT_MAX, "(Life) Num Faders");
+    InputManager::add_int_changer(&num_faders_, SDL_SCANCODE_A,
+                                  false, false, 0, INT_MAX,
+                                  "(Life) Number of refractory states after death");
 
     initializer_.start();
     rainbows_.start();
@@ -140,7 +147,7 @@ void LifeLike::stop() {
 
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
-    //InputManager::remove_var_changer(SDLK_a);
+    InputManager::remove_var_changer(SDL_SCANCODE_A, false, false);
 
     initializer_.stop();
     rainbows_.stop();

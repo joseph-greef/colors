@@ -145,11 +145,21 @@ void Ants::start() {
     ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDL_SCANCODE_R, false, false,
                                "(Ants) Add ant colony with random DNA", 5);
 
-    //InputManager::add_int_changer(&colony_pheromone_display_, SDLK_a, 0, INT_MAX, "(Ants) Pheromone Display");
-    //InputManager::add_int_changer(&num_colonies_, SDLK_s, 0, INT_MAX, "(Ants) Minimum Colonies");
-    //InputManager::add_int_changer(&color_speed_, SDLK_d, 0, INT_MAX, "(Ants) Color Speed");
-    //InputManager::add_int_changer(&rainbow_train_len_, SDLK_q, 0, INT_MAX, "(Ants) Trail Length");
-    //InputManager::add_int_changer(&num_food_for_child_, SDLK_w, 0, INT_MAX, "(Ants) Num Food to Spawn Child");
+    InputManager::add_int_changer(&colony_pheromone_display_, SDL_SCANCODE_A,
+                                  false, false, 0, INT_MAX,
+                                  "(Ants) Pheromone Display");
+    InputManager::add_int_changer(&num_colonies_, SDL_SCANCODE_S,
+                                  false, false, 0, INT_MAX,
+                                  "(Ants) Minimum Colonies");
+    InputManager::add_int_changer(&color_speed_, SDL_SCANCODE_D,
+                                  false, false, 0, INT_MAX,
+                                  "(Ants) Color Speed");
+    InputManager::add_int_changer(&rainbow_train_len_, SDL_SCANCODE_Q,
+                                  false, false, 0, INT_MAX,
+                                  "(Ants) Trail Length");
+    InputManager::add_int_changer(&num_food_for_child_, SDL_SCANCODE_W,
+                                  false, false, 0, INT_MAX,
+                                  "(Ants) Num Food to Spawn Child");
     rainbows_.start();
 }
 
@@ -161,10 +171,11 @@ void Ants::stop() {
     InputManager::remove_var_changer(SDL_SCANCODE_E, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
-    //InputManager::remove_var_changer(SDLK_a);
-    //InputManager::remove_var_changer(SDLK_s);
-    //InputManager::remove_var_changer(SDLK_d);
-    //InputManager::remove_var_changer(SDLK_q);
+    InputManager::remove_var_changer(SDL_SCANCODE_A, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_S, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_D, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_Q, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_W, false, false);
     rainbows_.stop();
 }
 

@@ -155,11 +155,21 @@ void Hodge::start() {
     ADD_FUNCTION_CALLER(&Hodge::randomize_ruleset, SDL_SCANCODE_R, false, false,
                         "(Hoge) Randomize Ruleset");
 
-    //InputManager::add_int_changer(&infection_rate_, SDLK_a, INT_MIN, INT_MAX, "(Hoge) Infection Rate");
-    //InputManager::add_int_changer(&death_threshold_, SDLK_d, 0, INT_MAX, "(Hoge) Death Threshold");
-    //InputManager::add_int_changer(&infection_threshold_, SDLK_s, 0, INT_MAX, "(Hoge) Infection Theshold");
-    //InputManager::add_int_changer(&k1_, SDLK_q, 0, INT_MAX, "(Hoge) k1");
-    //InputManager::add_int_changer(&k2_, SDLK_w, 0, INT_MAX, "(Hoge) k2");
+    InputManager::add_int_changer(&infection_rate_, SDL_SCANCODE_A,
+                                  false, false, INT_MIN, INT_MAX,
+                                  "(Hoge) Infection Rate");
+    InputManager::add_int_changer(&death_threshold_, SDL_SCANCODE_D,
+                                  false, false, 0, INT_MAX,
+                                  "(Hoge) Death Threshold");
+    InputManager::add_int_changer(&infection_threshold_, SDL_SCANCODE_S,
+                                  false, false, 0, INT_MAX,
+                                  "(Hoge) Infection Theshold");
+    InputManager::add_int_changer(&k1_, SDL_SCANCODE_Q,
+                                  false, false, 0, INT_MAX,
+                                  "(Hoge) k1");
+    InputManager::add_int_changer(&k2_, SDL_SCANCODE_W,
+                                  false, false, 0, INT_MAX,
+                                  "(Hoge) k2");
 
     initializer_.start();
     rainbows_.start();
@@ -172,11 +182,11 @@ void Hodge::stop() {
 
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
-    //InputManager::remove_var_changer(SDLK_a);
-    //InputManager::remove_var_changer(SDLK_d);
-    //InputManager::remove_var_changer(SDLK_q);
-    //InputManager::remove_var_changer(SDLK_s);
-    //InputManager::remove_var_changer(SDLK_w);
+    InputManager::remove_var_changer(SDL_SCANCODE_A, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_D, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_Q, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_S, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_W, false, false);
 
     initializer_.stop();
     rainbows_.stop();
