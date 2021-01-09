@@ -29,6 +29,8 @@ class Rainbows {
         int dead_color_scheme_;
         int dead_offset_;
         ge_GIF *gif_;
+        int gif_delay_;
+        int gif_frames_setting_;
         int gif_frames_;
 
         int saved_alive_color_scheme_;
@@ -42,7 +44,7 @@ class Rainbows {
 
         void save_gif_frame(int *age_board);
         void toggle_colors();
-        void toggle_gif(bool control);
+        void toggle_gif();
 };
 
 #endif //_RAINBOW_H
