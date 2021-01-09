@@ -12,6 +12,7 @@ private:
     int dot_radius_;
     int height_;
     int width_;
+    int word_size_;
 
     std::string init_words(std::string words);
 public:

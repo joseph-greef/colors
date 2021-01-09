@@ -15,6 +15,7 @@ Initializer::Initializer(int **board_ptr, int density, int dot_radius, int width
     , dot_radius_(dot_radius)
     , height_(height)
     , width_(width)
+    , word_size_(8)
 {
 }
 
@@ -83,19 +84,18 @@ void Initializer::init_random_board() {
 
 std::string Initializer::init_words(std::string words) {
     int *board = *board_ptr_;
-    int size = 8;
-    int full_width = words.length() * 10 * size;
+    int full_width = words.length() * 10 * word_size_;
     int x = (width_ - full_width) / 2;
-    int y = (height_ - 8 * size) / 2;
+    int y = (height_ - 8 * word_size_) / 2;
 
     clear_board();
     for(char c: words) {
         if(c < sizeof(font8x8) / sizeof(font8x8[0])) {
             std::cout << c;
-            for(int i = 0; i < 8 * size; i++) {
-                for(int j = 0; j < 8 * size; j++) {
-                    if(j % size <= 1 && i % size <= 1) {
-                        if(font8x8[c][j/size] & (1 << i/size)) {
+            for(int i = 0; i < 8 * word_size_; i++) {
+                for(int j = 0; j < 8 * word_size_; j++) {
+                    if(j % word_size_ <= density_ && i % word_size_ <= density_) {
+                        if(font8x8[c][j/word_size_] & (1 << i/word_size_)) {
                             board[(y + j) * width_ + x + i] = 1;
                         }
                     }
@@ -104,7 +104,7 @@ std::string Initializer::init_words(std::string words) {
 
 
         }
-        x += 10 * size;
+        x += 10 * word_size_;
     }
     std::cout << std::endl;
     board_changed_ = true;
@@ -127,10 +127,13 @@ void Initializer::start() {
 
     InputManager::add_int_changer(&density_, SDL_SCANCODE_H,
                                   false, false, 0, 100,
-                                  "Init", "Initialization density and cross width");
+                                  "Init", "Initialization and word density, and cross width");
     InputManager::add_int_changer(&dot_radius_, SDL_SCANCODE_J,
                                   false, false, 0, INT_MAX,
                                   "Init", "Center dot radius");
+    InputManager::add_int_changer(&word_size_, SDL_SCANCODE_W,
+                                  true, false, 0, INT_MAX,
+                                  "Init", "Change word size multiplier");
 }
 
 void Initializer::stop() { 
