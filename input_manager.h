@@ -35,6 +35,7 @@ namespace ManagerMode {
 enum ManagerMode {
     Normal,
     IntAccumulator,
+    StringAccumulator,
 };
 }
 
@@ -126,6 +127,7 @@ struct IntEntry{
 class InputManager {
     private:
         static std::set<ComboFunction*> active_int_combos_;
+        static ComboFunction* active_string_combo_;
         static int int_accumulator_;
         static std::list<IntEntry> int_entries_;
         static KeyFunction key_functions_[SDL_NUM_SCANCODES];
@@ -136,6 +138,8 @@ class InputManager {
 
         static std::list<ComboFunction*> mouse_right_combos_;
         static FunctionType::FunctionType mouse_right_mode_;
+
+        static std::string string_accumulator_;
 
 
         static ComboFunction* get_combo_func(SDL_Scancode scancode, bool control,
