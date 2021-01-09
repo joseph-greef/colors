@@ -138,28 +138,28 @@ void Ants::start() {
     Ruleset::start();
 
     InputManager::add_bool_toggler(&rainbow_view_, SDL_SCANCODE_T, false, false,
-                                   "(Ants) Toggle rainbow view");
+                                   "Ants", "Toggle rainbow view");
 
     ADD_FUNCTION_CALLER(&Ants::reset, SDL_SCANCODE_E, false, false,
-                        "(Ants) Reset simulation");
+                        "Ants", "Reset simulation");
     ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDL_SCANCODE_R, false, false,
-                               "(Ants) Add ant colony with random DNA", 5);
+                               "Ants", "Add ant colony with random DNA", 5);
 
     InputManager::add_int_changer(&colony_pheromone_display_, SDL_SCANCODE_A,
                                   false, false, 0, INT_MAX,
-                                  "(Ants) Pheromone Display");
+                                  "Ants", "Pheromone display");
     InputManager::add_int_changer(&num_colonies_, SDL_SCANCODE_S,
                                   false, false, 0, INT_MAX,
-                                  "(Ants) Minimum Colonies");
+                                  "Ants", "Minimum colonies");
     InputManager::add_int_changer(&color_speed_, SDL_SCANCODE_D,
                                   false, false, 0, INT_MAX,
-                                  "(Ants) Color Speed");
+                                  "Ants", "Color speed");
     InputManager::add_int_changer(&rainbow_train_len_, SDL_SCANCODE_Q,
                                   false, false, 0, INT_MAX,
-                                  "(Ants) Trail Length");
+                                  "Ants", "Trail length");
     InputManager::add_int_changer(&num_food_for_child_, SDL_SCANCODE_W,
                                   false, false, 0, INT_MAX,
-                                  "(Ants) Num Food to Spawn Child");
+                                  "Ants", "Num food to spawn child");
     rainbows_.start();
 }
 

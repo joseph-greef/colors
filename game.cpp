@@ -25,10 +25,10 @@ Game::Game(int width, int height)
     }
 
     ADD_FUNCTION_CALLER(&Game::print_fps, SDL_SCANCODE_X, false, false,
-                        "(Game) Print Frames Per Second");
+                        "Game", "Print frames per second");
 
     InputManager::add_int_changer(&current_ruleset_, SDL_SCANCODE_Z, false, false,
-                                  0, NUM_RULESETS-1, "(Game) Ruleset");
+                                  0, NUM_RULESETS-1, "Game", "Change ruleset");
 }
 
 Game::~Game() {

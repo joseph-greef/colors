@@ -59,7 +59,7 @@ int Ruleset::get_num_alive_neighbors(int *board, int x, int y,
 
 void Ruleset::start() {
     ADD_FUNCTION_CALLER(&Ruleset::toggle_gpu, SDL_SCANCODE_F, false, false,
-                        "(Game) Toggle CUDA processing");
+                        "Game", "Toggle CUDA processing");
 }
 
 void Ruleset::stop() {

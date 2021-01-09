@@ -12,13 +12,13 @@
 
 using std::placeholders::_1;
 using std::placeholders::_2;
-#define ADD_FUNCTION_CALLER_W_ARGS(func, scancode, control, shift, name, ...) \
+#define ADD_FUNCTION_CALLER_W_ARGS(func, scancode, control, shift, owner_name, description, ...) \
     InputManager::add_input(std::bind((func), this, __VA_ARGS__), \
-                            scancode, control, shift, name)
+                            scancode, control, shift, owner_name, description)
 
-#define ADD_FUNCTION_CALLER(func, scancode, control, shift, name) \
+#define ADD_FUNCTION_CALLER(func, scancode, control, shift, owner_name, description) \
     InputManager::add_input(std::bind((func), this), \
-                            scancode, control, shift, name)
+                            scancode, control, shift, owner_name, description)
 
 typedef void (*ManagerFunc)(bool control, bool shift);
 
@@ -48,7 +48,8 @@ struct ComboFunction {
     VoidFunc void_func;
     IntFunc int_func;
     StringFunc string_func;
-    std::string name;
+    std::string description;
+    std::string owner_name;
 };
 
 struct KeyFunction {
@@ -159,27 +160,30 @@ class InputManager {
         static std::vector<IntChangeEntry*> left_mouse_vars_;
         static std::vector<IntChangeEntry*> right_mouse_vars_;
 
-        static bool check_and_insert_key(SDL_Keycode key, std::string name);
+        static bool check_and_insert_key(SDL_Keycode key, std::string description);
         static void handle_bool_events(SDL_Event event, bool control, bool shift);
         static void handle_function_events(SDL_Event event, bool control, bool shift);
         static void handle_int_events(SDL_Event event, bool control, bool shift);
     public:
         static void add_input(VoidFunc func,
                               SDL_Scancode scancode, bool control, bool shift,
-                              std::string name);
+                              std::string owner_name, std::string description);
         static void add_input(IntFunc func,
                               SDL_Scancode scancode, bool control, bool shift,
-                              std::string name);
+                              std::string owner_name, std::string description);
         static void add_input(StringFunc func,
                               SDL_Scancode scancode, bool control, bool shift,
-                              std::string name);
+                              std::string owner_name, std::string description);
 
         static void add_int_changer(int *variable, SDL_Scancode,
                                     bool control, bool shift,
-                                    int min_value, int max_value, std::string name);
+                                    int min_value, int max_value,
+                                    std::string owner_name, std::string description);
         static void add_bool_toggler(bool *variable, SDL_Scancode scancode,
-                                     bool control, bool shift, std::string name);
+                                     bool control, bool shift,
+                                     std::string owner_name, std::string description);
         static void handle_input(SDL_Event event);
+        static void print_controls();
         static void remove_var_changer(SDL_Scancode scancode, bool control, bool shift);
         static void reset();
 
@@ -188,7 +192,6 @@ class InputManager {
 
         static void add_function_caller(std::function<void(bool, bool)> function,
                                         SDL_Keycode key, std::string name);
-        static void print_controls();
 };
 
 #endif //_INPUT_MANAGER_H

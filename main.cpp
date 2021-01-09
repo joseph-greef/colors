@@ -70,9 +70,9 @@ int main(int argc, char * argv[])
     std::vector<uint8_t> writer_pixels(4 * width * height);
 
     InputManager::add_input(InputManager::print_controls, SDL_SCANCODE_APOSTROPHE,
-                            false, false, "(Main) Print help message");
+                            false, false, "Game", "Print help message");
     InputManager::add_int_changer(&fps_target, SDL_SCANCODE_V, false, false,
-                                  10, INT_MAX, "(Main) Set FPS target");
+                                  10, INT_MAX, "Game", "Set FPS target");
 
     SDL_Window *window = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position

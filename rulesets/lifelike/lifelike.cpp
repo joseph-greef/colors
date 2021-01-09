@@ -132,11 +132,11 @@ void LifeLike::start() {
     Ruleset::start();
 
     ADD_FUNCTION_CALLER(&LifeLike::randomize_ruleset, SDL_SCANCODE_R, false, false,
-                        "(Life) Randomize Ruleset");
+                        "LifeLike", "Randomize ruleset");
 
     InputManager::add_int_changer(&num_faders_, SDL_SCANCODE_A,
                                   false, false, 0, INT_MAX,
-                                  "(Life) Number of refractory states after death");
+                                  "LifeLike", "Number of refractory states after death");
 
     initializer_.start();
     rainbows_.start();

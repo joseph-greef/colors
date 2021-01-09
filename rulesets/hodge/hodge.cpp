@@ -150,26 +150,26 @@ void Hodge::start() {
     Ruleset::start();
 
     InputManager::add_bool_toggler(&podge_, SDL_SCANCODE_T, false, false,
-                                   "(Hoge) Toggle between Hodgepodge and Hodge");
+                                   "Hodge", "Toggle between Hodgepodge and Hodge");
 
     ADD_FUNCTION_CALLER(&Hodge::randomize_ruleset, SDL_SCANCODE_R, false, false,
-                        "(Hoge) Randomize Ruleset");
+                        "Hodge", "Randomize Ruleset");
 
     InputManager::add_int_changer(&infection_rate_, SDL_SCANCODE_A,
                                   false, false, INT_MIN, INT_MAX,
-                                  "(Hoge) Infection Rate");
+                                  "Hodge", "Infection Rate");
     InputManager::add_int_changer(&death_threshold_, SDL_SCANCODE_D,
                                   false, false, 0, INT_MAX,
-                                  "(Hoge) Death Threshold");
+                                  "Hodge", "Death Threshold");
     InputManager::add_int_changer(&infection_threshold_, SDL_SCANCODE_S,
                                   false, false, 0, INT_MAX,
-                                  "(Hoge) Infection Theshold");
+                                  "Hodge", "Infection Theshold");
     InputManager::add_int_changer(&k1_, SDL_SCANCODE_Q,
                                   false, false, 0, INT_MAX,
-                                  "(Hoge) k1");
+                                  "Hodge", "k1");
     InputManager::add_int_changer(&k2_, SDL_SCANCODE_W,
                                   false, false, 0, INT_MAX,
-                                  "(Hoge) k2");
+                                  "Hodge", "k2");
 
     initializer_.start();
     rainbows_.start();

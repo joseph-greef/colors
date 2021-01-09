@@ -1,5 +1,6 @@
 
 #include <climits>
+#include <iomanip>
 #include <iostream>
 
 #include "input_manager.h"
@@ -33,79 +34,84 @@ FunctionType::FunctionType InputManager::mouse_right_mode_ = FunctionType::None;
 std::string InputManager::string_accumulator_ = std::string();
 
 void InputManager::add_bool_toggler(bool *variable, SDL_Scancode scancode,
-                                    bool control, bool shift, std::string name) {
+                                    bool control, bool shift,
+                                    std::string owner_name, std::string description) {
     add_input(std::bind(InputManager::toggle_bool, variable), scancode,
-              control, shift, name);
+              control, shift, owner_name, description);
 }
 
 void InputManager::add_input(VoidFunc func,
                              SDL_Scancode scancode, bool control, bool shift,
-                             std::string name) {
+                             std::string owner_name, std::string description) {
     ComboFunction *combo = get_combo_func(scancode, control, shift);
     if(combo->func_type == FunctionType::None) {
         combo->func_type = FunctionType::Void;
         combo->void_func = func;
-        combo->name = name;
+        combo->description = description;
+        combo->owner_name = owner_name;
     }
     else {
         const char *key_name = SDL_GetKeyName(
                 SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
         std::cout << key_name << " " << control << " " << shift <<
                      " is already registered. Not double registering." << std::endl;
-        std::cout << "The current registration is " << combo->name << ". "
-                     "The attempted registration is  " << name << std::endl;
+        std::cout << "The current registration is " << combo->description << ". "
+                     "The attempted registration is  " << description << std::endl;
     }
 }
 
 void InputManager::add_input(IntFunc func,
                              SDL_Scancode scancode, bool control, bool shift,
-                             std::string name) {
+                             std::string owner_name, std::string description) {
     ComboFunction *combo = get_combo_func(scancode, control, shift);
     if(combo->func_type == FunctionType::None) {
         combo->func_type = FunctionType::Int;
         combo->int_func = func;
-        combo->name = name;
+        combo->description = description;
+        combo->owner_name = owner_name;
     }
     else {
         const char *key_name = SDL_GetKeyName(
                 SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
         std::cout << key_name << " " << control << " " << shift <<
                      " is already registered. Not double registering." << std::endl;
-        std::cout << "The current registration is " << combo->name << ". "
-                     "The attempted registration is  " << name << std::endl;
+        std::cout << "The current registration is " << combo->description << ". "
+                     "The attempted registration is  " << description << std::endl;
     }
 }
 
 void InputManager::add_input(StringFunc func,
                              SDL_Scancode scancode, bool control, bool shift,
-                             std::string name) {
+                             std::string owner_name, std::string description) {
 
     ComboFunction *combo = get_combo_func(scancode, control, shift);
     if(combo->func_type == FunctionType::None) {
         combo->func_type = FunctionType::String;
         combo->string_func = func;
-        combo->name = name;
+        combo->description = description;
+        combo->owner_name = owner_name;
     }
     else {
         const char *key_name = SDL_GetKeyName(
                 SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(scancode)));
         std::cout << key_name << " " << control << " " << shift <<
                      " is already registered. Not double registering." << std::endl;
-        std::cout << "The current registration is " << combo->name << ". "
-                     "The attempted registration is " << name << std::endl;
+        std::cout << "The current registration is " << combo->description << ". "
+                     "The attempted registration is " << description << std::endl;
     }
 }
 
 void InputManager::add_int_changer(int *variable, SDL_Scancode scancode,
                                    bool control, bool shift,
-                                   int min_value, int max_value, std::string name) {
+                                   int min_value, int max_value,
+                                   std::string owner_name, std::string description) {
     IntEntry entry(max_value, min_value, variable, scancode, control, shift);
     int_entries_.push_back(entry);
 
     auto perm_entry = find(int_entries_.begin(), int_entries_.end(), entry);
     
     add_input(std::bind(InputManager::modify_int, &*perm_entry, _1, _2), scancode,
-              control, shift, name);
+              control, shift, owner_name, description);
 }
 
 ComboFunction* InputManager::get_combo_func(SDL_Scancode scancode,
@@ -167,17 +173,17 @@ void InputManager::handle_input(SDL_Event event) {
                 case FunctionType::Int:
                     mode_ = ManagerMode::IntAccumulator;
                     active_int_combos_.insert(combo);
-                    std::cout << "Activated " << combo->name << std::endl;
+                    std::cout << "Activated " << combo->description << std::endl;
                     return;
                 case FunctionType::String:
                     if(mode_ == ManagerMode::Normal) {
                         mode_ = ManagerMode::StringAccumulator;
                         active_string_combo_ = combo;
-                        std::cout << "Activated " << combo->name << std::endl;
+                        std::cout << "Activated " << combo->description << std::endl;
                     }
                     else {
                         std::cout << "Must be in mormal mode to activate " <<
-                                     combo->name << std::endl;
+                                     combo->description << std::endl;
                     }
                     return;
             }
@@ -289,7 +295,7 @@ int InputManager::modify_int(IntEntry *entry, int override_value,
         *(entry->variable) = entry->max_value;
     }
     
-    std::cout << get_combo_func(entry->scancode, entry->control, entry->shift)->name 
+    std::cout << get_combo_func(entry->scancode, entry->control, entry->shift)->description 
               << ": " 
               << *(entry->variable) 
               << std::endl;
@@ -298,27 +304,75 @@ int InputManager::modify_int(IntEntry *entry, int override_value,
 }
 
 void InputManager::print_controls() {
-    std::cout << "CTRL | SHIFT | KEY : Function" << std::endl;
+    struct RuleEntry {
+        std::string owner_name;
+        std::string description;
+        std::string key_name;
+        bool control;
+        bool shift;
+
+        RuleEntry(std::string owner_name, std::string description,
+                  const char *key_name, bool control, bool shift)
+            : owner_name(owner_name)
+            , description(description)
+            , key_name(key_name)
+            , control(control)
+            , shift(shift)
+        {}
+
+        bool operator <(RuleEntry &other) {
+            if(owner_name != other.owner_name) {
+                return owner_name < other.owner_name;
+            }
+            else {
+                return key_name < other.key_name;
+            }
+        }
+    };
+    std::vector<RuleEntry> to_print;
+
     for(int i = 0; i < SDL_NUM_SCANCODES; i++) {
         const char *key_name = SDL_GetKeyName(
                 SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(i)));
         if(key_functions_[i].no_mod.func_type != FunctionType::None) {
-            std::cout << "     |       | " << key_name << " : " <<
-                         key_functions_[i].no_mod.name << std::endl;
+            to_print.push_back(RuleEntry(key_functions_[i].no_mod.owner_name,
+                                         key_functions_[i].no_mod.description,
+                                         key_name, false, false));
         }
         if(key_functions_[i].control.func_type != FunctionType::None) {
-            std::cout << "  *  |       | " << key_name << " : " <<
-                         key_functions_[i].control.name << std::endl;
+            to_print.push_back(RuleEntry(key_functions_[i].control.owner_name,
+                                         key_functions_[i].control.description,
+                                         key_name, true, false));
         }
         if(key_functions_[i].shift.func_type != FunctionType::None) {
-            std::cout << "     |   *   | " << key_name << " : " <<
-                         key_functions_[i].shift.name << std::endl;
+            to_print.push_back(RuleEntry(key_functions_[i].shift.owner_name,
+                                         key_functions_[i].shift.description,
+                                         key_name, false, true));
         }
         if(key_functions_[i].control_shift.func_type != FunctionType::None) {
-            std::cout << "  *  |   *   | " << key_name << " : " <<
-                         key_functions_[i].control.name << std::endl;
+            to_print.push_back(RuleEntry(key_functions_[i].control_shift.owner_name,
+                                         key_functions_[i].control_shift.description,
+                                         key_name, true, true));
         }
     }
+
+    std::sort(to_print.begin(), to_print.end());
+
+    std::cout << "           |   | S |" << std::endl;
+    std::cout << "           | C | H |" << std::endl;
+    std::cout << "           | T | I |" << std::endl;
+    std::cout << "           | R | F |" << std::endl;
+    std::cout << "    Key    | L | T |   Owner   | Description" << std::endl;
+    std::cout << "-----------+---+---+-----------+------------" << std::endl;
+
+    for(RuleEntry entry: to_print) {
+        std::cout << std::setw(10) << entry.key_name << " | " << 
+                     (entry.control ? "*" : " ") << " | " <<
+                     (entry.shift ? "*" : " ") << " | " <<
+                     std::setw(9) << entry.owner_name << 
+                     " | " << entry.description << std::endl;
+    }
+
 }
 
 void InputManager::remove_var_changer(SDL_Scancode scancode, bool control, bool shift) {

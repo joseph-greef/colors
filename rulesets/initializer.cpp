@@ -113,24 +113,24 @@ std::string Initializer::init_words(std::string words) {
 
 void Initializer::start() { 
     ADD_FUNCTION_CALLER(&Initializer::init_random_board, SDL_SCANCODE_I, false, false,
-                        "(Init) Initialize random board");
+                        "Init", "Initialize random board");
     ADD_FUNCTION_CALLER(&Initializer::clear_board, SDL_SCANCODE_K, false, false,
-                        "(Init) Clear board");
+                        "Init", "Clear board");
     ADD_FUNCTION_CALLER(&Initializer::init_center_square, SDL_SCANCODE_O, false, false,
-                        "(Init) Initialize center square");
+                        "Init", "Initialize center square");
     ADD_FUNCTION_CALLER(&Initializer::init_center_diamond, SDL_SCANCODE_U, false, false,
-                        "(Init) Initialize center diamond");
+                        "Init", "Initialize center diamond");
     ADD_FUNCTION_CALLER(&Initializer::init_center_cross, SDL_SCANCODE_Y, false, false,
-                        "(Init) Initialize center cross");
+                        "Init", "Initialize center cross");
     ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, SDL_SCANCODE_W, false, false,
-                        "(Init) Initialize words on board", _1);
+                        "Init", "Initialize words on board", _1);
 
     InputManager::add_int_changer(&density_, SDL_SCANCODE_H,
                                   false, false, 0, 100,
-                                  "(Init) Initialization density and cross width");
+                                  "Init", "Initialization density and cross width");
     InputManager::add_int_changer(&dot_radius_, SDL_SCANCODE_J,
                                   false, false, 0, INT_MAX,
-                                  "(Init) Center dot radius");
+                                  "Init", "Center dot radius");
 }
 
 void Initializer::stop() { 
