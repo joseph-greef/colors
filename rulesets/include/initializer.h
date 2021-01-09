@@ -12,7 +12,8 @@ private:
     int dot_radius_;
     int height_;
     int width_;
-    
+
+    std::string init_words(std::string words);
 public:
     //Initializer(Board *b);
     Initializer(int **board, int density, int dot_radius, int width, int height);

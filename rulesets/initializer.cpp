@@ -1,6 +1,8 @@
 
 #include <climits>
+#include <iostream>
 
+#include "font8x8.h"
 #include "initializer.h"
 #include "input_manager.h"
 
@@ -79,6 +81,36 @@ void Initializer::init_random_board() {
     board_changed_ = true;
 }
 
+std::string Initializer::init_words(std::string words) {
+    int *board = *board_ptr_;
+    int size = 8;
+    int full_width = words.length() * 10 * size;
+    int x = (width_ - full_width) / 2;
+    int y = (height_ - 8 * size) / 2;
+
+    clear_board();
+    for(char c: words) {
+        if(c < sizeof(font8x8) / sizeof(font8x8[0])) {
+            std::cout << c;
+            for(int i = 0; i < 8 * size; i++) {
+                for(int j = 0; j < 8 * size; j++) {
+                    if(j % size <= 1 && i % size <= 1) {
+                        if(font8x8[c][j/size] & (1 << i/size)) {
+                            board[(y + j) * width_ + x + i] = 1;
+                        }
+                    }
+                }
+            }
+
+
+        }
+        x += 10 * size;
+    }
+    std::cout << std::endl;
+    board_changed_ = true;
+    return "";
+}
+
 void Initializer::start() { 
     ADD_FUNCTION_CALLER(&Initializer::init_random_board, SDL_SCANCODE_I, false, false,
                         "(Init) Initialize random board");
@@ -90,6 +122,8 @@ void Initializer::start() {
                         "(Init) Initialize center diamond");
     ADD_FUNCTION_CALLER(&Initializer::init_center_cross, SDL_SCANCODE_Y, false, false,
                         "(Init) Initialize center cross");
+    ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, SDL_SCANCODE_W, false, false,
+                        "(Init) Initialize words on board", _1);
 
     //InputManager::add_int_changer(&density_,    SDLK_h, 0, 100, "(Init) Density");
     //InputManager::add_int_changer(&dot_radius_, SDLK_j, 0, INT_MAX, "(Init) Dot Size");
@@ -101,6 +135,7 @@ void Initializer::stop() {
     InputManager::remove_var_changer(SDL_SCANCODE_O, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_U, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_Y, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_W, false, false);
 
     //InputManager::remove_var_changer(SDLK_h);
     //InputManager::remove_var_changer(SDLK_j);
