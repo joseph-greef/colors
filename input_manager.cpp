@@ -213,9 +213,7 @@ void InputManager::handle_input(SDL_Event event) {
                 for(ComboFunction *combo: active_int_combos_) {
                     combo->int_func(int_accumulator_, 0);
                 }
-                int_accumulator_ = INT_MIN;
-                active_int_combos_.clear();
-                mode_ = ManagerMode::Normal;
+                reset();
                 return;
             }
             else if(event.key.keysym.sym >= SDLK_KP_1 && 
@@ -240,16 +238,18 @@ void InputManager::handle_input(SDL_Event event) {
         }
         else if(event.type == SDL_MOUSEBUTTONDOWN) {
             if(control) {
-                for(ComboFunction *combo: active_int_combos_) {
-                    if(event.button.button == SDL_BUTTON_LEFT) {
-                        mouse_left_combos_.clear();
+                if(event.button.button == SDL_BUTTON_LEFT) {
+                    mouse_left_combos_.clear();
+                    mouse_left_mode_ = FunctionType::Int;
+                    for(ComboFunction *combo: active_int_combos_) {
                         mouse_left_combos_.push_back(combo);
-                        mouse_left_mode_ = FunctionType::Int;
                     }
-                    else if(event.button.button == SDL_BUTTON_RIGHT) {
-                        mouse_right_combos_.clear();
+                }
+                else if(event.button.button == SDL_BUTTON_RIGHT) {
+                    mouse_right_combos_.clear();
+                    mouse_right_mode_ = FunctionType::Int;
+                    for(ComboFunction *combo: active_int_combos_) {
                         mouse_right_combos_.push_back(combo);
-                        mouse_right_mode_ = FunctionType::Int;
                     }
                 }
             }
@@ -279,9 +279,7 @@ void InputManager::handle_input(SDL_Event event) {
             if(event.key.keysym.scancode == SDL_SCANCODE_RETURN ||
                event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER) {
                 active_string_combo_->string_func(string_accumulator_);
-                active_string_combo_ = NULL;
-                string_accumulator_ = "";
-                mode_ = ManagerMode::Normal;
+                reset();
             }
             else if(strlen(key_name) == 1) {
                 string_accumulator_ += *key_name;
@@ -395,9 +393,13 @@ void InputManager::remove_var_changer(SDL_Scancode scancode, bool control, bool 
 }
 
 void InputManager::reset() {
-    mouse_left_combos_.clear();
-    mouse_right_combos_.clear();
     active_int_combos_.clear();
+    int_accumulator_ = INT_MIN;
+
+    active_string_combo_ = NULL;
+    string_accumulator_ = "";
+
+    mode_ = ManagerMode::Normal;
 }
 
 void InputManager::toggle_bool(bool *var) {
