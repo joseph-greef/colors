@@ -16,6 +16,7 @@ Mouse control? Register mouse callbacks?
 
 std::set<ComboFunction*> InputManager::active_int_combos_ =
         std::set<ComboFunction*>();
+ComboFunction* InputManager::active_string_combo_ = NULL;
 int InputManager::int_accumulator_ = INT_MIN;
 std::list<IntEntry> InputManager::int_entries_ = std::list<IntEntry>();
 KeyFunction InputManager::key_functions_[SDL_NUM_SCANCODES] = { FunctionType::None };
@@ -28,6 +29,8 @@ FunctionType::FunctionType InputManager::mouse_left_mode_ = FunctionType::None;
 std::list<ComboFunction*> InputManager::mouse_right_combos_ = 
         std::list<ComboFunction*>();
 FunctionType::FunctionType InputManager::mouse_right_mode_ = FunctionType::None;
+
+std::string InputManager::string_accumulator_ = std::string();
 
 void InputManager::add_bool_toggler(bool *variable, SDL_Scancode scancode,
                                     bool control, bool shift, std::string name) {
@@ -165,7 +168,18 @@ void InputManager::handle_input(SDL_Event event) {
                     mode_ = ManagerMode::IntAccumulator;
                     active_int_combos_.insert(combo);
                     std::cout << "Activated " << combo->name << std::endl;
-                    break;
+                    return;
+                case FunctionType::String:
+                    if(mode_ == ManagerMode::Normal) {
+                        mode_ = ManagerMode::StringAccumulator;
+                        active_string_combo_ = combo;
+                        std::cout << "Activated " << combo->name << std::endl;
+                    }
+                    else {
+                        std::cout << "Must be in mormal mode to activate " <<
+                                     combo->name << std::endl;
+                    }
+                    return;
             }
 
             if(event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
@@ -185,6 +199,7 @@ void InputManager::handle_input(SDL_Event event) {
                 int_accumulator_ = INT_MIN;
                 active_int_combos_.clear();
                 mode_ = ManagerMode::Normal;
+                return;
             }
             else if(event.key.keysym.sym >= SDLK_KP_1 && 
                     event.key.keysym.sym <= SDLK_KP_0) {
@@ -236,6 +251,23 @@ void InputManager::handle_input(SDL_Event event) {
         if(modify_value != 0) {
             for(ComboFunction *combo: active_int_combos_) {
                 combo->int_func(INT_MIN, modify_value);
+            }
+        }
+    }
+    if(mode_ == ManagerMode::StringAccumulator) {
+        if(event.type == SDL_KEYDOWN) {
+            const char *key_name = SDL_GetKeyName(
+                    SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(
+                            event.key.keysym.scancode)));
+            if(event.key.keysym.scancode == SDL_SCANCODE_RETURN ||
+               event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER) {
+                active_string_combo_->string_func(string_accumulator_);
+                active_string_combo_ = NULL;
+                string_accumulator_ = "";
+                mode_ = ManagerMode::Normal;
+            }
+            else if(strlen(key_name) == 1) {
+                string_accumulator_ += *key_name;
             }
         }
     }
