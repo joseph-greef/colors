@@ -161,6 +161,13 @@ void InputManager::handle_input(SDL_Event event) {
         }
     }
     else if(event.type == SDL_KEYDOWN) {
+        if(event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
+            std::cout << "Clearing all active controls" << std::endl;
+            reset();
+        }
+    }
+    if((mode_ == ManagerMode::Normal || mode_ == ManagerMode::IntAccumulator) &&
+            event.type == SDL_KEYDOWN) {
         ComboFunction *combo = get_combo_func(event.key.keysym.scancode,
                                               control, shift); 
         switch(combo->func_type) {
@@ -188,13 +195,6 @@ void InputManager::handle_input(SDL_Event event) {
                     active_string_combo_ = combo;
                     std::cout << "Activated " << combo->description << std::endl;
                 }
-                else if(mode_ == ManagerMode::StringAccumulator &&
-                        combo == active_string_combo_) {
-                    active_string_combo_ = NULL;
-                    string_accumulator_ = "";
-                    mode_ = ManagerMode::Normal;
-                    std::cout << "Deactivated " << combo->description << std::endl;
-                }
                 else {
                     std::cout << "Must be in mormal mode to activate " <<
                                  combo->description << std::endl;
@@ -202,10 +202,7 @@ void InputManager::handle_input(SDL_Event event) {
                 return;
         }
 
-        if(event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
-            std::cout << "Clearing all active controls" << std::endl;
-            reset();
-        }
+
     }
 
     if(mode_ == ManagerMode::IntAccumulator) {
