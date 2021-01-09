@@ -114,6 +114,8 @@ std::string Initializer::init_words(std::string words) {
 void Initializer::start() { 
     ADD_FUNCTION_CALLER(&Initializer::init_random_board, SDL_SCANCODE_I, false, false,
                         "Init", "Initialize random board");
+    ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, SDL_SCANCODE_I, true, false,
+                        "Init", "Initialize words on board", _1);
     ADD_FUNCTION_CALLER(&Initializer::clear_board, SDL_SCANCODE_K, false, false,
                         "Init", "Clear board");
     ADD_FUNCTION_CALLER(&Initializer::init_center_square, SDL_SCANCODE_O, false, false,
@@ -122,8 +124,6 @@ void Initializer::start() {
                         "Init", "Initialize center diamond");
     ADD_FUNCTION_CALLER(&Initializer::init_center_cross, SDL_SCANCODE_Y, false, false,
                         "Init", "Initialize center cross");
-    ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, SDL_SCANCODE_W, false, false,
-                        "Init", "Initialize words on board", _1);
 
     InputManager::add_int_changer(&density_, SDL_SCANCODE_H,
                                   false, false, 0, 100,
@@ -131,18 +131,19 @@ void Initializer::start() {
     InputManager::add_int_changer(&dot_radius_, SDL_SCANCODE_J,
                                   false, false, 0, INT_MAX,
                                   "Init", "Center dot radius");
-    InputManager::add_int_changer(&word_size_, SDL_SCANCODE_W,
-                                  true, false, 0, INT_MAX,
+    InputManager::add_int_changer(&word_size_, SDL_SCANCODE_I,
+                                  false, true, 0, INT_MAX,
                                   "Init", "Change word size multiplier");
 }
 
 void Initializer::stop() { 
     InputManager::remove_var_changer(SDL_SCANCODE_I, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_I, true, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_I, false, true);
     InputManager::remove_var_changer(SDL_SCANCODE_K, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_O, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_U, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_Y, false, false);
-    InputManager::remove_var_changer(SDL_SCANCODE_W, false, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_H, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_J, false, false);
