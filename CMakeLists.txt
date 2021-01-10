@@ -52,6 +52,7 @@ target_link_directories(colors PUBLIC ${SDL_LIB_DIR})
 # Add rulesets
 target_link_libraries(colors PRIVATE
   ants
+  empty_ruleset
   hodge
   lifelike
 )
