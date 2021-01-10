@@ -183,10 +183,12 @@ void InputManager::handle_input(SDL_Event event) {
                 }
                 else {
                     std::cout << "Activated " << combo->description << std::endl;
+                    mode_ = ManagerMode::IntAccumulator;
                 }
 
-                mode_ = active_int_combos_.empty() ? ManagerMode::Normal :
-                                                     ManagerMode::IntAccumulator;
+                if(active_int_combos_.empty()) {
+                    reset();
+                }
                 return;
             }
             case FunctionType::String:
@@ -213,7 +215,7 @@ void InputManager::handle_input(SDL_Event event) {
                 for(ComboFunction *combo: active_int_combos_) {
                     combo->int_func(int_accumulator_, 0);
                 }
-                reset();
+                int_accumulator_ = INT_MIN;
                 return;
             }
             else if(event.key.keysym.sym >= SDLK_KP_1 && 
