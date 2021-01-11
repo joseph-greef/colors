@@ -120,7 +120,7 @@ int Hodge::get_sum_neighbors(int x, int y) {
     return sum;
 }
 
-void Hodge::print_rules() {
+void Hodge::print_human_readable_rules() {
     std::cout << "Hodge";
     if(podge_) {
         std::cout << "podge: ";

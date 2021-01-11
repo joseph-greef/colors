@@ -92,7 +92,7 @@ void Ants::get_pixels(uint32_t *pixels) {
     }
 }
 
-void Ants::print_rules() {
+void Ants::print_human_readable_rules() {
 }
 
 void Ants::reset() {

@@ -27,7 +27,7 @@ class Ruleset {
         virtual ~Ruleset();
 
         virtual void get_pixels(uint32_t *pixels) = 0;
-        virtual void print_rules() = 0;
+        virtual void print_human_readable_rules() = 0;
         virtual void start();
         virtual void stop();
 

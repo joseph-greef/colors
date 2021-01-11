@@ -139,7 +139,7 @@ void Game::print_fps(void) {
 }
 
 void Game::print_rules(void) {
-    active_ruleset_->print_rules();
+    active_ruleset_->print_human_readable_rules();
 }
 
 void Game::take_screenshot(void) {

@@ -36,7 +36,7 @@ void EmptyRuleset::stop_cuda() {
 void EmptyRuleset::get_pixels(uint32_t *pixels) {
 }
 
-void EmptyRuleset::print_rules() {
+void EmptyRuleset::print_human_readable_rules() {
 }
 
 void EmptyRuleset::start() { 
