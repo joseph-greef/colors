@@ -114,7 +114,7 @@ std::string Initializer::init_words(std::string words) {
 void Initializer::start() { 
     ADD_FUNCTION_CALLER(&Initializer::init_random_board, SDL_SCANCODE_I, false, false,
                         "Init", "Initialize random board");
-    ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, SDL_SCANCODE_I, true, false,
+    ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, StringFunc, SDL_SCANCODE_I, true, false,
                         "Init", "Initialize words on board", _1);
     ADD_FUNCTION_CALLER(&Initializer::clear_board, SDL_SCANCODE_K, false, false,
                         "Init", "Clear board");

@@ -142,7 +142,7 @@ void Ants::start() {
 
     ADD_FUNCTION_CALLER(&Ants::reset, SDL_SCANCODE_E, false, false,
                         "Ants", "Reset simulation");
-    ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, SDL_SCANCODE_R, false, false,
+    ADD_FUNCTION_CALLER_W_ARGS(&Ants::add_colony, VoidFunc, SDL_SCANCODE_R, false, false,
                                "Ants", "Add ant colony with random DNA", 5);
 
     InputManager::add_int_changer(&colony_pheromone_display_, SDL_SCANCODE_A,

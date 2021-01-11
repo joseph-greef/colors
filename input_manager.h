@@ -13,8 +13,8 @@
 
 using std::placeholders::_1;
 using std::placeholders::_2;
-#define ADD_FUNCTION_CALLER_W_ARGS(func, scancode, control, shift, owner_name, description, ...) \
-    InputManager::add_input(std::bind((func), this, __VA_ARGS__), \
+#define ADD_FUNCTION_CALLER_W_ARGS(func, func_type, scancode, control, shift, owner_name, description, ...) \
+    InputManager::add_input(static_cast<func_type>(std::bind((func), this, __VA_ARGS__)), \
                             scancode, control, shift, owner_name, description)
 
 #define ADD_FUNCTION_CALLER(func, scancode, control, shift, owner_name, description) \
