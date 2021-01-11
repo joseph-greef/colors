@@ -44,8 +44,7 @@ class Hodge : public Ruleset {
         Hodge(int width, int height);
         ~Hodge();
 
-        static std::string Name;
-
+        std::string get_name();
         void get_pixels(uint32_t *pixels);
         void print_human_readable_rules();
         void start();

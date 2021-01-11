@@ -44,8 +44,6 @@ Hodge::~Hodge() {
 #endif //USE_GPU
 }
 
-std::string Hodge::Name = std::string("Hodge");
-
 #ifdef USE_GPU
 void Hodge::copy_board_to_gpu() {
     cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
@@ -61,6 +59,9 @@ void Hodge::stop_cuda() {
 }
 #endif //USE_GPU
 
+std::string Hodge::get_name() {
+    return "Hodge";
+}
 
 void Hodge::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);

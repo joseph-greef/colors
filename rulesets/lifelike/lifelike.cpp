@@ -93,6 +93,10 @@ void LifeLike::stop_cuda() {
 
 #endif //USE_GPU
 
+std::string LifeLike::get_name() {
+    return "LifeLike";
+}
+
 void LifeLike::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
 }

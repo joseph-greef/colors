@@ -26,6 +26,7 @@ class Ruleset {
         Ruleset(int width, int height);
         virtual ~Ruleset();
 
+        virtual std::string get_name() = 0;
         virtual void get_pixels(uint32_t *pixels) = 0;
         virtual void print_human_readable_rules() = 0;
         virtual void start();

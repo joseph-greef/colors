@@ -59,6 +59,10 @@ uint32_t Ants::generate_color() {
            (b << 16);
 }
 
+std::string Ants::get_name() {
+    return "Ants";
+}
+
 void Ants::get_pixels(uint32_t *pixels) {
     if(rainbow_view_) {
         rainbows_.age_to_pixels(rainbow_board_, pixels);

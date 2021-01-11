@@ -36,6 +36,8 @@ class LifeLike : public Ruleset {
     public:
         LifeLike(int width, int height);
         ~LifeLike();
+
+        std::string get_name();
         void get_pixels(uint32_t *pixels);
         void print_human_readable_rules();
         void start();

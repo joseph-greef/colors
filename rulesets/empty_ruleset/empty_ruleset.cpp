@@ -33,6 +33,9 @@ void EmptyRuleset::stop_cuda() {
 }
 #endif //USE_GPU
 
+std::string EmptyRuleset::get_name() {
+    return "EmptyRuleset";
+}
 void EmptyRuleset::get_pixels(uint32_t *pixels) {
 }
 
