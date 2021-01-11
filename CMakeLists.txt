@@ -1,7 +1,11 @@
 # Root CMakeLists
 
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.9 FATAL_ERROR)
+cmake_policy(SET CMP0091 NEW)
 project(colors LANGUAGES C CXX CUDA)
+
+set(CUDA_STATIC ON)
+set(SDL2_STATIC ON)
 
 find_package(CUDA REQUIRED)
 find_package(SDL2 REQUIRED)
@@ -59,7 +63,7 @@ target_link_libraries(colors PRIVATE
 
 # Add general purpose libraries
 target_link_libraries(colors PRIVATE
-  curand
+  cudart_static
   gifenc
   rulesets
   SDL2

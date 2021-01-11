@@ -1,4 +1,5 @@
 
+#include <algorithm>
 #include <climits>
 #include <iomanip>
 #include <iostream>
@@ -109,9 +110,8 @@ void InputManager::add_int_changer(int *variable, SDL_Scancode scancode,
     int_entries_.push_back(entry);
 
     auto perm_entry = find(int_entries_.begin(), int_entries_.end(), entry);
-    
-    add_input(std::bind(InputManager::modify_int, &*perm_entry, _1, _2), scancode,
-              control, shift, owner_name, description);
+    add_input(static_cast<IntFunc>(std::bind(InputManager::modify_int, &*perm_entry, _1, _2)),
+              scancode, control, shift, owner_name, description);
 }
 
 ComboFunction* InputManager::get_combo_func(SDL_Scancode scancode,
