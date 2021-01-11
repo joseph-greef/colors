@@ -173,6 +173,7 @@ void InputManager::handle_input(SDL_Event event) {
         switch(combo->func_type) {
             case FunctionType::Void:
                 combo->void_func();
+                std::cout << combo->description << std::endl;
                 break;
             case FunctionType::Int:
             {
