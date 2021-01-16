@@ -58,9 +58,13 @@ Game::Game(int fps_target, int width, int height)
     }
 
     ADD_FUNCTION_CALLER(&Game::print_rules, SDL_SCANCODE_P, false, false,
-                        "Game", "Print current game's ruleset");
-    ADD_FUNCTION_CALLER(&Game::save_rule_string_to_file, SDL_SCANCODE_R, true, false,
+                        "Game", "Print current game's rules");
+    ADD_FUNCTION_CALLER(&Game::save_rule_string_to_clipboard, SDL_SCANCODE_P, true, false,
+                        "Game", "Save rule to clipboard");
+    ADD_FUNCTION_CALLER(&Game::save_rule_string_to_file, SDL_SCANCODE_P, false, true,
                         "Game", "Save rule to file");
+    ADD_FUNCTION_CALLER(&Game::load_rule_string_from_clipboard, SDL_SCANCODE_R, true, false,
+                        "Game", "Load rule from clipboard");
     ADD_FUNCTION_CALLER(&Game::load_rule_string_from_file, SDL_SCANCODE_R, false, true,
                         "Game", "Load rule from file");
     ADD_FUNCTION_CALLER(&Game::print_fps, SDL_SCANCODE_X, false, false,
@@ -86,6 +90,8 @@ Game::~Game() {
         delete ruleset;
     }
     InputManager::remove_var_changer(SDL_SCANCODE_P, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_P, true, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_P, false, true);
     InputManager::remove_var_changer(SDL_SCANCODE_R, true, false);
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, true);
     InputManager::remove_var_changer(SDL_SCANCODE_X, false, false);
@@ -111,6 +117,12 @@ void Game::change_ruleset(int new_ruleset) {
 
 void Game::draw_board(uint32_t *board) {
     active_ruleset_->get_pixels(board);
+}
+
+void Game::load_rule_string_from_clipboard(void) {
+    std::string clipboard;
+    clip::get_text(clipboard);
+    active_ruleset_->load_rule_string(clipboard);
 }
 
 void Game::load_rule_string_from_file(void) {
@@ -171,6 +183,12 @@ void Game::print_fps(void) {
 
 void Game::print_rules(void) {
     active_ruleset_->print_human_readable_rules();
+}
+
+void Game::save_rule_string_to_clipboard(void) {
+    std::string rules = active_ruleset_->get_rule_string();
+    std::cout << rules << std::endl;
+    clip::set_text(rules);
 }
 
 void Game::save_rule_string_to_file(void) {

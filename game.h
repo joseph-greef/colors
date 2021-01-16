@@ -24,9 +24,11 @@ class Game {
         int height_;
 
         void change_ruleset(int new_ruleset);
+        void load_rule_string_from_clipboard(void);
         void load_rule_string_from_file(void);
         void print_fps(void);
         void print_rules(void);
+        void save_rule_string_to_clipboard(void);
         void save_rule_string_to_file(void);
         void take_screenshot(void);
 
