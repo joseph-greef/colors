@@ -17,6 +17,7 @@ LifeLike::LifeLike(int width, int height)
     , initializer_(&board_, 1, 54, width, height)
     , num_faders_(0)
     , rainbows_(width, height, 1)
+    , random_fader_modulo_(6)
 {
     //Random pretty pattern
     //bool born_tmp[9] = {0, 0, 0, 0, 1, 1 ,1 ,1, 1};
@@ -102,10 +103,26 @@ void LifeLike::get_pixels(uint32_t *pixels) {
 }
 
 std::string LifeLike::get_rule_string() {
-    return "";
+    std::ostringstream rule_ss;
+    for(int i = 0; i < 9; i++) {
+        rule_ss << born_[i] << " ";
+    }
+    for(int i = 0; i < 9; i++) {
+        rule_ss << stay_alive_[i] << " ";
+    }
+    rule_ss << num_faders_;
+    return rule_ss.str();
 }
 
 void LifeLike::load_rule_string(std::string rules) {
+    std::istringstream rule_ss(rules);
+    for(int i = 0; i < 9; i++) {
+        rule_ss >> born_[i];
+    }
+    for(int i = 0; i < 9; i++) {
+        rule_ss >> stay_alive_[i];
+    }
+    rule_ss >> num_faders_;
 }
 
 void LifeLike::print_human_readable_rules() {
@@ -120,6 +137,7 @@ void LifeLike::print_human_readable_rules() {
         std::cout << stay_alive_[i] << ", ";
     }
     std::cout << "}" << std::endl;
+    std::cout << "Num Faders: " << num_faders_ << std::endl;
 }
 
 void LifeLike::randomize_ruleset() {
@@ -128,6 +146,8 @@ void LifeLike::randomize_ruleset() {
         stay_alive_[i] = (rand()%100>20 ? 1 : 0);
     }
     born_[0] = false;
+
+    num_faders_ = (rand() % random_fader_modulo_);
 
     rainbows_.randomize_colors();
 
@@ -148,6 +168,9 @@ void LifeLike::start() {
     InputManager::add_int_changer(&num_faders_, SDL_SCANCODE_A,
                                   false, false, 0, INT_MAX,
                                   "LifeLike", "Number of refractory states after death");
+    InputManager::add_int_changer(&random_fader_modulo_, SDL_SCANCODE_A,
+                                  true, false, 0, INT_MAX,
+                                  "LifeLike", "Set modulo for number of refractory states during randomization");
 
     initializer_.start();
     rainbows_.start();
@@ -159,6 +182,7 @@ void LifeLike::stop() {
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_A, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_A, true, false);
 
     initializer_.stop();
     rainbows_.stop();

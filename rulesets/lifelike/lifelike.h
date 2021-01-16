@@ -16,6 +16,7 @@ class LifeLike : public Ruleset {
         Initializer initializer_;
         int num_faders_;
         Rainbows rainbows_;
+        int random_fader_modulo_;
         bool stay_alive_[9];
 
         void randomize_ruleset();
