@@ -1,3 +1,6 @@
 [submodule "gifenc"]
 	path = gifenc
-	url = git@github.com:lecram/gifenc.git
+	url = https://github.com/lecram/gifenc.git
+[submodule "clip"]
+	path = clip
+	url = https://github.com/dacap/clip.git

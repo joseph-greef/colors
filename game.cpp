@@ -6,6 +6,7 @@
 #include <iostream>
 #include <thread>
 
+#include "clip/clip.h"
 #include "game.h"
 #include "input_manager.h"
 

@@ -33,6 +33,16 @@ endif()
 
 add_subdirectory(rulesets)
 
+# Disable clip examples and tests
+set(CLIP_EXAMPLES OFF CACHE BOOL "Compile clip examples")
+set(CLIP_TESTS OFF CACHE BOOL "Compile clip tests")
+
+# In case that you have ${PNG_LIBRARY} set to support copy/paste images on Linux
+#set(CLIP_X11_PNG_LIBRARY "${PNG_LIBRARY}")
+
+# Add clip subdirectory to compile the library
+add_subdirectory(clip)
+
 add_library(gifenc STATIC gifenc/gifenc.c gifenc/gifenc.h)
 
 add_executable(colors
@@ -63,6 +73,7 @@ target_link_libraries(colors PRIVATE
 
 # Add general purpose libraries
 target_link_libraries(colors PRIVATE
+  clip
   cudart_static
   gifenc
   rulesets
