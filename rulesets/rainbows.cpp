@@ -21,6 +21,7 @@ Rainbows::Rainbows(int width, int height, int color_speed)
     , gif_delay_(2)
     , gif_frames_(0)
     , gif_frames_setting_(0)
+    , gif_loop_(true)
     , saved_alive_color_scheme_(2)
     , saved_dead_color_scheme_(2)
     , height_(height)
@@ -108,6 +109,9 @@ void Rainbows::start() {
     InputManager::add_bool_toggler(&changing_background_, SDL_SCANCODE_B,
                                    false, false,
                                    "Rainbows", "Toggle Changing Background");
+    InputManager::add_bool_toggler(&gif_loop_, SDL_SCANCODE_BACKSLASH,
+                                   true, true,
+                                   "Rainbows", "Toggle looping gif");
 
     ADD_FUNCTION_CALLER(&Rainbows::toggle_colors, SDL_SCANCODE_C, false, false,
                         "Rainbows", "Toggle colors");
@@ -186,7 +190,8 @@ void Rainbows::toggle_gif() {
             rainbow_no_alpha[nai + 2] = components[0];
         }
 
-        gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8, -1);
+        gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8,
+                          gif_loop_ ? 0 : -1);
         gif_frames_ = gif_frames_setting_;
     }
 }

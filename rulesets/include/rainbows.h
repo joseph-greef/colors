@@ -32,6 +32,7 @@ class Rainbows {
         int gif_delay_;
         int gif_frames_setting_;
         int gif_frames_;
+        bool gif_loop_;
 
         int saved_alive_color_scheme_;
         int saved_dead_color_scheme_;
