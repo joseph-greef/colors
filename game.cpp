@@ -68,7 +68,7 @@ Game::Game(int fps_target, int width, int height)
     InputManager::add_input(InputManager::print_controls, SDL_SCANCODE_APOSTROPHE,
                             false, false, "Game", "Print help message");
 
-    InputManager::add_int_changer(&fps_target, SDL_SCANCODE_V, false, false,
+    InputManager::add_int_changer(&fps_target_, SDL_SCANCODE_V, false, false,
                                   10, INT_MAX, "Game", "Set FPS target");
     InputManager::add_int_changer(&current_ruleset_, SDL_SCANCODE_Z, false, false,
                                   0, NUM_RULESETS-1, "Game", "Change ruleset");
