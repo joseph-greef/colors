@@ -121,6 +121,13 @@ int Hodge::get_sum_neighbors(int x, int y) {
     return sum;
 }
 
+std::string Hodge::get_rule_string() {
+    return "";
+}
+
+void Hodge::load_rule_string(std::string rules) {
+}
+
 void Hodge::print_human_readable_rules() {
     std::cout << "Hodge";
     if(podge_) {

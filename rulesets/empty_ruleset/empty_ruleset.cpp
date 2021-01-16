@@ -39,6 +39,13 @@ std::string EmptyRuleset::get_name() {
 void EmptyRuleset::get_pixels(uint32_t *pixels) {
 }
 
+std::string EmptyRuleset::get_rule_string() {
+    return "";
+}
+
+void EmptyRuleset::load_rule_string(std::string rules) {
+}
+
 void EmptyRuleset::print_human_readable_rules() {
 }
 

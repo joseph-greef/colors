@@ -101,6 +101,13 @@ void LifeLike::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
 }
 
+std::string LifeLike::get_rule_string() {
+    return "";
+}
+
+void LifeLike::load_rule_string(std::string rules) {
+}
+
 void LifeLike::print_human_readable_rules() {
     std::cout << "Born: {";
     for(int i = 0; i < 9; i++) {

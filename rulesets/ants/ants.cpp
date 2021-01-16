@@ -96,6 +96,13 @@ void Ants::get_pixels(uint32_t *pixels) {
     }
 }
 
+std::string Ants::get_rule_string() {
+    return "";
+}
+
+void Ants::load_rule_string(std::string rules) {
+}
+
 void Ants::print_human_readable_rules() {
 }
 
