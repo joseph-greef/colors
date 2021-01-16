@@ -133,7 +133,7 @@ void Game::main(void) {
 
 void Game::print_fps(void) {
     auto total_time = frame_times_.back() - frame_times_.front();
-    auto avg_frame_time = total_time / frame_times_.size();
+    auto avg_frame_time = total_time / (frame_times_.size() - 1);
     uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(avg_frame_time).count();
     std::cout << "FPS: " << 1000000.0 / time << std::endl;
 }
