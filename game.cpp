@@ -1,6 +1,7 @@
 
 #include <ctime>
 #include <chrono>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <thread>
@@ -55,10 +56,14 @@ Game::Game(int fps_target, int width, int height)
         frame_times_.push_back(std::chrono::high_resolution_clock::now());
     }
 
+    ADD_FUNCTION_CALLER(&Game::print_rules, SDL_SCANCODE_P, false, false,
+                        "Game", "Print current game's ruleset");
+    ADD_FUNCTION_CALLER(&Game::save_rule_string_to_file, SDL_SCANCODE_R, true, false,
+                        "Game", "Save rule to file");
+    ADD_FUNCTION_CALLER(&Game::load_rule_string_from_file, SDL_SCANCODE_R, false, true,
+                        "Game", "Load rule from file");
     ADD_FUNCTION_CALLER(&Game::print_fps, SDL_SCANCODE_X, false, false,
                         "Game", "Print frames per second");
-    ADD_FUNCTION_CALLER(&Game::print_rules, SDL_SCANCODE_P, false, true,
-                        "Game", "Print current game's ruleset");
     ADD_FUNCTION_CALLER(&Game::take_screenshot, SDL_SCANCODE_LEFTBRACKET, false, false,
                         "Game", "Take screenshot");
 
@@ -79,6 +84,9 @@ Game::~Game() {
     for(Ruleset *ruleset: rulesets_) {
         delete ruleset;
     }
+    InputManager::remove_var_changer(SDL_SCANCODE_P, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_R, true, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_R, false, true);
     InputManager::remove_var_changer(SDL_SCANCODE_X, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_LEFTBRACKET, false, false);
 
@@ -102,6 +110,28 @@ void Game::change_ruleset(int new_ruleset) {
 
 void Game::draw_board(uint32_t *board) {
     active_ruleset_->get_pixels(board);
+}
+
+void Game::load_rule_string_from_file(void) {
+    std::string line;
+    std::ostringstream name_ss;
+    std::ifstream rules_file;
+    std::vector<std::string> rules_lines;
+    std::vector<std::string> out_lines;
+
+    name_ss << active_ruleset_->get_name() << ".txt";
+    rules_file.open(name_ss.str(), std::ios::in);
+
+    while(std::getline(rules_file, line)) {
+        rules_lines.push_back(line);
+    }
+
+    std::sample(rules_lines.begin(), rules_lines.end(), std::back_inserter(out_lines),
+                1, std::mt19937{std::random_device{}()});
+
+    std::cout << out_lines[0] << std::endl;
+
+    active_ruleset_->load_rule_string(out_lines[0]);
 }
 
 void Game::main(void) {
@@ -140,6 +170,15 @@ void Game::print_fps(void) {
 
 void Game::print_rules(void) {
     active_ruleset_->print_human_readable_rules();
+}
+
+void Game::save_rule_string_to_file(void) {
+    std::ofstream rules_file;
+    std::ostringstream name_ss;
+    name_ss << active_ruleset_->get_name() << ".txt";
+    rules_file.open(name_ss.str(), std::ios::out | std::ios::app);
+    rules_file << active_ruleset_->get_rule_string() << "\n";
+    rules_file.close();
 }
 
 void Game::take_screenshot(void) {
