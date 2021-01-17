@@ -98,7 +98,10 @@ Game::Game(int fps_target, int width, int height)
                         "Game", "Take screenshot");
 
     ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z, 
-                               false, false, "Game", "Change ruleset", _1, _2);
+                               false, false, "Game", "Change ruleset", _1, _2, false);
+    ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z, 
+                               true, false, "Game", "Change ruleset (transfer board)",
+                               _1, _2, true);
 
     InputManager::add_bool_toggler(&running_, SDL_SCANCODE_ESCAPE, false, false,
                                    "Game", "Quit application");
@@ -124,6 +127,7 @@ Game::~Game() {
     InputManager::remove_var_changer(SDL_SCANCODE_LEFTBRACKET, false, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_Z, false, false);
+    InputManager::remove_var_changer(SDL_SCANCODE_Z, true, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_ESCAPE, false, false);
 
@@ -135,7 +139,7 @@ Game::~Game() {
     SDL_Quit();
 }
 
-int Game::change_ruleset(int new_ruleset, int modifier) {
+int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
     if(new_ruleset == INT_MIN) {
         new_ruleset = current_ruleset_;
     }
@@ -143,11 +147,20 @@ int Game::change_ruleset(int new_ruleset, int modifier) {
     if(new_ruleset != current_ruleset_ &&
        new_ruleset >= 0 &&
        new_ruleset < rulesets_.size()) {
+        Ruleset *old_ruleset = active_ruleset_;
+
         active_ruleset_->stop();
         InputManager::trigger_reset();
         active_ruleset_ = rulesets_[new_ruleset];
         active_ruleset_->start();
         current_ruleset_ = new_ruleset;
+
+        if(transfer_board &&
+           old_ruleset->board_get_type() != BoardType::Other &&
+           active_ruleset_->board_set_type() != BoardType::Other &&
+           old_ruleset->board_get_type() == active_ruleset_->board_set_type()) {
+            active_ruleset_->set_board(old_ruleset->get_board());
+        }
     }
     return 0;
 }
@@ -185,7 +198,7 @@ void Game::load_rule_string_from_file(void) {
 }
 
 void Game::load_rule_string_from_temp(int index) {
-    change_ruleset(saved_rules_[index].ruleset_num, 0);
+    change_ruleset(saved_rules_[index].ruleset_num, 0, true);
     active_ruleset_->load_rule_string(saved_rules_[index].rule_string);
     std::cout << std::endl << index << " | " << saved_rules_[index].rule_string << std::endl;
 }

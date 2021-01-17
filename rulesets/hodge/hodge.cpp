@@ -59,6 +59,18 @@ void Hodge::stop_cuda() {
 }
 #endif //USE_GPU
 
+BoardType::BoardType Hodge::board_get_type() {
+    return BoardType::AgeBoard;
+}
+
+BoardType::BoardType Hodge::board_set_type() {
+    return BoardType::AgeBoard;
+}
+
+void* Hodge::get_board() {
+    return static_cast<void*>(board_);
+}
+
 std::string Hodge::get_name() {
     return "Hodge";
 }
@@ -165,6 +177,10 @@ void Hodge::randomize_ruleset() {
     infection_threshold_ = rand() % 4 + 1;
 
     rainbows_.randomize_colors();
+}
+
+void Hodge::set_board(void *new_board) {
+    memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
 void Hodge::start() { 

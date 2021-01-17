@@ -44,6 +44,14 @@ void Ants::add_colony(int num_ants) {
     colonies_.back()->add_ants(&ants_, num_ants);
 }
 
+BoardType::BoardType Ants::board_get_type() {
+    return BoardType::AgeBoard;
+}
+
+BoardType::BoardType Ants::board_set_type() {
+    return BoardType::Other;
+}
+
 uint32_t Ants::generate_color() {
     uint8_t r = 0;
     uint8_t b = 0;
@@ -57,6 +65,10 @@ uint32_t Ants::generate_color() {
     return (r << 0) |
            (g << 8) |
            (b << 16);
+}
+
+void* Ants::get_board() {
+    return static_cast<void*>(rainbow_board_);
 }
 
 std::string Ants::get_name() {
@@ -145,6 +157,9 @@ void Ants::restock_colonies(int num_ants) {
         std::cout << "restocking" << std::endl;
         add_colony(num_ants);
     }
+}
+
+void Ants::set_board(void *new_board) {
 }
 
 #ifdef USE_GPU

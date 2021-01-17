@@ -11,6 +11,13 @@ enum NeighborhoodType {
     Moore,
 };
 
+namespace BoardType {
+    enum BoardType {
+        AgeBoard,
+        Other,
+    };
+};
+
 class Ruleset {
     protected:
         int height_;
@@ -26,11 +33,15 @@ class Ruleset {
         Ruleset(int width, int height);
         virtual ~Ruleset();
 
+        virtual BoardType::BoardType board_get_type() = 0;
+        virtual BoardType::BoardType board_set_type() = 0;
+        virtual void* get_board() = 0;
         virtual std::string get_name() = 0;
         virtual void get_pixels(uint32_t *pixels) = 0;
         virtual std::string get_rule_string() = 0;
         virtual void load_rule_string(std::string rules) = 0;
         virtual void print_human_readable_rules() = 0;
+        virtual void set_board(void *new_board) = 0;
         virtual void start();
         virtual void stop();
 

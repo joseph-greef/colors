@@ -28,7 +28,7 @@ class Game {
         int width_;
         int height_;
 
-        int change_ruleset(int new_ruleset, int modifier);
+        int change_ruleset(int new_ruleset, int modifier, bool transfer_board);
         void load_rule_string_from_clipboard(void);
         void load_rule_string_from_file(void);
         void load_rule_string_from_temp(int index);

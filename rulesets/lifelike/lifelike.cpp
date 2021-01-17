@@ -94,6 +94,18 @@ void LifeLike::stop_cuda() {
 
 #endif //USE_GPU
 
+BoardType::BoardType LifeLike::board_get_type() {
+    return BoardType::AgeBoard;
+}
+
+BoardType::BoardType LifeLike::board_set_type() {
+    return BoardType::AgeBoard;
+}
+
+void* LifeLike::get_board() {
+    return static_cast<void*>(board_);
+}
+
 std::string LifeLike::get_name() {
     return "LifeLike";
 }
@@ -156,6 +168,10 @@ void LifeLike::randomize_ruleset() {
         copy_rules_to_gpu();
     }
 #endif //USE_GPU
+}
+
+void LifeLike::set_board(void *new_board) {
+    memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
 void LifeLike::start() { 
