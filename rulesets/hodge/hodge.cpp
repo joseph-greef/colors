@@ -122,10 +122,24 @@ int Hodge::get_sum_neighbors(int x, int y) {
 }
 
 std::string Hodge::get_rule_string() {
-    return "";
+    std::ostringstream rule_ss;
+    rule_ss << death_threshold_ << " ";
+    rule_ss << infection_rate_ << " ";
+    rule_ss << infection_threshold_ << " ";
+    rule_ss << k1_ << " ";
+    rule_ss << k2_ << " ";
+    rule_ss << podge_;
+    return rule_ss.str();
 }
 
 void Hodge::load_rule_string(std::string rules) {
+    std::istringstream rule_ss(rules);
+    rule_ss >> death_threshold_;
+    rule_ss >> infection_rate_;
+    rule_ss >> infection_threshold_;
+    rule_ss >> k1_;
+    rule_ss >> k2_;
+    rule_ss >> podge_;
 }
 
 void Hodge::print_human_readable_rules() {
