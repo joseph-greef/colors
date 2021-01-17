@@ -99,6 +99,7 @@ class InputManager {
         static std::list<IntEntry> int_entries_;
         static KeyFunction key_functions_[SDL_NUM_SCANCODES];
         static ManagerMode::ManagerMode mode_;
+        static bool reset_pending_;
 
         static std::list<ComboFunction*> mouse_left_combos_;
         static FunctionType::FunctionType mouse_left_mode_;
@@ -113,6 +114,7 @@ class InputManager {
                                              bool shift);
 
         static int modify_int(IntEntry *entry, int override_value, int modify_entry);
+        static void reset();
         static void toggle_bool(bool *var);
 
     public:
@@ -137,7 +139,7 @@ class InputManager {
         static void handle_input(SDL_Event event);
         static void print_controls();
         static void remove_var_changer(SDL_Scancode scancode, bool control, bool shift);
-        static void reset();
+        static void trigger_reset();
 };
 
 #endif //_INPUT_MANAGER_H

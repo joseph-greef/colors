@@ -23,6 +23,7 @@ int InputManager::int_accumulator_ = INT_MIN;
 std::list<IntEntry> InputManager::int_entries_ = std::list<IntEntry>();
 KeyFunction InputManager::key_functions_[SDL_NUM_SCANCODES] = { FunctionType::None };
 ManagerMode::ManagerMode InputManager::mode_ = ManagerMode::Normal;
+bool InputManager::reset_pending_ = false;
 
 std::list<ComboFunction*> InputManager::mouse_left_combos_ = 
         std::list<ComboFunction*>();
@@ -135,6 +136,10 @@ void InputManager::handle_input(SDL_Event event) {
     static bool shift = false;
     int mul;
 
+    if(reset_pending_) {
+        reset();
+    }
+
     if(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) {
         control = event.key.keysym.mod & KMOD_CTRL;
         shift = event.key.keysym.mod & KMOD_SHIFT;
@@ -163,7 +168,7 @@ void InputManager::handle_input(SDL_Event event) {
     else if(event.type == SDL_KEYDOWN) {
         if(event.key.keysym.scancode == SDL_SCANCODE_BACKSPACE) {
             std::cout << "Clearing all active controls" << std::endl;
-            reset();
+            trigger_reset();
         }
     }
     if((mode_ == ManagerMode::Normal || mode_ == ManagerMode::IntAccumulator) &&
@@ -188,7 +193,7 @@ void InputManager::handle_input(SDL_Event event) {
                 }
 
                 if(active_int_combos_.empty()) {
-                    reset();
+                    trigger_reset();
                 }
                 return;
             }
@@ -282,7 +287,7 @@ void InputManager::handle_input(SDL_Event event) {
             if(event.key.keysym.scancode == SDL_SCANCODE_RETURN ||
                event.key.keysym.scancode == SDL_SCANCODE_KP_ENTER) {
                 active_string_combo_->string_func(string_accumulator_);
-                reset();
+                trigger_reset();
             }
             else if(strlen(key_name) == 1) {
                 string_accumulator_ += *key_name;
@@ -403,9 +408,15 @@ void InputManager::reset() {
     string_accumulator_ = "";
 
     mode_ = ManagerMode::Normal;
+
+    reset_pending_ = false;
 }
 
 void InputManager::toggle_bool(bool *var) {
     *var = !*var;
+}
+
+void InputManager::trigger_reset() {
+    reset_pending_ = true;
 }
 

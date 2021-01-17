@@ -10,17 +10,31 @@
 #include "game.h"
 #include "input_manager.h"
 
+#define FRAMES_TO_AVERAGE 10
+
 
 Game::Game(int fps_target, int width, int height)
     : active_ruleset_(NULL)
     , current_ruleset_(0)
     , fps_target_(fps_target)
-    , last_ruleset_(current_ruleset_)
     , running_(true)
     , width_(width)
     , height_(height)
 {
     SDL_DisplayMode display_mode;
+
+    TempRuleEntry initial_temp_rules[10] = {
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+    };
 
     if(SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cout << "ERROR SDL_Init" << std::endl;
@@ -53,8 +67,19 @@ Game::Game(int fps_target, int width, int height)
     active_ruleset_ = rulesets_[current_ruleset_];
     active_ruleset_->start();
 
-    for(int i = 0; i < 10; i++) {
+    for(int i = 0; i < FRAMES_TO_AVERAGE; i++) {
         frame_times_.push_back(std::chrono::high_resolution_clock::now());
+    }
+
+    for(int i = 0; i < 10; i++) {
+        ADD_FUNCTION_CALLER_W_ARGS(&Game::load_rule_string_from_temp, VoidFunc,
+                   static_cast<SDL_Scancode>(static_cast<int>(SDL_SCANCODE_1) + i),
+                   false, false, "Game", "Load rules from temp storage", i);
+        ADD_FUNCTION_CALLER_W_ARGS(&Game::save_rule_string_to_temp, VoidFunc,
+                   static_cast<SDL_Scancode>(static_cast<int>(SDL_SCANCODE_1) + i),
+                   true, false, "Game", "Save rules to temp storage", i);
+        saved_rules_[i].ruleset_num = initial_temp_rules[i].ruleset_num;
+        saved_rules_[i].rule_string = initial_temp_rules[i].rule_string;
     }
 
     ADD_FUNCTION_CALLER(&Game::print_rules, SDL_SCANCODE_P, false, false,
@@ -72,6 +97,9 @@ Game::Game(int fps_target, int width, int height)
     ADD_FUNCTION_CALLER(&Game::take_screenshot, SDL_SCANCODE_LEFTBRACKET, false, false,
                         "Game", "Take screenshot");
 
+    ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z, 
+                               false, false, "Game", "Change ruleset", _1, _2);
+
     InputManager::add_bool_toggler(&running_, SDL_SCANCODE_ESCAPE, false, false,
                                    "Game", "Quit application");
 
@@ -80,8 +108,6 @@ Game::Game(int fps_target, int width, int height)
 
     InputManager::add_int_changer(&fps_target_, SDL_SCANCODE_V, false, false,
                                   10, INT_MAX, "Game", "Set FPS target");
-    InputManager::add_int_changer(&current_ruleset_, SDL_SCANCODE_Z, false, false,
-                                  0, NUM_RULESETS-1, "Game", "Change ruleset");
 }
 
 Game::~Game() {
@@ -97,22 +123,33 @@ Game::~Game() {
     InputManager::remove_var_changer(SDL_SCANCODE_X, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_LEFTBRACKET, false, false);
 
+    InputManager::remove_var_changer(SDL_SCANCODE_Z, false, false);
+
     InputManager::remove_var_changer(SDL_SCANCODE_ESCAPE, false, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_APOSTROPHE, false, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_V, false, false);
-    InputManager::remove_var_changer(SDL_SCANCODE_Z, false, false);
 
     SDL_DestroyWindow(window_);
     SDL_Quit();
 }
 
-void Game::change_ruleset(int new_ruleset) {
-    active_ruleset_->stop();
-    InputManager::reset();
-    active_ruleset_ = rulesets_[new_ruleset];
-    active_ruleset_->start();
+int Game::change_ruleset(int new_ruleset, int modifier) {
+    if(new_ruleset == INT_MIN) {
+        new_ruleset = current_ruleset_;
+    }
+    new_ruleset += modifier;
+    if(new_ruleset != current_ruleset_ &&
+       new_ruleset >= 0 &&
+       new_ruleset < rulesets_.size()) {
+        active_ruleset_->stop();
+        InputManager::trigger_reset();
+        active_ruleset_ = rulesets_[new_ruleset];
+        active_ruleset_->start();
+        current_ruleset_ = new_ruleset;
+    }
+    return 0;
 }
 
 void Game::draw_board(uint32_t *board) {
@@ -147,6 +184,12 @@ void Game::load_rule_string_from_file(void) {
     active_ruleset_->load_rule_string(out_lines[0]);
 }
 
+void Game::load_rule_string_from_temp(int index) {
+    change_ruleset(saved_rules_[index].ruleset_num, 0);
+    active_ruleset_->load_rule_string(saved_rules_[index].rule_string);
+    std::cout << index << " | " << saved_rules_[index].rule_string << std::endl;
+}
+
 void Game::main(void) {
     SDL_Event event;
 
@@ -156,7 +199,8 @@ void Game::main(void) {
         active_ruleset_->get_pixels(
                 static_cast<uint32_t*>(SDL_GetWindowSurface(window_)->pixels));
         SDL_UpdateWindowSurface(window_);
-        tick();
+
+        active_ruleset_->tick();
 
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
@@ -166,6 +210,9 @@ void Game::main(void) {
                 InputManager::handle_input(event);
             }
         }
+
+        frame_times_.pop_front();
+        frame_times_.push_back(std::chrono::high_resolution_clock::now());
 
         std::chrono::microseconds frame_delay(1000000/fps_target_);
         auto next_frame_time = start_time + frame_delay;
@@ -200,6 +247,12 @@ void Game::save_rule_string_to_file(void) {
     rules_file.close();
 }
 
+void Game::save_rule_string_to_temp(int index) {
+    saved_rules_[index].ruleset_num = current_ruleset_;
+    saved_rules_[index].rule_string = active_ruleset_->get_rule_string();
+    std::cout << index << " | " << saved_rules_[index].rule_string << std::endl;
+}
+
 void Game::take_screenshot(void) {
     //Get the time and convert it to a string.png
     std::time_t t = std::time(nullptr);
@@ -211,17 +264,4 @@ void Game::take_screenshot(void) {
     IMG_SavePNG(SDL_GetWindowSurface(window_), str.c_str());
 }
 
-void Game::tick(void) {
-    if(last_ruleset_ != current_ruleset_) {
-        change_ruleset(current_ruleset_);
-    }
-    last_ruleset_ = current_ruleset_;
-
-    frame_times_.pop_front();
-    frame_times_.push_back(std::chrono::high_resolution_clock::now());
-
-    active_ruleset_->tick();
-
-    return;
-}
 
