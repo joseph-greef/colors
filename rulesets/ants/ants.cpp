@@ -97,10 +97,22 @@ void Ants::get_pixels(uint32_t *pixels) {
 }
 
 std::string Ants::get_rule_string() {
+    if(colony_pheromone_display_ > 0 &&
+       colony_pheromone_display_ <= static_cast<int>(colonies_.size()))
+    {
+        auto colonies_it = colonies_.begin();
+        std::advance(colonies_it, colony_pheromone_display_ - 1);
+        return (*colonies_it)->get_dna_string();
+    }
     return "";
 }
 
 void Ants::load_rule_string(std::string rules) {
+    colonies_.push_back(new Colony(width_, height_,
+                                   rand() % width_, rand() % height_,
+                                   generate_color(),
+                                   rules));
+    colonies_.back()->add_ants(&ants_, 5);
 }
 
 void Ants::print_human_readable_rules() {

@@ -79,6 +79,7 @@ class Colony {
         Colony(int width, int height, int x, int y, uint32_t color);
         Colony(int width, int height, uint32_t color, ColonyDNA *DNA,
                Ant *starting_ant);
+        Colony(int width, int height, int x, int y, uint32_t color, std::string dna_string);
         ~Colony();
         void add_ants(std::list<Ant*> *ants, int number);
         void add_enemy_smell(int x, int y, float amount);
@@ -91,6 +92,7 @@ class Colony {
         std::list<Ant*> *get_ants();
         float get_aggression();
         uint32_t get_color();
+        std::string get_dna_string();
         int get_offset();
         uint32_t get_num_ants();
         int get_num_food_collected();

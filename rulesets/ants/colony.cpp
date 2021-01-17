@@ -88,6 +88,28 @@ Colony::Colony(int width, int height, uint32_t color, ColonyDNA *DNA,
     ants_.push_back(starting_ant);
 }
 
+Colony::Colony(int width, int height, int x, int y, uint32_t color, std::string dna_string)
+    : Colony(width, height, x, y, color)
+{
+    std::istringstream dna_ss(dna_string);
+    dna_ss >> DNA_.aggression_;
+    dna_ss >> DNA_.enemy_encounter_amount_;
+    dna_ss >> DNA_.enemy_signal_strength_;
+    dna_ss >> DNA_.enemy_smooth_amount_;
+    dna_ss >> DNA_.food_signal_strength_;
+    dna_ss >> DNA_.food_smooth_amount_;
+    dna_ss >> DNA_.home_signal_strength_;
+    dna_ss >> DNA_.home_smell_amount_;
+    dna_ss >> DNA_.home_smooth_amount_;
+    dna_ss >> DNA_.pheromone_decay_rate_;
+    dna_ss >> DNA_.randomness_;
+    dna_ss >> DNA_.enemy_blur_size_;
+    dna_ss >> DNA_.food_blur_size_;
+    dna_ss >> DNA_.home_blur_size_;
+    dna_ss >> DNA_.max_signal_steps_;
+    dna_ss >> DNA_.max_total_steps_;
+}
+
 Colony::~Colony() {
     for(Ant *ant: ants_) {
         delete ant;
@@ -182,6 +204,26 @@ float Colony::get_aggression() {
 
 uint32_t Colony::get_color() {
     return color_;
+}
+
+std::string Colony::get_dna_string() {
+    std::ostringstream dna_ss;
+    dna_ss << DNA_.aggression_ << " ";
+    dna_ss << DNA_.enemy_encounter_amount_ << " ";
+    dna_ss << DNA_.enemy_signal_strength_ << " ";
+    dna_ss << DNA_.enemy_smooth_amount_ << " ";
+    dna_ss << DNA_.food_signal_strength_ << " ";
+    dna_ss << DNA_.food_smooth_amount_ << " ";
+    dna_ss << DNA_.home_signal_strength_ << " ";
+    dna_ss << DNA_.home_smell_amount_ << " ";
+    dna_ss << DNA_.home_smooth_amount_ << " ";
+    dna_ss << DNA_.pheromone_decay_rate_ << " ";
+    dna_ss << DNA_.randomness_ << " ";
+    dna_ss << DNA_.enemy_blur_size_ << " ";
+    dna_ss << DNA_.food_blur_size_ << " ";
+    dna_ss << DNA_.home_blur_size_ << " ";
+    dna_ss << DNA_.max_signal_steps_;
+    return dna_ss.str();
 }
 
 int Colony::get_num_food_collected() {
