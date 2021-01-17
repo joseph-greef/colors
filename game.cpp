@@ -187,7 +187,7 @@ void Game::load_rule_string_from_file(void) {
 void Game::load_rule_string_from_temp(int index) {
     change_ruleset(saved_rules_[index].ruleset_num, 0);
     active_ruleset_->load_rule_string(saved_rules_[index].rule_string);
-    std::cout << index << " | " << saved_rules_[index].rule_string << std::endl;
+    std::cout << std::endl << index << " | " << saved_rules_[index].rule_string << std::endl;
 }
 
 void Game::main(void) {
@@ -250,7 +250,8 @@ void Game::save_rule_string_to_file(void) {
 void Game::save_rule_string_to_temp(int index) {
     saved_rules_[index].ruleset_num = current_ruleset_;
     saved_rules_[index].rule_string = active_ruleset_->get_rule_string();
-    std::cout << index << " | " << saved_rules_[index].rule_string << std::endl;
+    std::cout << std::endl << index << " | " << 
+                 saved_rules_[index].rule_string << std::endl;
 }
 
 void Game::take_screenshot(void) {
