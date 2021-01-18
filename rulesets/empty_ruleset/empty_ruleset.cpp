@@ -25,13 +25,17 @@ EmptyRuleset::~EmptyRuleset() {
 #endif //USE_GPU
 }
 
-#ifdef USE_GPU
-void EmptyRuleset::start_cuda() {
+BoardType::BoardType EmptyRuleset::board_get_type() {
+    return BoardType::Other;
 }
 
-void EmptyRuleset::stop_cuda() {
+BoardType::BoardType EmptyRuleset::board_set_type() {
+    return BoardType::Other;
 }
-#endif //USE_GPU
+
+void* EmptyRuleset::get_board() {
+    return NULL;
+}
 
 std::string EmptyRuleset::get_name() {
     return "EmptyRuleset";
@@ -48,6 +52,17 @@ void EmptyRuleset::load_rule_string(std::string rules) {
 
 void EmptyRuleset::print_human_readable_rules() {
 }
+
+void EmptyRuleset::set_board(void* new_board) {
+}
+
+#ifdef USE_GPU
+void EmptyRuleset::start_cuda() {
+}
+
+void EmptyRuleset::stop_cuda() {
+}
+#endif //USE_GPU
 
 void EmptyRuleset::start() { 
     std::cout << "Starting EmptyRuleset" << std::endl;
