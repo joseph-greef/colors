@@ -63,6 +63,7 @@ target_link_libraries(colors PRIVATE
   empty_ruleset
   hodge
   lifelike
+  video_feedback
 )
 
 # Add general purpose libraries

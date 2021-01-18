@@ -53,6 +53,7 @@ class Ruleset {
         void toggle_gpu();
 };
 
+#include "video_feedback/video_feedback.h"
 #include "lifelike/lifelike.h"
 #include "hodge/hodge.h"
 #include "ants/ants.h"

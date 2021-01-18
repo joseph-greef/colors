@@ -4,6 +4,7 @@ add_subdirectory(ants)
 add_subdirectory(empty_ruleset)
 add_subdirectory(hodge)
 add_subdirectory(lifelike)
+add_subdirectory(video_feedback)
 
 add_library(rulesets STATIC
   initializer.cpp
