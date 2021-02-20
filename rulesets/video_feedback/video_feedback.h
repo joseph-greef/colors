@@ -1,17 +1,23 @@
+#ifndef _VIDEO_FEEDBACK_H
+#define _VIDEO_FEEDBACK_H
 
-#ifndef _EMPTY_RULESET_H
-#define _EMPTY_RULESET_H
+#include <vector>
 
 #include "ruleset.h"
+#include "transformations/transformations.h"
 
 
 class VideoFeedback : public Ruleset {
     private:
-#ifdef USE_GPU
+        Pixel *current_frame_;
+        Pixel *last_frame_;
+
+        std::vector<Transformation*> transformations_;
+
         void start_cuda();
         void stop_cuda();
-#endif
 
+        void randomize_effects();
     public:
         VideoFeedback(int width, int height);
         ~VideoFeedback();
@@ -30,4 +36,4 @@ class VideoFeedback : public Ruleset {
         void tick();
 };
 
-#endif //_EMPTY_RULESET_H
+#endif //_VIDEO_FEEDBACK_H
