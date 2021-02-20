@@ -3,11 +3,9 @@
 #include <iostream>
 #include <stdlib.h>
 
-#ifdef USE_GPU
 #include "curand.h"
 #include "cuda_runtime.h"
 #include "lifelike.cuh"
-#endif
 
 #include "input_manager.h"
 #include "lifelike.h"
@@ -46,13 +44,13 @@ LifeLike::LifeLike(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
-#ifdef USE_GPU
+
     std::cout << "Allocating CUDA memory for LifeLike" << std::endl;
     cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_born_, 9 * sizeof(int));
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
-#endif //USE_GPU
+
 
     initializer_.init_center_cross();
 }
@@ -60,16 +58,16 @@ LifeLike::LifeLike(int width, int height)
 LifeLike::~LifeLike() {
     delete [] board_;
     delete [] board_buffer_;
-#ifdef USE_GPU
+
     std::cout << "Freeing CUDA memory for LifeLike" << std::endl;
     cudaFree((void*)cudev_board_);
     cudaFree((void*)cudev_board_buffer_);
     cudaFree((void*)cudev_born_);
     cudaFree((void*)cudev_stay_alive_);
-#endif //USE_GPU
+
 }
 
-#ifdef USE_GPU
+
 void LifeLike::copy_board_to_gpu() {
     cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
                cudaMemcpyHostToDevice);
@@ -92,7 +90,7 @@ void LifeLike::start_cuda() {
 void LifeLike::stop_cuda() {
 }
 
-#endif //USE_GPU
+
 
 BoardType::BoardType LifeLike::board_get_type() {
     return BoardType::AgeBoard;
@@ -163,11 +161,11 @@ void LifeLike::randomize_ruleset() {
 
     rainbows_.randomize_colors();
 
-#ifdef USE_GPU
+
     if(use_gpu_) {
         copy_rules_to_gpu();
     }
-#endif //USE_GPU
+
 }
 
 void LifeLike::set_board(void *new_board) {
@@ -207,15 +205,14 @@ void LifeLike::stop() {
 void LifeLike::tick() {
     if(initializer_.was_board_changed()) {
         current_tick_ = num_faders_;
-#ifdef USE_GPU
+
         if(use_gpu_) {
             copy_board_to_gpu();
         }
-#endif
     }
 
     if(use_gpu_) {
-#if USE_GPU
+
         int *temp = NULL;
 
         call_cuda_lifelike(cudev_board_, cudev_board_buffer_, cudev_born_,
@@ -230,7 +227,7 @@ void LifeLike::tick() {
         temp = cudev_board_buffer_;
         cudev_board_buffer_ = cudev_board_;
         cudev_board_ = temp;
-#endif //USE_GPU
+
     }
     else {
         update_board();

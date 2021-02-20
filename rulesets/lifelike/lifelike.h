@@ -21,7 +21,7 @@ class LifeLike : public Ruleset {
 
         void randomize_ruleset();
         void update_board();
-#ifdef USE_GPU
+
         int *cudev_board_;
         int *cudev_board_buffer_;
         bool *cudev_born_;
@@ -32,7 +32,6 @@ class LifeLike : public Ruleset {
 
         void start_cuda();
         void stop_cuda();
-#endif
 
     public:
         LifeLike(int width, int height);

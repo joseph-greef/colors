@@ -52,7 +52,7 @@ class Colony {
         std::uniform_real_distribution<> dist_full_;
         std::uniform_real_distribution<> dist_positive_;
 
-#ifdef USE_GPU
+
         cv::cuda::GpuMat enemy_mat_;
         cv::cuda::GpuMat enemy_mat_buffer_;
         cv::Ptr<cv::cuda::Filter> enemy_gauss_;
@@ -64,7 +64,7 @@ class Colony {
         cv::cuda::GpuMat home_mat_;
         cv::cuda::GpuMat home_mat_buffer_;
         cv::Ptr<cv::cuda::Filter> home_gauss_;
-#endif //USE_GPU
+
 
         float *enemy_pheromones_;
         float *enemy_pheromones_buffer_;
@@ -103,9 +103,9 @@ class Colony {
         bool owns_ant(Ant *ant);
         void update_pheromones();
 
-#ifdef USE_GPU
+
         void queue_cuda_ops(cv::cuda::Stream stream);
-#endif //USE_GPU
+
 
 };
 

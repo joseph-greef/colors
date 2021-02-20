@@ -48,10 +48,9 @@ class Ants : public Ruleset {
         uint32_t generate_color();
         void reset();
         void restock_colonies(int num_ants);
-#ifdef USE_GPU
+
         void start_cuda();
         void stop_cuda();
-#endif
 
     public:
         Ants(int width, int height);

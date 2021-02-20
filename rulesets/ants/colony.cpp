@@ -16,14 +16,14 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
     , e2_(rd_())
     , dist_full_(-1, 1)
     , dist_positive_(0, 1)
-#ifdef USE_GPU
+
     , enemy_mat_(width, height, CV_32F)
     , enemy_mat_buffer_(width, height, CV_32F)
     , food_mat_(width, height, CV_32F)
     , food_mat_buffer_(width, height, CV_32F)
     , home_mat_(width, height, CV_32F)
     , home_mat_buffer_(width, height, CV_32F)
-#endif //USE_GPU
+
 {
     if(x_ < 3) {
         x_ = 3;
@@ -64,7 +64,7 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
     enemy_pheromones_ = new float[width*height]();
     enemy_pheromones_buffer_ = new float[width*height]();
 
-#ifdef USE_GPU
+
     enemy_gauss_ = cv::cuda::createGaussianFilter(enemy_mat_.type(), -1,
             cv::Size(DNA_.enemy_blur_size_, DNA_.enemy_blur_size_),
             DNA_.enemy_smooth_amount_);
@@ -76,7 +76,7 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
     home_gauss_ = cv::cuda::createGaussianFilter(home_mat_.type(), -1,
             cv::Size(DNA_.home_blur_size_, DNA_.home_blur_size_),
             DNA_.home_smooth_amount_);
-#endif //USE_GPU
+
 }
 
 Colony::Colony(int width, int height, uint32_t color, ColonyDNA *DNA,
@@ -405,7 +405,7 @@ bool Colony::owns_ant(Ant *ant) {
     return ant->colony == this;
 }
 
-#ifdef USE_GPU
+
 void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
     cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
@@ -433,7 +433,7 @@ void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
     food_mat_.download(food, stream);
     home_mat_.download(home, stream);
 }
-#endif //USE_GPU
+
 
 void Colony::update_pheromones() {
     cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);

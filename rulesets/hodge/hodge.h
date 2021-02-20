@@ -20,7 +20,7 @@ class Hodge : public Ruleset {
         bool podge_;
         Rainbows rainbows_;
 
-#ifdef USE_GPU
+
         int *cudev_board_;
         int *cudev_board_buffer_;
 
@@ -28,7 +28,6 @@ class Hodge : public Ruleset {
 
         void start_cuda();
         void stop_cuda();
-#endif
 
         int get_next_value_healthy(int x, int y);
         int get_next_value_infected(int x, int y);

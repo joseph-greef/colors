@@ -2,11 +2,9 @@
 #include <iostream>
 #include <stdlib.h>
 
-#ifdef USE_GPU
 #include "curand.h"
 #include "cuda_runtime.h"
 #include "hodge.cuh"
-#endif
 
 #include "input_manager.h"
 #include "hodge.h"
@@ -25,11 +23,11 @@ Hodge::Hodge(int width, int height)
     board_ = new int[width*height];
     board_buffer_ = new int[width*height];
 
-#ifdef USE_GPU
+
     std::cout << "Allocating CUDA memory for Hodge" << std::endl;
     cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
-#endif //USE_GPU
+
 
     initializer_.init_center_square();
 }
@@ -37,14 +35,14 @@ Hodge::Hodge(int width, int height)
 Hodge::~Hodge() {
     delete [] board_;
     delete [] board_buffer_;
-#ifdef USE_GPU
+
     std::cout << "Freeing CUDA memory for Hodge" << std::endl;
     cudaFree((void*)cudev_board_);
     cudaFree((void*)cudev_board_buffer_);
-#endif //USE_GPU
+
 }
 
-#ifdef USE_GPU
+
 void Hodge::copy_board_to_gpu() {
     cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
                cudaMemcpyHostToDevice);
@@ -57,7 +55,7 @@ void Hodge::start_cuda() {
 
 void Hodge::stop_cuda() {
 }
-#endif //USE_GPU
+
 
 BoardType::BoardType Hodge::board_get_type() {
     return BoardType::AgeBoard;
@@ -232,7 +230,7 @@ void Hodge::stop() {
 
 void Hodge::tick() {
     if(use_gpu_) {
-#if USE_GPU
+
         int *temp = NULL;
         if(initializer_.was_board_changed()) {
             copy_board_to_gpu();
@@ -255,7 +253,7 @@ void Hodge::tick() {
         temp = cudev_board_buffer_;
         cudev_board_buffer_ = cudev_board_;
         cudev_board_ = temp;
-#endif //USE_GPU
+
     }
     else {
         update_board();

@@ -7,10 +7,8 @@
 
 class EmptyRuleset : public Ruleset {
     private:
-#ifdef USE_GPU
         void start_cuda();
         void stop_cuda();
-#endif
 
     public:
         EmptyRuleset(int width, int height);

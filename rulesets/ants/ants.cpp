@@ -162,14 +162,11 @@ void Ants::restock_colonies(int num_ants) {
 void Ants::set_board(void *new_board) {
 }
 
-#ifdef USE_GPU
 void Ants::start_cuda() {
 }
 
 void Ants::stop_cuda() {
 }
-
-#endif
 
 void Ants::start() {
     std::cout << "Starting Ants" << std::endl;
@@ -221,9 +218,9 @@ void Ants::tick() {
     std::vector<Ant*> ant_to_remove;
     std::vector<Colony*> colonies_to_add;
     std::vector<Colony*> colonies_to_remove;
-#ifdef USE_GPU
+
     cv::cuda::Stream cuda_stream;
-#endif //USE_GPU
+
 
     //Move every ant
     for(Ant *ant: ants_) {
@@ -267,16 +264,14 @@ void Ants::tick() {
                     colony->add_enemy_smell(ant->x, ant->y, 10);
                 }
             }
-#ifdef USE_GPU
+
             colony->queue_cuda_ops(cuda_stream);
-#else
-            colony->update_pheromones();
-#endif //USE_GPU
+
         }
     }
-#ifdef USE_GPU
+
     cuda_stream.waitForCompletion();
-#endif //USE_GPU
+
 
     for(Colony *colony: colonies_to_add) {
         colonies_.push_back(colony);
