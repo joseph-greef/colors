@@ -25,11 +25,13 @@ void Rotation::apply_transformation(Pixel *last_frame, Pixel *current_frame,
                           (target_y - center_y_) * std::cos(rotation_amount_) +
                           center_y_;
 
-            new_x = std::clamp(new_x, 0.0f, static_cast<float>(width_));
-            new_y = std::clamp(new_y, 0.0f, static_cast<float>(height_));
+            new_x = new_x < 0 ? 0 : new_x;
+            new_x = new_x >= width_ ? width_-1 : new_x;
+            new_y = new_y < 0 ? 0 : new_y;
+            new_y = new_y >= height_ ? height_-1 : new_y;
 
             target_frame[target_y * width_ + target_x] =
-                    interpolate_pixel(new_x, new_y, current_frame);
+                    interpolate(new_x, new_y, width_, height_, current_frame);
 
         }
     }

@@ -23,6 +23,7 @@ include_directories(
   moviemaker-cpp/include
   rulesets
   rulesets/include
+  rulesets/utilities
 )
 
 add_subdirectory(rulesets)
@@ -63,6 +64,7 @@ target_link_libraries(colors PRIVATE
   empty_ruleset
   hodge
   lifelike
+  utilities
   video_feedback
 )
 

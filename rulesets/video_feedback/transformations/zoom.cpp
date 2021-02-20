@@ -20,11 +20,9 @@ void Zoom::apply_transformation(Pixel *last_frame, Pixel *current_frame,
             float current_x = (target_x - center_x_) * scale_x_ + center_x_;
             float current_y = (target_y - center_y_) * scale_y_ + center_y_;
             
-
-
             target_frame[target_y * width_ + target_x] =
-                    interpolate_pixel(current_x, current_y, current_frame);
-
+                    interpolate(current_x, current_y, 
+                                width_, height_, current_frame);
         }
     }
 }
