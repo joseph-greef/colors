@@ -11,13 +11,26 @@ __global__ static void transformation(float scale_x, float scale_y,
                                       int width, int height,
                                       Pixel *last_frame, Pixel *current_frame,
                                       Pixel *target_frame) {
+    unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
+    while (index < height * width) {
+        int target_x = index % width;
+        int target_y = index / width;
+
+        float current_x = (target_x - center_x) * scale_x + center_x;
+        float current_y = (target_y - center_y) * scale_y + center_y;
+
+        target_frame[target_y * width + target_x] =
+                interpolate(current_x, current_y,
+                            width, height, current_frame);
+        index += blockDim.x * gridDim.x;
+    }
 }
 
 Zoom::Zoom(int width, int height)
     : Transformation(width, height)
 {
-    scale_x_ = 1 - dist_positive_(e2_) / 80;
-    scale_y_ = 1 - dist_positive_(e2_) / 80;
+    scale_x_ = 1 - dist_positive_(e2_) / 180;
+    scale_y_ = 1 - dist_positive_(e2_) / 180;
     center_x_ = width / 2 + dist_full_(e2_) * width_ / 10;
     center_y_ = height / 2 + dist_full_(e2_) * height_ / 10;
 
