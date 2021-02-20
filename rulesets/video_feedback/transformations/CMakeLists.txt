@@ -1,15 +1,17 @@
 
 add_library(transformations STATIC
-  blend.cpp
+  blend.cu
   blend.h
-  noise.cpp
+  noise.cu
   noise.h
-  rotation.cpp
+  rotation.cu
   rotation.h
   transformation.cpp
   transformation.h
-  zoom.cpp
+  zoom.cu
   zoom.h
 )
 
-target_compile_features(transformations PUBLIC cxx_std_17)
+target_compile_options(transformations PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -dc >)
+
+target_link_libraries(transformations PRIVATE utilities)

@@ -25,10 +25,8 @@ class Ruleset {
         bool use_gpu_;
         int width_;
 
-
         virtual void start_cuda() = 0;
         virtual void stop_cuda() = 0;
-
 
     public:
         Ruleset(int width, int height);

@@ -11,6 +11,10 @@ class VideoFeedback : public Ruleset {
     private:
         Pixel *current_frame_;
         Pixel *last_frame_;
+        Pixel *temp_frame_;
+        Pixel *cudev_current_frame_;
+        Pixel *cudev_dest_frame_;
+        Pixel *cudev_last_frame_;
 
         std::vector<Transformation*> transformations_;
 
