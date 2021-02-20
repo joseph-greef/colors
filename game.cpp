@@ -25,8 +25,8 @@ Game::Game(int fps_target, int width, int height)
 
     TempRuleEntry initial_temp_rules[10] = {
         {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
-        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
-        {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
+        {1, "260 30 2 2 5 1"},
+        {3, ""},
         {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
         {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
         {0, "0 0 1 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 4"},
@@ -155,11 +155,17 @@ int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
         active_ruleset_->start();
         current_ruleset_ = new_ruleset;
 
-        if(transfer_board &&
-           old_ruleset->board_get_type() != BoardType::Other &&
-           active_ruleset_->board_set_type() != BoardType::Other &&
-           old_ruleset->board_get_type() == active_ruleset_->board_set_type()) {
-            active_ruleset_->set_board(old_ruleset->get_board());
+        if(transfer_board) {
+            if(active_ruleset_->board_set_type() == BoardType::PixelBoard) {
+                uint32_t tmp_board[width_ * height_];
+                old_ruleset->get_pixels(tmp_board);
+                active_ruleset_->set_board(static_cast<void*>(tmp_board));
+            }
+            else if (old_ruleset->board_get_type() != BoardType::Other &&
+                     active_ruleset_->board_set_type() != BoardType::Other &&
+                     old_ruleset->board_get_type() == active_ruleset_->board_set_type()) {
+                active_ruleset_->set_board(old_ruleset->get_board());
+            }
         }
     }
     return 0;

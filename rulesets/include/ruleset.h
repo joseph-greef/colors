@@ -14,6 +14,7 @@ enum NeighborhoodType {
 namespace BoardType {
     enum BoardType {
         AgeBoard,
+        PixelBoard,
         Other,
     };
 };
