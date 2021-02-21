@@ -51,3 +51,15 @@ __host__ __device__ Pixel interpolate(float x, float y, int width, int height, P
 
     return *(Pixel*)channels;
 }
+
+__host__ __device__ uint8_t truncate(int32_t value) {
+    if(value > 255) {
+        return 255;
+    }
+    else if(value < 0) {
+        return 0;
+    }
+    else {
+        return (uint8_t)value;
+    }
+}

@@ -2,6 +2,8 @@
 add_library(transformations STATIC
   blend.cu
   blend.h
+  brightness.cu
+  brightness.h
   noise.cu
   noise.h
   rotation.cu

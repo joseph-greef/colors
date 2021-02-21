@@ -21,6 +21,7 @@ union Pixel {
 static_assert(sizeof(Pixel) == sizeof(uint32_t));
 
 __host__ __device__ Pixel interpolate(float x, float y, int width, int height, Pixel *buffer);
+__host__ __device__ uint8_t truncate(int32_t value);
 
 #endif //IMGPROC_H
 

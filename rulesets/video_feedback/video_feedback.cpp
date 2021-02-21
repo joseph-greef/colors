@@ -82,7 +82,7 @@ void VideoFeedback::randomize_effects() {
     transformations_.clear();
 
     for(int i = 0; i < num_effects; i++) {
-        int r = rand() % 3;
+        int r = rand() % 4;
         switch(r) {
             case 0:
                 transformations_.push_back(new Rotation(width_, height_));
@@ -95,6 +95,9 @@ void VideoFeedback::randomize_effects() {
                 break;
             case 3:
                 transformations_.push_back(new Blend(width_, height_));
+                break;
+            case 4:
+                transformations_.push_back(new Brightness(width_, height_));
                 break;
         }
     }
