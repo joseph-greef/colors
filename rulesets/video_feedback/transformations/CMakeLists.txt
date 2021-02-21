@@ -14,4 +14,5 @@ add_library(transformations STATIC
 
 target_compile_options(transformations PRIVATE $<$<COMPILE_LANGUAGE:CUDA>: -dc >)
 
-target_link_libraries(transformations PRIVATE utilities)
+target_link_libraries(transformations PRIVATE curand utilities)
+
