@@ -7,22 +7,32 @@
 #include "cuda_runtime.h"
 #include "imgproc.cuh"
 
-__global__ static void transformation(float scale_x, float scale_y,
-                                      float center_x, float center_y,
-                                      int width, int height,
-                                      Pixel *last_frame, Pixel *current_frame,
-                                      Pixel *target_frame) {
+__host__ __device__ static
+    void transformation(float scale_x, float scale_y, float center_x, float center_y,
+                        int width, int height,
+                        Pixel *last_frame, Pixel *current_frame, Pixel *target_frame,
+                        int target_x, int target_y) {
+    float current_x = (target_x - center_x) * scale_x + center_x;
+    float current_y = (target_y - center_y) * scale_y + center_y;
+
+    target_frame[target_y * width + target_x] =
+            interpolate(current_x, current_y, width, height, current_frame);
+}
+
+__global__ static void transformation_kernel(float scale_x, float scale_y,
+                                             float center_x, float center_y,
+                                             int width, int height,
+                                             Pixel *last_frame, Pixel *current_frame,
+                                             Pixel *target_frame) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < height * width) {
         int target_x = index % width;
         int target_y = index / width;
 
-        float current_x = (target_x - center_x) * scale_x + center_x;
-        float current_y = (target_y - center_y) * scale_y + center_y;
+        transformation(scale_y, scale_y, center_y, center_y, width, height,
+                       last_frame, current_frame, target_frame,
+                       target_x, target_y);
 
-        target_frame[target_y * width + target_x] =
-                interpolate(current_x, current_y,
-                            width, height, current_frame);
         index += blockDim.x * gridDim.x;
     }
 }
@@ -68,19 +78,16 @@ Zoom::Zoom(int width, int height, std::string params)
 void Zoom::apply_transformation(Pixel *last_frame, Pixel *current_frame,
                                 Pixel *target_frame, bool use_gpu) {
     if(use_gpu) {
-        transformation<<<512, 128>>>(scale_x_, scale_y_, center_x_, center_y_,
+        transformation_kernel<<<512, 128>>>(scale_x_, scale_y_, center_x_, center_y_,
                                      width_, height_,
                                      last_frame, current_frame, target_frame);
     }
     else {
         for(int target_y = 0; target_y < height_; target_y++) {
             for(int target_x = 0; target_x < width_; target_x++) {
-                float current_x = (target_x - center_x_) * scale_x_ + center_x_;
-                float current_y = (target_y - center_y_) * scale_y_ + center_y_;
-
-                target_frame[target_y * width_ + target_x] =
-                        interpolate(current_x, current_y,
-                                    width_, height_, current_frame);
+                transformation(scale_y_, scale_y_, center_y_, center_y_, width_, height_,
+                               last_frame, current_frame, target_frame,
+                               target_x, target_y);
             }
         }
     }

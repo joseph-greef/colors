@@ -7,6 +7,30 @@
 
 #include "cuda_runtime.h"
 
+
+__host__ __device__ static
+    void transformation(float rotation_amount, float center_x, float center_y,
+                        int width, int height,
+                        Pixel *last_frame, Pixel *current_frame, Pixel *target_frame,
+                        int target_x, int target_y) {
+    float new_x = (target_x - center_x) * cos(rotation_amount) -
+                  (target_y - center_y) * sin(rotation_amount) +
+                  center_x;
+
+    float new_y = (target_x - center_x) * sin(rotation_amount) +
+                  (target_y - center_y) * cos(rotation_amount) +
+                  center_y;
+
+    if(new_x < 0 || new_x >= width || new_y < 0 || new_y >= height) {
+        target_frame[target_y * width + target_x].value = 0;
+    }
+    else {
+        target_frame[target_y * width + target_x] =
+                interpolate(new_x, new_y, width, height, current_frame);
+    }
+
+}
+
 __global__ static void transformation(float rotation_amount,
                                       float center_x, float center_y,
                                       int width, int height,
@@ -17,21 +41,9 @@ __global__ static void transformation(float rotation_amount,
         int target_x = index % width;
         int target_y = index / width;
 
-        float new_x = (target_x - center_x) * cos(rotation_amount) -
-                      (target_y - center_y) * sin(rotation_amount) +
-                      center_x;
-
-        float new_y = (target_x - center_x) * sin(rotation_amount) +
-                      (target_y - center_y) * cos(rotation_amount) +
-                      center_y;
-
-        new_x = new_x < 0 ? 0 : new_x;
-        new_x = new_x >= width? width-1 : new_x;
-        new_y = new_y < 0 ? 0 : new_y;
-        new_y = new_y >= height? height-1 : new_y;
-
-        target_frame[target_y * width + target_x] =
-                interpolate(new_x, new_y, width, height, current_frame);
+        transformation(rotation_amount, center_x, center_y, width, height,
+                       last_frame, current_frame, target_frame,
+                       target_x, target_y);
 
         index += blockDim.x * gridDim.x;
     }
@@ -80,22 +92,9 @@ void Rotation::apply_transformation(Pixel *last_frame, Pixel *current_frame,
     else {
         for(int target_y = 0; target_y < height_; target_y++) {
             for(int target_x = 0; target_x < width_; target_x++) {
-                float new_x = (target_x - center_x_) * std::cos(rotation_amount_) -
-                              (target_y - center_y_) * std::sin(rotation_amount_) +
-                              center_x_;
-
-                float new_y = (target_x - center_x_) * std::sin(rotation_amount_) +
-                              (target_y - center_y_) * std::cos(rotation_amount_) +
-                              center_y_;
-
-                new_x = new_x < 0 ? 0 : new_x;
-                new_x = new_x >= width_ ? width_-1 : new_x;
-                new_y = new_y < 0 ? 0 : new_y;
-                new_y = new_y >= height_ ? height_-1 : new_y;
-
-                target_frame[target_y * width_ + target_x] =
-                        interpolate(new_x, new_y, width_, height_, current_frame);
-
+                transformation(rotation_amount_, center_x_, center_y_, width_, height_,
+                               last_frame, current_frame, target_frame,
+                               target_x, target_y);
             }
         }
     }
