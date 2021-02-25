@@ -45,6 +45,19 @@ Brightness::Brightness(int width, int height)
                  //static_cast<int>(dist_positive_(e2_) * 5);
 }
 
+Brightness::Brightness(int width, int height, std::string params)
+    : Transformation(width, height)
+{
+        size_t next_delim;
+        std::string params_copy(params);
+        std::string param;
+
+        next_delim = params_copy.find(',');
+        param = params_copy.substr(0, next_delim);
+        amplitude_ = stoi(param);
+        params_copy.erase(0, next_delim + 1);
+}
+
 Brightness::~Brightness() {
 }
 
@@ -62,3 +75,10 @@ void Brightness::apply_transformation(Pixel *last_frame, Pixel *current_frame,
         }
     }
 }
+
+std::string Brightness::get_rule_string() {
+    std::ostringstream oss;
+    oss << "brightness:" << amplitude_;
+    return oss.str();
+}
+

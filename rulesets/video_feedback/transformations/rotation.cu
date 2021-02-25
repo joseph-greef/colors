@@ -1,6 +1,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 #include "rotation.h"
 
@@ -46,6 +47,29 @@ Rotation::Rotation(int width, int height)
     rotation_amount_ += static_cast<int>(dist_positive_(e2_) * 2) * 3.141592;
 }
 
+Rotation::Rotation(int width, int height, std::string params)
+    : Transformation(width, height)
+{
+        size_t next_delim;
+        std::string params_copy(params);
+        std::string param;
+
+        next_delim = params_copy.find(',');
+        param = params_copy.substr(0, next_delim);
+        center_x_ = stof(param);
+        params_copy.erase(0, next_delim + 1);
+
+        next_delim = params_copy.find(',');
+        param = params_copy.substr(0, next_delim);
+        center_y_ = stof(param);
+        params_copy.erase(0, next_delim + 1);
+
+        next_delim = params_copy.find(',');
+        param = params_copy.substr(0, next_delim);
+        rotation_amount_ = stof(param);
+        params_copy.erase(0, next_delim + 1);
+}
+
 void Rotation::apply_transformation(Pixel *last_frame, Pixel *current_frame,
                                 Pixel *target_frame, bool use_gpu) {
     if(use_gpu) {
@@ -76,3 +100,10 @@ void Rotation::apply_transformation(Pixel *last_frame, Pixel *current_frame,
         }
     }
 }
+
+std::string Rotation::get_rule_string() {
+    std::ostringstream oss;
+    oss << "rotation:" << center_x_ << "," << center_y_ << "," <<rotation_amount_;
+    return oss.str();
+}
+

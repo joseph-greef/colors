@@ -65,17 +65,53 @@ void VideoFeedback::get_pixels(uint32_t *pixels) {
 }
 
 std::string VideoFeedback::get_rule_string() {
-    return "";
+    std::string rule_string = "";
+    for(Transformation *t : transformations_) {
+        rule_string += t->get_rule_string();
+        rule_string += ";";
+    }
+    return rule_string;
 }
 
 void VideoFeedback::load_rule_string(std::string rules) {
+    std::string rules_copy(rules);
+    for(Transformation *t : transformations_) {
+        delete t;
+    }
+    transformations_.clear();
+
+    while(rules_copy.length() > 0) {
+        size_t next_delim = rules_copy.find(';');
+        std::string rule_string = rules_copy.substr(0, next_delim);
+        std::string ruleset = rule_string.substr(0, rule_string.find(':'));
+        std::string params = rule_string.substr(rule_string.find(':')+1);
+
+        if(ruleset == "blend") {
+            transformations_.push_back(new Blend(width_, height_, params));
+        }
+        if(ruleset == "brightness") {
+            transformations_.push_back(new Brightness(width_, height_, params));
+        }
+        if(ruleset == "noise") {
+            transformations_.push_back(new Noise(width_, height_, params));
+        }
+        if(ruleset == "rotation") {
+            transformations_.push_back(new Rotation(width_, height_, params));
+        }
+        if(ruleset == "zoom") {
+            transformations_.push_back(new Zoom(width_, height_, params));
+        }
+
+        rules_copy.erase(0, next_delim + 1);
+    }
 }
 
 void VideoFeedback::print_human_readable_rules() {
+    std::cout << get_rule_string() << std::endl;
 }
 
 void VideoFeedback::randomize_effects() {
-    int num_effects = 0; //rand() % 4 + 2;
+    int num_effects = rand() % 4 + 2;
     for(Transformation *t : transformations_) {
         delete t;
     }
@@ -101,15 +137,9 @@ void VideoFeedback::randomize_effects() {
                 break;
         }
     }
-    transformations_.push_back(new Rotation(width_, height_));
-    transformations_.push_back(new Noise(width_, height_));
-    transformations_.push_back(new Zoom(width_, height_));
-    //transformations_.push_back(new Blend(width_, height_));
-    transformations_.push_back(new Brightness(width_, height_));
 }
 
 void VideoFeedback::set_board(void* new_board) {
-    std::cout << "adfaf" << std::endl;
     memcpy(current_frame_, new_board, width_ * height_ * sizeof(current_frame_[0]));
     cudaMemcpy(cudev_current_frame_, new_board,
                width_ * height_ * sizeof(cudev_current_frame_[0]),
@@ -136,8 +166,6 @@ void VideoFeedback::start() {
 
     ADD_FUNCTION_CALLER(&VideoFeedback::randomize_effects, SDL_SCANCODE_R, false, false,
                         "VideoFeedback", "Randomize effects");
-
-    randomize_effects();
 }
 
 void VideoFeedback::stop() {

@@ -3,7 +3,9 @@
 #define TRANSFORMATION_H
 
 #include <cstdint>
+#include <iomanip>
 #include <random>
+#include <string>
 
 #include "imgproc.cuh"
 
@@ -25,6 +27,7 @@ public:
     //should write every pixel of target_frame
     virtual void apply_transformation(Pixel *last_frame, Pixel *current_frame,
                                       Pixel *target_frame, bool use_gpu) = 0;
+    virtual std::string get_rule_string() = 0;
 };
 
 #endif //TRANSFORMATION_H

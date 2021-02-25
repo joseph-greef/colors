@@ -36,6 +36,11 @@ Blend::Blend(int width, int height)
 {
 }
 
+Blend::Blend(int width, int height, std::string params)
+    : Transformation(width, height)
+{
+}
+
 void Blend::apply_transformation(Pixel *last_frame, Pixel *current_frame,
                                 Pixel *target_frame, bool use_gpu) {
     if(use_gpu) {
@@ -62,3 +67,10 @@ void Blend::apply_transformation(Pixel *last_frame, Pixel *current_frame,
         }
     }
 }
+
+std::string Blend::get_rule_string() {
+    std::ostringstream oss;
+    oss << "blend:";
+    return oss.str();
+}
+

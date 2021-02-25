@@ -106,6 +106,34 @@ Noise::Noise(int width, int height)
     random_numbers_ = new uint32_t[num_randoms_];
 }
 
+Noise::Noise(int width, int height, std::string params)
+    : Transformation(width, height)
+{
+    size_t next_delim;
+    std::string params_copy(params);
+    std::string param;
+
+    next_delim = params_copy.find(',');
+    param = params_copy.substr(0, next_delim);
+    noise_type_ = stoi(param);
+    params_copy.erase(0, next_delim + 1);
+
+    next_delim = params_copy.find(',');
+    param = params_copy.substr(0, next_delim);
+    num_randoms_ = stoi(param);
+    params_copy.erase(0, next_delim + 1);
+
+    next_delim = params_copy.find(',');
+    param = params_copy.substr(0, next_delim);
+    amplitude_ = stoul(param);
+    params_copy.erase(0, next_delim + 1);
+
+    curandCreateGenerator(&curand_gen_, CURAND_RNG_PSEUDO_DEFAULT);
+    curandSetPseudoRandomGeneratorSeed(curand_gen_, time(NULL));
+    cudaMalloc((void**)&cudev_random_numbers_, num_randoms_ * sizeof(uint32_t));
+    random_numbers_ = new uint32_t[num_randoms_];
+}
+
 Noise::~Noise() {
     cudaFree(cudev_random_numbers_);
     delete [] random_numbers_;
@@ -130,3 +158,10 @@ void Noise::apply_transformation(Pixel *last_frame, Pixel *current_frame,
         }
     }
 }
+
+std::string Noise::get_rule_string() {
+    std::ostringstream oss;
+    oss << "noise:" << noise_type_ << "," << num_randoms_ << "," << amplitude_;
+    return oss.str();
+}
+
