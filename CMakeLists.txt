@@ -64,18 +64,18 @@ target_link_libraries(colors PRIVATE
   empty_ruleset
   hodge
   lifelike
-  utilities
   video_feedback
 )
 
 # Add general purpose libraries
-target_link_libraries(colors PRIVATE
+target_link_libraries(colors PUBLIC
   clip
   cudart_static
   gifenc
   rulesets
   SDL2
   SDL2_image
+  #utilities
   ${OpenCV_LIBS}
 )
 

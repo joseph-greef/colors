@@ -4,9 +4,11 @@
 
 #include <cstdint>
 
+#include "board.cuh"
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 
+/*
 union Pixel {
     struct {
         uint8_t r;
@@ -17,11 +19,27 @@ union Pixel {
     uint32_t value;
 
 };
+*/
 
-static_assert(sizeof(Pixel) == sizeof(uint32_t));
+template <class T>
+union Pixel {
+    struct {
+        T r;
+        T g;
+        T b;
+        T a;
+    } part;
+    T value[4];
+};
 
-__host__ __device__ Pixel interpolate(float x, float y, int width, int height, Pixel *buffer);
-__host__ __device__ uint8_t truncate(int32_t value);
+static_assert(sizeof(Pixel<uint8_t>) == sizeof(uint32_t));
+
+template <class T>
+__host__ __device__ Pixel<T> interpolate(float x, float y, Board<Pixel<T>> &board);
+template <class T>
+__host__ __device__ T truncate(T value);
+
+#include "imgproc.h.cu"
 
 #endif //IMGPROC_H
 
