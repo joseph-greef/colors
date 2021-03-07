@@ -7,7 +7,6 @@
 
 #include "cuda_runtime.h"
 
-
 __host__ __device__ static
     void transformation(float rotation_amount, float center_x, float center_y,
                         int width, int height,

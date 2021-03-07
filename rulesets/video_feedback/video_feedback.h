@@ -3,18 +3,19 @@
 
 #include <vector>
 
+#include "board.cuh"
 #include "ruleset.h"
 #include "transformations/transformations.h"
 
 
 class VideoFeedback : public Ruleset {
     private:
-        Pixel *current_frame_;
-        Pixel *last_frame_;
-        Pixel *temp_frame_;
-        Pixel *cudev_current_frame_;
-        Pixel *cudev_dest_frame_;
-        Pixel *cudev_last_frame_;
+        Board<Pixel<float>> *current_frame_;
+        Board<Pixel<float>> *last_frame_;
+        Board<Pixel<float>> *temp_frame_;
+        Board<Pixel<float>> *cudev_current_frame_;
+        Board<Pixel<float>> *cudev_last_frame_;
+        Board<Pixel<float>> *cudev_temp_frame_;
 
         std::vector<Transformation*> transformations_;
 

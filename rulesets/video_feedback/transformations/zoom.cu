@@ -9,27 +9,25 @@
 
 __host__ __device__ static
     void transformation(float scale_x, float scale_y, float center_x, float center_y,
-                        int width, int height,
-                        Pixel *last_frame, Pixel *current_frame, Pixel *target_frame,
+                        Board<Pixel<float>> &last_frame, Board<Pixel<float>> &current_frame, Board<Pixel<float>> &target_frame,
                         int target_x, int target_y) {
     float current_x = (target_x - center_x) * scale_x + center_x;
     float current_y = (target_y - center_y) * scale_y + center_y;
 
-    target_frame[target_y * width + target_x] =
-            interpolate(current_x, current_y, width, height, current_frame);
+    target_frame.set(target_x, target_y,
+            interpolate<float>(current_x, current_y, current_frame));
 }
 
 __global__ static void transformation_kernel(float scale_x, float scale_y,
                                              float center_x, float center_y,
-                                             int width, int height,
-                                             Pixel *last_frame, Pixel *current_frame,
-                                             Pixel *target_frame) {
+                                             Board<Pixel<float>> last_frame, Board<Pixel<float>> current_frame,
+                                             Board<Pixel<float>> target_frame) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
-    while (index < height * width) {
-        int target_x = index % width;
-        int target_y = index / width;
+    while (index < target_frame.height_ * target_frame.width_) {
+        int target_x = index % target_frame.width_;
+        int target_y = index / target_frame.width_;
 
-        transformation(scale_y, scale_y, center_y, center_y, width, height,
+        transformation(scale_y, scale_y, center_y, center_y,
                        last_frame, current_frame, target_frame,
                        target_x, target_y);
 
@@ -75,17 +73,17 @@ Zoom::Zoom(int width, int height, std::string params)
         params_copy.erase(0, next_delim + 1);
 }
 
-void Zoom::apply_transformation(Pixel *last_frame, Pixel *current_frame,
-                                Pixel *target_frame, bool use_gpu) {
+void Zoom::apply_transformation(Board<Pixel<float>> &last_frame,
+                                Board<Pixel<float>> &current_frame,
+                                Board<Pixel<float>> &target_frame, bool use_gpu) {
     if(use_gpu) {
         transformation_kernel<<<512, 128>>>(scale_x_, scale_y_, center_x_, center_y_,
-                                     width_, height_,
                                      last_frame, current_frame, target_frame);
     }
     else {
         for(int target_y = 0; target_y < height_; target_y++) {
             for(int target_x = 0; target_x < width_; target_x++) {
-                transformation(scale_y_, scale_y_, center_y_, center_y_, width_, height_,
+                transformation(scale_y_, scale_y_, center_y_, center_y_,
                                last_frame, current_frame, target_frame,
                                target_x, target_y);
             }

@@ -7,6 +7,7 @@
 #include <random>
 #include <string>
 
+#include "board.cuh"
 #include "imgproc.cuh"
 
 
@@ -25,8 +26,9 @@ public:
     virtual ~Transformation();
 
     //should write every pixel of target_frame
-    virtual void apply_transformation(Pixel *last_frame, Pixel *current_frame,
-                                      Pixel *target_frame, bool use_gpu) = 0;
+    virtual void apply_transformation(Board<Pixel<float>> &last_frame,
+                                      Board<Pixel<float>> &current_frame,
+                                      Board<Pixel<float>> &target_frame, bool use_gpu) = 0;
     virtual std::string get_rule_string() = 0;
 };
 
