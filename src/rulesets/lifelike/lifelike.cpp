@@ -3,8 +3,6 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "curand.h"
-#include "cuda_runtime.h"
 #include "lifelike.cuh"
 
 #include "input_manager.h"
@@ -172,7 +170,7 @@ void LifeLike::set_board(void *new_board) {
     memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
-void LifeLike::start() { 
+void LifeLike::start() {
     std::cout << "Starting LifeLike" << std::endl;
     Ruleset::start();
 
@@ -190,7 +188,7 @@ void LifeLike::start() {
     rainbows_.start();
 }
 
-void LifeLike::stop() { 
+void LifeLike::stop() {
     Ruleset::stop();
 
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
@@ -215,11 +213,11 @@ void LifeLike::tick() {
 
         int *temp = NULL;
 
-        call_cuda_lifelike(cudev_board_, cudev_board_buffer_, cudev_born_,
-                           cudev_stay_alive_, num_faders_, current_tick_,
-                           width_, height_);
+        call_lifelike_kernel(cudev_board_, cudev_board_buffer_, cudev_born_,
+                             cudev_stay_alive_, num_faders_, current_tick_,
+                             width_, height_);
 
-        cudaMemcpy(board_, cudev_board_buffer_, 
+        cudaMemcpy(board_, cudev_board_buffer_,
                    width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
 
         cudaDeviceSynchronize();
@@ -230,51 +228,14 @@ void LifeLike::tick() {
 
     }
     else {
-        update_board();
-    }
-    current_tick_++;
-}
-
-void LifeLike::update_board() {
-    for(int j = 0; j < height_; j++) {
-        for(int i = 0; i < width_; i++) {
-            //get how many alive neighbors it has
-            int neighbors = Ruleset::get_num_alive_neighbors(board_, i, j, 1,
-                                                             Moore);
-            int offset = j * width_ + i;
-
-            if(board_[offset] > 0) {
-                if(stay_alive_[neighbors]) {
-                    board_buffer_[offset] = board_[offset];
-                }
-                else {
-                    board_buffer_[offset] = -current_tick_;
-                }
-
-            }
-            //board_ + current_tick_ is the number of ticks since state change
-            //so this block is when the cell is allowed to be born
-            else if(board_[offset] + current_tick_ >= num_faders_) {
-                if(born_[neighbors]) {
-                    board_buffer_[offset] = current_tick_;
-                }
-                else {
-                    board_buffer_[offset] = board_[offset];
-                }
-            }
-            //this block is the refractory states, just chill
-            else {
-                board_buffer_[offset] = board_[offset];
-            }
+        for(int i = 0; i < width_ * height_; i++) {
+            lifelike_step(board_, board_buffer_, i, born_, stay_alive_,
+                          num_faders_, current_tick_, width_, height_);
         }
-    }
-
-    {
         int *tmp = board_buffer_;
         board_buffer_ = board_;
         board_ = tmp;
     }
-
+    current_tick_++;
 }
-
 

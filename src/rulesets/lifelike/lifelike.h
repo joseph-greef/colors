@@ -20,7 +20,6 @@ class LifeLike : public Ruleset {
         bool stay_alive_[9];
 
         void randomize_ruleset();
-        void update_board();
 
         int *cudev_board_;
         int *cudev_board_buffer_;
