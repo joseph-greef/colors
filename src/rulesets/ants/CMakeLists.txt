@@ -1,4 +1,3 @@
-# rulesets/ants
 
 add_library(ants STATIC
   ant.h

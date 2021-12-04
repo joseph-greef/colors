@@ -1,4 +1,3 @@
-# Root CMakeLists
 
 add_subdirectory(rulesets)
 
