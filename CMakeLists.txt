@@ -23,8 +23,8 @@ include_directories(
   gifenc
   src
   src/rulesets
-  src/rulesets/include
   src/rulesets/utilities
+  src/rulesets/rainbows
 )
 
 
