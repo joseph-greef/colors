@@ -21,7 +21,7 @@ int Ruleset::get_num_alive_neighbors(int *board, int x, int y,
                                      int radius,
                                      NeighborhoodType type) {
     int check_x = 0;
-    int check_y = 0; 
+    int check_y = 0;
     int count = 0;
 
     if(type == VonNeuman) {
@@ -76,7 +76,7 @@ void Ruleset::toggle_gpu() {
     else {
         stop_cuda();
         std::cout << "Stopping CUDA" << std::endl;
-    } 
+    }
 
 }
 

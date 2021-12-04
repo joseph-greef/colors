@@ -25,7 +25,7 @@ __host__ __device__ Pixel<T> interpolate(float x, float y, Board<Pixel<T>> &boar
     Pixel<T> dest = {0, 0, 0, 0};
 
     for(int i = 0; i < 4; i++) {
-        T temp = tl.value[i] * tl_bias + 
+        T temp = tl.value[i] * tl_bias +
                  tr.value[i] * tr_bias +
                  bl.value[i] * bl_bias +
                  br.value[i] * br_bias;

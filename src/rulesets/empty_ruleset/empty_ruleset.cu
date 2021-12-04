@@ -5,7 +5,7 @@
 __global__ void cuda_empty_ruleset(int width, int height) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < height * width) {
-        
+
         //int x = index % width;
         //int y = index / width;
 

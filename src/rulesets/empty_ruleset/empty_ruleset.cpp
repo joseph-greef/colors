@@ -62,12 +62,12 @@ void EmptyRuleset::stop_cuda() {
 }
 
 
-void EmptyRuleset::start() { 
+void EmptyRuleset::start() {
     std::cout << "Starting EmptyRuleset" << std::endl;
     Ruleset::start();
 }
 
-void EmptyRuleset::stop() { 
+void EmptyRuleset::stop() {
     Ruleset::stop();
 }
 

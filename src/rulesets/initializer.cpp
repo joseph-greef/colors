@@ -111,7 +111,7 @@ std::string Initializer::init_words(std::string words) {
     return "";
 }
 
-void Initializer::start() { 
+void Initializer::start() {
     ADD_FUNCTION_CALLER(&Initializer::init_random_board, SDL_SCANCODE_I, false, false,
                         "Init", "Initialize random board");
     ADD_FUNCTION_CALLER_W_ARGS(&Initializer::init_words, StringFunc, SDL_SCANCODE_I, true, false,
@@ -136,7 +136,7 @@ void Initializer::start() {
                                   "Init", "Change word size multiplier");
 }
 
-void Initializer::stop() { 
+void Initializer::stop() {
     InputManager::remove_var_changer(SDL_SCANCODE_I, false, false);
     InputManager::remove_var_changer(SDL_SCANCODE_I, true, false);
     InputManager::remove_var_changer(SDL_SCANCODE_I, false, true);

@@ -14,12 +14,12 @@ class Rainbows {
     public:
         Rainbows(int width, int height, int color_speed);
         ~Rainbows();
-        void age_to_pixels(int *age_board, uint32_t *pixels); 
+        void age_to_pixels(int *age_board, uint32_t *pixels);
         void randomize_colors();
         void reset_colors();
         void start();
         void stop();
-    private: 
+    private:
         int alive_color_scheme_;
         int alive_offset_;
         bool changing_background_;

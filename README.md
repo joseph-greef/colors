@@ -53,7 +53,7 @@ In game, press `escape` to quit, and `'` to print the current controls.
 
 <!---
 
-#### General Controls 
+#### General Controls
 Key     | Effect
 ------- | ------
 escape  | Quit
@@ -125,24 +125,24 @@ q:                      Quits simulation
 
 d:                      randomizes the rule set and randomizes the starting colors
 
-r:                      randomizes the rule set with non-deterministic behaviour and randomizes the 
+r:                      randomizes the rule set with non-deterministic behaviour and randomizes the
                         starting colors
-                        
+
 j:                      randomizes the rule set for smooth life
-                        
-f:                      toggle between GPU and CPU calculations       
+
+f:                      toggle between GPU and CPU calculations
 
 i:                      reinitialize the rules to their starting versions
 
 x:                      randomizes only the starting colors
-                        
+
 c:                      toggles whether the sim draws black and white or colors
 
 v:                      toggles whether to have the background change color if it has not yet been
                         interacted with yet
-                        
+
 p:                      prints the ruleset to the console
-                        
+
 Left Shift:             pauses the simulation but keeps changing the colors
 
 ----------------------------- Change Simulations -----------------------------
@@ -159,7 +159,7 @@ m:                      sets the simulation to smooth mode
 
 l:                      sets the simulation to larger than life mode
 
-                        
+
 ----------------------------- Board Initializations -----------------------------
 
 space:                  randomly generates a new board with live cell density $density
@@ -194,7 +194,7 @@ F1 -> F12:              changes how fast the colors change from fast to slow
 Arrow Up/Down:          increases/decreases the number of gliders to generate by 1
                         also changes the number of quadrant dots to generate by 1/4
                         also changes the number of refractory states to have by 1
-                      
+
 Arrow Right/Left:       increases/decreases the number of gliders to generate by 4
                         also changes the number of quadrant dots to generate by 1
                         also changes the number of refractory states to have by 4

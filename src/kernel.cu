@@ -93,7 +93,7 @@ __global__ void cuda_update_board_1D(int *board, int *board_buffer, int *OneD_ru
         int sum = 0;
         int high_bound = i + OneD_width/2;
         int low_bound = i - OneD_width/2;
-        
+
         //adds the sum with each neighbor being abinary digit
         for (int check_i = high_bound; check_i >= low_bound; check_i--) {
             int check_x = (check_i + CUDA_CELL_WIDTH) % CUDA_CELL_WIDTH;
@@ -160,7 +160,7 @@ void call_cuda_UBH(int *board, int *board_buffer, int *hodge_rules, int CUDA_CEL
 __global__ void cuda_update_board_non_deterministic(int* board, int* board_buffer, float *born, float *stay_alive, float *rand_nums, int CUDA_CELL_WIDTH, int CUDA_CELL_HEIGHT) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < CUDA_CELL_HEIGHT * CUDA_CELL_WIDTH) {
-        
+
         int j = index / CUDA_CELL_WIDTH;
         int i = index % CUDA_CELL_WIDTH;
 
@@ -173,7 +173,7 @@ __global__ void cuda_update_board_non_deterministic(int* board, int* board_buffe
         int stayresult = (int) (stay_alive[neighbors]>rand_nums[index]);
         int isdead = (int)(board[index] <= 0);
         board_buffer[index] = isdead*(bornresult + !bornresult * (board[index] - 1)) + !isdead * (-(!stayresult) + stayresult * (board[index] + 1));
-#else       
+#else
         if (board[index] <= 0) {
 #if lowdivergence
             int result = (int) (born[neighbors]>rand_nums[index]);
@@ -196,7 +196,7 @@ __global__ void cuda_update_board_non_deterministic(int* board, int* board_buffe
             else
                 board_buffer[index] = -1;
 #endif /*lowdivergence*/
-            
+
         }
 #endif /*reallylowdivergence*/
 
@@ -214,7 +214,7 @@ void call_cuda_UBND(int *board, int *board_buffer, float *born, float *stay_aliv
 __global__ void cuda_update_board_normal(int* board, int* board_buffer, float *born, float *stay_alive, int num_faders, int CUDA_CELL_WIDTH, int CUDA_CELL_HEIGHT) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < CUDA_CELL_HEIGHT * CUDA_CELL_WIDTH) {
-        
+
         int j = index / CUDA_CELL_WIDTH;
         int i = index % CUDA_CELL_WIDTH;
 
@@ -228,7 +228,7 @@ __global__ void cuda_update_board_normal(int* board, int* board_buffer, float *b
         int isdead = (int)(board[index] <= -num_faders);
         int isfader = (int) (board[index] > -num_faders && board[index] < 0);
         board_buffer[index] = !isfader * (isdead*(bornresult + !bornresult * (board[index] - 1)) + !isdead * (-(!stayresult) + stayresult * (board[index] + 1))) + isfader * (board[index] - 1);
-#else       
+#else
         if (board[index] <= -num_faders) {
 #if lowdivergence
             int result = (int) (born[neighbors]>0.5);
@@ -251,7 +251,7 @@ __global__ void cuda_update_board_normal(int* board, int* board_buffer, float *b
             else
                 board_buffer[index] = -1;
 #endif /*lowdivergence*/
-            
+
         }
         else {
             board_buffer[index] = board[index] - 1;
@@ -291,7 +291,7 @@ __global__ void cuda_update_board_LtL(int *board, int *board_buffer, int *LtL_ru
             int result = (neighbors >= LtL_rules[3] && neighbors <= LtL_rules[4]);
             board_buffer[index] = (!result*(board[index] - 1)) + result;
 #else
-            
+
             //if supposed to be born
             if (neighbors >= LtL_rules[3] && neighbors <= LtL_rules[4])
                 // then make it alive with an age of 1
@@ -309,7 +309,7 @@ __global__ void cuda_update_board_LtL(int *board, int *board_buffer, int *LtL_ru
             int result = (neighbors >= LtL_rules[1] && neighbors <= LtL_rules[2]);
             board_buffer[index] = (result*(board[index] + 1)) - !result;
 #else
-            
+
             //and it's supposed to stay alive, and it's not older than the max age
             if (neighbors >= LtL_rules[1] && neighbors <= LtL_rules[2])
                 //then age it
@@ -351,17 +351,17 @@ __device__ float s(float n, float m, float *smooth_rules) {
 
 //update the board according to the smooth rules. Pass in all the squares of the cell/neighborhood sizes so they
 //are only computed once total per frame.
-__global__ void cuda_update_board_smooth(float *board_float, float *board_buffer_float, float *smooth_rules, 
+__global__ void cuda_update_board_smooth(float *board_float, float *board_buffer_float, float *smooth_rules,
                                             float r_a_2, float r_i_2, float r_a_2_m_b, float r_i_2_m_b, float r_a_2_p_b, float r_i_2_p_b,
                                             int CUDA_CELL_WIDTH, int CUDA_CELL_HEIGHT) {
     float n, m, r, rr;
     int x, y, test_x, test_y;
-    
-    
+
+
     //iterate over every cell*/
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < CUDA_CELL_HEIGHT * CUDA_CELL_WIDTH) {
-        
+
         int j = index / CUDA_CELL_WIDTH;
         int i = index % CUDA_CELL_WIDTH;
         n = 0;
@@ -372,12 +372,12 @@ __global__ void cuda_update_board_smooth(float *board_float, float *board_buffer
             for (x = -smooth_rules[1]; x <= smooth_rules[1]; x++) {
                 test_x = (i + x + CUDA_CELL_WIDTH) % CUDA_CELL_WIDTH;
 
-               
+
 
                 rr = x*x + y*y;
                 r = sqrt(rr);
-               
-                
+
+
                 //if inside r_i
                 if (rr < r_i_2_m_b)
                     n += board_float[test_y*CUDA_CELL_WIDTH + test_x];
@@ -396,16 +396,16 @@ __global__ void cuda_update_board_smooth(float *board_float, float *board_buffer
             }
         }
 
-        
+
         //get the normalized integrals
         n = n / (r_i_2 * PI);
         m = m / (PI * (r_a_2 - r_i_2));
-        
+
         //calculate s
         float new_val = s(n, m, smooth_rules);
-        
+
         //and apply the transition
-        board_buffer_float[index] = board_float[index] + DT*(new_val-board_float[index]); 
+        board_buffer_float[index] = board_float[index] + DT*(new_val-board_float[index]);
 
         index += blockDim.x * gridDim.x;
 
@@ -455,10 +455,10 @@ __global__ void cuda_update_smooth_colors(float *board_float, int *board, int *b
             else if(board[index] < 0)
                 board_buffer[index] = board[index] - 1;
 #endif /*lowdivergence*/
-            
+
         }
 #endif /*reallylowdivergence*/
-        
+
         index += blockDim.x * gridDim.x;
     }
 }

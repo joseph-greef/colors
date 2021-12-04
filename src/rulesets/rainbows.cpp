@@ -71,13 +71,13 @@ void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
 }
 
 void Rainbows::randomize_colors() {
-    alive_offset_ = rand() % RAINBOW_LENGTH;                                    
+    alive_offset_ = rand() % RAINBOW_LENGTH;
     color_offset_ = 0;
     dead_offset_ = rand() % RAINBOW_LENGTH;
 }
 
 void Rainbows::reset_colors() {
-    alive_offset_ = 0;                                    
+    alive_offset_ = 0;
     color_offset_ = 0;
     dead_offset_ = 0;
 }
@@ -105,7 +105,7 @@ void Rainbows::save_gif_frame(int *age_board) {
     }
 }
 
-void Rainbows::start() { 
+void Rainbows::start() {
     InputManager::add_bool_toggler(&changing_background_, SDL_SCANCODE_B,
                                    false, false,
                                    "Rainbows", "Toggle Changing Background");
@@ -130,7 +130,7 @@ void Rainbows::start() {
     InputManager::add_int_changer(&gif_delay_,  SDL_SCANCODE_BACKSLASH, false, true,
                                   2, INT_MAX, "Rainbows", "Gif delay (sec/100)");
     InputManager::add_int_changer(&gif_frames_setting_,  SDL_SCANCODE_BACKSLASH,
-                                  true, false, 0, INT_MAX, 
+                                  true, false, 0, INT_MAX,
                                   "Rainbows", "Number of Gif frames to record");
 
     InputManager::add_int_changer(&dead_offset_,  SDL_SCANCODE_COMMA, false, false,
@@ -142,7 +142,7 @@ void Rainbows::start() {
                                   INT_MIN, INT_MAX, "Rainbows", "Color speed");
 }
 
-void Rainbows::stop() { 
+void Rainbows::stop() {
     InputManager::remove_var_changer(SDL_SCANCODE_B, false, false);
 
     InputManager::remove_var_changer(SDL_SCANCODE_GRAVE, false, false);

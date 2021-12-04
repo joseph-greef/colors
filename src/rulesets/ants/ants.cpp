@@ -143,8 +143,8 @@ void Ants::reset() {
 
     restock_colonies(25);
     for(int i = 0; i < width_ * height_ / starting_food_density_; i++) {
-        foods_.push_back(new Food(rand() % (width_ - 2) + 1, 
-                                  rand() % (height_ - 2) + 1, 
+        foods_.push_back(new Food(rand() % (width_ - 2) + 1,
+                                  rand() % (height_ - 2) + 1,
                                   rand() % 50));
     }
 
@@ -293,20 +293,20 @@ void Ants::tick() {
     memset(world_, 0, width_*height_*sizeof(world_[0]));
 
     for(Food *food: foods_) {
-        int offset = food->y * width_ + food->x;                            
+        int offset = food->y * width_ + food->x;
         world_[offset].type = FoodType;
         world_[offset].ptr = food;
     }
 
     for(Colony *colony: colonies_) {
-        int offset = colony->get_offset();                            
+        int offset = colony->get_offset();
         world_[offset].type = ColonyType;
         world_[offset].ptr = colony;
     }
 
     ant_to_remove.clear();
     for(Ant *ant: ants_) {
-        int offset = ant->y * width_ + ant->x;                            
+        int offset = ant->y * width_ + ant->x;
         bool overwrite_world = true;
         if(world_[offset].type == FoodType) {
             Food *f = static_cast<Food*>(world_[offset].ptr);
@@ -315,8 +315,8 @@ void Ants::tick() {
                 if(f->bites_left == 0) {
                     delete f;
                     foods_.remove(f);
-                    foods_.push_back(new Food(rand() % (width_ - 2) + 1, 
-                                              rand() % (height_ - 2) + 1, 
+                    foods_.push_back(new Food(rand() % (width_ - 2) + 1,
+                                              rand() % (height_ - 2) + 1,
                                               rand() % 50));
                 }
                 ant->has_food = true;
