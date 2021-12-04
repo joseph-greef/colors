@@ -29,15 +29,7 @@ class Hodge : public Ruleset {
         void start_cuda();
         void stop_cuda();
 
-        int get_next_value_healthy(int x, int y);
-        int get_next_value_infected(int x, int y);
-        int get_sum_neighbors(int x, int y);
-
         void randomize_ruleset();
-        void update_board();
-        void update_hodge();
-        void update_hodgepodge();
-
 
     public:
         Hodge(int width, int height);

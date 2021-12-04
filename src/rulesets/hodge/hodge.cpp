@@ -77,60 +77,6 @@ void Hodge::get_pixels(uint32_t *pixels) {
     rainbows_.age_to_pixels(board_, pixels);
 }
 
-int Hodge::get_next_value_healthy(int x, int y) {
-    int check_x = 0, check_y = 0, offset = 0;
-    int ill = 0, infected = 0;
-    for(int i = x - 1; i <= x + 1; i++) {
-        for(int j = y - 1; j <= y + 1; j++) {
-            check_x = (i + width_) % width_;
-            check_y = (j + height_) % height_;
-            offset = check_y * width_ + check_x;
-
-            ill += board_[offset] == death_threshold_;
-            infected += board_[offset] > 0 &&
-                        board_[offset] < death_threshold_;
-        }
-    }
-    return (infected / k1_) + (ill / k2_);
-}
-
-int Hodge::get_next_value_infected(int x, int y) {
-    int check_x = 0, check_y = 0, offset = 0;
-    int ill = 0, infected = 0, sum = 0;
-    for(int i = x - 1; i <= x + 1; i++) {
-        for(int j = y - 1; j <= y + 1; j++) {
-            check_x = (i + width_) % width_;
-            check_y = (j + height_) % height_;
-            offset = check_y * width_ + check_x;
-
-            ill += board_[offset] == death_threshold_;
-            infected += board_[offset] > 0 &&
-                        board_[offset] < death_threshold_;
-            if(board_[offset] > 0) {
-                sum += board_[offset];
-            }
-        }
-    }
-    return sum / (ill + infected + 1) + infection_rate_;
-}
-
-int Hodge::get_sum_neighbors(int x, int y) {
-    int check_x = 0, check_y = 0, offset = 0;
-    int sum = 0;
-    for(int i = x - 1; i <= x + 1; i++) {
-        for(int j = y - 1; j <= y + 1; j++) {
-            check_x = (i + width_) % width_;
-            check_y = (j + height_) % height_;
-            offset = check_y * width_ + check_x;
-
-            if(board_[offset] > 0) {
-                sum += board_[offset];
-            }
-        }
-    }
-    return sum;
-}
-
 std::string Hodge::get_rule_string() {
     std::ostringstream rule_ss;
     rule_ss << death_threshold_ << " ";
@@ -181,7 +127,7 @@ void Hodge::set_board(void *new_board) {
     memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
-void Hodge::start() { 
+void Hodge::start() {
     std::cout << "Starting Hodge" << std::endl;
     Ruleset::start();
 
@@ -211,7 +157,7 @@ void Hodge::start() {
     rainbows_.start();
 }
 
-void Hodge::stop() { 
+void Hodge::stop() {
     Ruleset::stop();
 
     InputManager::remove_var_changer(SDL_SCANCODE_T, false, false);
@@ -236,17 +182,18 @@ void Hodge::tick() {
             copy_board_to_gpu();
         }
         if(podge_) {
-            call_cuda_hodgepodge(cudev_board_, cudev_board_buffer_, death_threshold_,
-                                 infection_rate_, k1_, k2_,
-                                 width_, height_);
+            call_hodgepodge_kernel(cudev_board_, cudev_board_buffer_,
+                                   death_threshold_,
+                                   infection_rate_, k1_, k2_,
+                                   width_, height_);
         }
         else {
-            call_cuda_hodge(cudev_board_, cudev_board_buffer_, death_threshold_,
-                            infection_rate_, infection_threshold_,
-                            width_, height_);
+            call_hodge_kernel(cudev_board_, cudev_board_buffer_, death_threshold_,
+                              infection_rate_, infection_threshold_,
+                              width_, height_);
         }
 
-        cudaMemcpy(board_, cudev_board_buffer_, 
+        cudaMemcpy(board_, cudev_board_buffer_,
                    width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
 
@@ -256,57 +203,20 @@ void Hodge::tick() {
 
     }
     else {
-        update_board();
-    }
-}
-
-void Hodge::update_board() {
-    if(podge_) {
-        update_hodgepodge();
-    }
-    else {
-        update_hodge();
-    }
-
-    {
-        int *tmp = board_buffer_;
-        board_buffer_ = board_;
-        board_ = tmp;
-    }
-}
-
-void Hodge::update_hodge() {
-    for(int j = 0; j < height_; j++) {
-        for(int i = 0; i < width_; i++) {
-            int offset = j * width_ + i;
-
-            if(board_[offset] <= 0) {
-                board_buffer_[offset] = (int)(get_sum_neighbors(i, j) >= infection_threshold_);
+        for(int i = 0; i < width_ * height_; i++) {
+            if(podge_) {
+                hodgepodge_step(board_, board_buffer_, i, death_threshold_,
+                                infection_rate_, k1_, k2_, width_, height_);
             }
-            else if(board_[offset] < death_threshold_) {
-                board_buffer_[offset] = get_sum_neighbors(i, j) / 9;
-                board_buffer_[offset] += infection_rate_;
-            }
-            else if(board_[offset] >= death_threshold_) {
-                board_buffer_[offset] = 0;
+            else {
+                hodge_step(board_, board_buffer_, i, death_threshold_,
+                           infection_rate_, infection_threshold_, width_, height_);
             }
         }
-    }
-}
-
-void Hodge::update_hodgepodge() {
-    for(int j = 0; j < height_; j++) {
-        for(int i = 0; i < width_; i++) {
-            int offset = j * width_ + i;
-            if(board_[offset] <= 0) {
-                board_buffer_[offset] = get_next_value_healthy(i, j);
-            }
-            else if(board_[offset] < death_threshold_) {
-                board_buffer_[offset] = get_next_value_infected(i, j);
-            }
-            else if(board_[offset] >= death_threshold_) {
-                board_buffer_[offset] = 0;
-            }
+        {
+            int *tmp = board_buffer_;
+            board_buffer_ = board_;
+            board_ = tmp;
         }
     }
 }
