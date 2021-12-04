@@ -9,8 +9,8 @@
 #include "lifelike.h"
 
 LifeLike::LifeLike(int width, int height)
-    : Ruleset(width, height)
-    , initializer_(&board_, 1, 54, width, height)
+    : Ruleset()
+    , initializer_(&board_, 1, 54)
     , num_faders_(0)
     , rainbows_(width, height, 1)
     , random_fader_modulo_(6)
@@ -39,13 +39,10 @@ LifeLike::LifeLike(int width, int height)
     memcpy(born_, born_tmp, sizeof(born_));
     memcpy(stay_alive_, stay_alive_tmp, sizeof(stay_alive_));
 
-    board_ = new int[width*height];
-    board_buffer_ = new int[width*height];
-
+    board_ = new Board<int>(width, height);
+    board_buffer_ = new Board<int>(width, height);
 
     std::cout << "Allocating CUDA memory for LifeLike" << std::endl;
-    cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_born_, 9 * sizeof(int));
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
 
@@ -58,18 +55,9 @@ LifeLike::~LifeLike() {
     delete [] board_buffer_;
 
     std::cout << "Freeing CUDA memory for LifeLike" << std::endl;
-    cudaFree((void*)cudev_board_);
-    cudaFree((void*)cudev_board_buffer_);
     cudaFree((void*)cudev_born_);
     cudaFree((void*)cudev_stay_alive_);
 
-}
-
-
-void LifeLike::copy_board_to_gpu() {
-    cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
-               cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
 }
 
 void LifeLike::copy_rules_to_gpu() {
@@ -82,13 +70,12 @@ void LifeLike::copy_rules_to_gpu() {
 
 void LifeLike::start_cuda() {
     copy_rules_to_gpu();
-    copy_board_to_gpu();
+    board_->copy_host_to_device();
 }
 
 void LifeLike::stop_cuda() {
+    board_->copy_device_to_host();
 }
-
-
 
 BoardType::BoardType LifeLike::board_get_type() {
     return BoardType::AgeBoard;
@@ -107,7 +94,7 @@ std::string LifeLike::get_name() {
 }
 
 void LifeLike::get_pixels(uint32_t *pixels) {
-    rainbows_.age_to_pixels(board_, pixels);
+    rainbows_.age_to_pixels(board_->get_data(use_gpu_), pixels);
 }
 
 std::string LifeLike::get_rule_string() {
@@ -131,6 +118,10 @@ void LifeLike::load_rule_string(std::string rules) {
         rule_ss >> stay_alive_[i];
     }
     rule_ss >> num_faders_;
+
+    if(use_gpu_) {
+        copy_rules_to_gpu();
+    }
 }
 
 void LifeLike::print_human_readable_rules() {
@@ -167,7 +158,7 @@ void LifeLike::randomize_ruleset() {
 }
 
 void LifeLike::set_board(void *new_board) {
-    memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
+    //memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
 void LifeLike::start() {
@@ -201,6 +192,7 @@ void LifeLike::stop() {
 }
 
 void LifeLike::tick() {
+    /*
     if(initializer_.was_board_changed()) {
         current_tick_ = num_faders_;
 
@@ -208,34 +200,24 @@ void LifeLike::tick() {
             copy_board_to_gpu();
         }
     }
+    */
 
     if(use_gpu_) {
-
-        int *temp = NULL;
-
-        call_lifelike_kernel(cudev_board_, cudev_board_buffer_, cudev_born_,
-                             cudev_stay_alive_, num_faders_, current_tick_,
-                             width_, height_);
-
-        cudaMemcpy(board_, cudev_board_buffer_,
-                   width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
+        call_lifelike_kernel(board_, board_buffer_, cudev_born_,
+                             cudev_stay_alive_, num_faders_, current_tick_);
 
         cudaDeviceSynchronize();
-
-        temp = cudev_board_buffer_;
-        cudev_board_buffer_ = cudev_board_;
-        cudev_board_ = temp;
-
     }
     else {
-        for(int i = 0; i < width_ * height_; i++) {
+        for(int i = 0; i < board_->width_ * board_->height_; i++) {
             lifelike_step(board_, board_buffer_, i, born_, stay_alive_,
-                          num_faders_, current_tick_, width_, height_);
+                          num_faders_, current_tick_);
         }
-        int *tmp = board_buffer_;
-        board_buffer_ = board_;
-        board_ = tmp;
     }
+    Board<int> *tmp = board_buffer_;
+    board_buffer_ = board_;
+    board_ = tmp;
+
     current_tick_++;
 }
 

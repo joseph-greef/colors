@@ -1,45 +1,49 @@
 
+#include <typeinfo>
+
 template <class T>
-Board<T>::Board(int width, int height, bool gpu)
+Board<T>::Board(int width, int height)
     : width_(width)
     , height_(height)
-    , gpu_(gpu)
 {
-    if(gpu_) {
-        cudaMalloc((void**)&data_, width_ * height_ * sizeof(T));
-    }
-    else {
-        data_ = new T[width_*height_];
-    }
+    cudaMalloc((void**)&device_data_, width_ * height_ * sizeof(T));
+    host_data_ = new T[width_*height_];
+
+    cudaMalloc((void**)&device_copy_, sizeof(Board<T>));
+    cudaMemcpy(device_copy_, this, sizeof(Board<T>),
+               cudaMemcpyHostToDevice);
 }
 
 template <class T>
 Board<T>::~Board() {
-    if(gpu_) {
-        cudaFree((void*)data_);
-    }
-    else {
-        delete [] data_;
-    }
+    cudaFree((void*)device_data_);
+    cudaFree((void*)device_copy_);
+    delete [] host_data_;
 }
 
 template <class T>
-void Board<T>::copy_board_from(Board<T> &other) {
-    if(gpu_ && other.gpu_) {
-        cudaMemcpy(data_, other.data_, width_ * height_ * sizeof(T),
-                   cudaMemcpyDeviceToDevice);
+void Board<T>::clear() {
+    memset(host_data_, 0, width_*height_*sizeof(T));
+    cudaMemset(device_data_, 0, width_*height_*sizeof(T));
+}
+
+template <class T>
+void Board<T>::copy_host_to_device() {
+    cudaMemcpy(device_data_, host_data_, width_ * height_ * sizeof(T),
+               cudaMemcpyHostToDevice);
+}
+
+template <class T>
+T* Board<T>::get_data(bool gpu) {
+    if(gpu) {
+        cudaMemcpy(host_data_, device_data_,
+                   width_ * height_ * sizeof(T), cudaMemcpyDeviceToHost);
     }
-    else if(!gpu_ && other.gpu_) {
-        cudaMemcpy(data_, other.data_, width_ * height_ * sizeof(T),
-                   cudaMemcpyDeviceToHost);
-    }
-    else if(gpu_ && !other.gpu_) {
-        cudaMemcpy(data_, other.data_, width_ * height_ * sizeof(T),
-                   cudaMemcpyHostToDevice);
-    }
-    else if(!gpu_ && !other.gpu_) {
-        cudaMemcpy(data_, other.data_, width_ * height_ * sizeof(T),
-                   cudaMemcpyHostToHost);
-    }
+    return host_data_;
+}
+
+template <class T>
+std::size_t Board<T>::get_type() {
+    return typeid(T).hash_code();
 }
 

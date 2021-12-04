@@ -24,6 +24,7 @@ include_directories(
   src
   src/rulesets
   src/rulesets/include
+  src/rulesets/utilities
 )
 
 

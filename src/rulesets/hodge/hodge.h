@@ -9,8 +9,8 @@
 
 class Hodge : public Ruleset {
     private:
-        int *board_;
-        int *board_buffer_;
+        Board<int> *board_;
+        Board<int> *board_buffer_;
         int death_threshold_;
         int infection_rate_;
         int infection_threshold_;
@@ -19,12 +19,6 @@ class Hodge : public Ruleset {
         int k2_;
         bool podge_;
         Rainbows rainbows_;
-
-
-        int *cudev_board_;
-        int *cudev_board_buffer_;
-
-        void copy_board_to_gpu();
 
         void start_cuda();
         void stop_cuda();

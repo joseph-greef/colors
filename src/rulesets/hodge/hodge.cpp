@@ -10,50 +10,34 @@
 #include "hodge.h"
 
 Hodge::Hodge(int width, int height)
-    : Ruleset(width, height)
+    : Ruleset()
     , death_threshold_(260)
     , infection_rate_(30)
     , infection_threshold_(2)
-    , initializer_(&board_, 2, 5, width, height)
+    , initializer_(&board_, 2, 5)
     , k1_(2)
     , k2_(5)
     , podge_(true)
     , rainbows_(width, height, 1)
 {
-    board_ = new int[width*height];
-    board_buffer_ = new int[width*height];
-
-
-    std::cout << "Allocating CUDA memory for Hodge" << std::endl;
-    cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
-
+    board_ = new Board<int>(width, height);
+    board_buffer_ = new Board<int>(width, height);
 
     initializer_.init_center_square();
 }
 
 Hodge::~Hodge() {
-    delete [] board_;
-    delete [] board_buffer_;
-
-    std::cout << "Freeing CUDA memory for Hodge" << std::endl;
-    cudaFree((void*)cudev_board_);
-    cudaFree((void*)cudev_board_buffer_);
-
+    delete board_;
+    delete board_buffer_;
 }
 
-
-void Hodge::copy_board_to_gpu() {
-    cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
-               cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
-}
 
 void Hodge::start_cuda() {
-    copy_board_to_gpu();
+    board_->copy_host_to_device();
 }
 
 void Hodge::stop_cuda() {
+    board_->copy_device_to_host();
 }
 
 
@@ -74,7 +58,7 @@ std::string Hodge::get_name() {
 }
 
 void Hodge::get_pixels(uint32_t *pixels) {
-    rainbows_.age_to_pixels(board_, pixels);
+    rainbows_.age_to_pixels(board_->get_data(use_gpu_), pixels);
 }
 
 std::string Hodge::get_rule_string() {
@@ -124,7 +108,7 @@ void Hodge::randomize_ruleset() {
 }
 
 void Hodge::set_board(void *new_board) {
-    memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
+    //memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
 void Hodge::start() {
@@ -176,48 +160,34 @@ void Hodge::stop() {
 
 void Hodge::tick() {
     if(use_gpu_) {
-
-        int *temp = NULL;
-        if(initializer_.was_board_changed()) {
-            copy_board_to_gpu();
-        }
         if(podge_) {
-            call_hodgepodge_kernel(cudev_board_, cudev_board_buffer_,
+            call_hodgepodge_kernel(board_, board_buffer_,
                                    death_threshold_,
-                                   infection_rate_, k1_, k2_,
-                                   width_, height_);
+                                   infection_rate_, k1_, k2_);
         }
         else {
-            call_hodge_kernel(cudev_board_, cudev_board_buffer_, death_threshold_,
-                              infection_rate_, infection_threshold_,
-                              width_, height_);
+            call_hodge_kernel(board_, board_buffer_, death_threshold_,
+                              infection_rate_, infection_threshold_);
         }
 
-        cudaMemcpy(board_, cudev_board_buffer_,
-                   width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
         cudaDeviceSynchronize();
-
-        temp = cudev_board_buffer_;
-        cudev_board_buffer_ = cudev_board_;
-        cudev_board_ = temp;
-
     }
     else {
-        for(int i = 0; i < width_ * height_; i++) {
+        for(int i = 0; i < board_->width_ * board_->height_; i++) {
             if(podge_) {
                 hodgepodge_step(board_, board_buffer_, i, death_threshold_,
-                                infection_rate_, k1_, k2_, width_, height_);
+                                infection_rate_, k1_, k2_);
             }
             else {
                 hodge_step(board_, board_buffer_, i, death_threshold_,
-                           infection_rate_, infection_threshold_, width_, height_);
+                           infection_rate_, infection_threshold_);
             }
         }
-        {
-            int *tmp = board_buffer_;
-            board_buffer_ = board_;
-            board_ = tmp;
-        }
+    }
+    {
+        Board<int> *tmp = board_buffer_;
+        board_buffer_ = board_;
+        board_ = tmp;
     }
 }
 

@@ -7,7 +7,7 @@
 #include "input_manager.h"
 
 Ants::Ants(int width, int height)
-    : Ruleset(width, height)
+    : Ruleset()
     , colony_pheromone_display_(0)
     , color_speed_(2)
     , current_tick_(0)
@@ -20,6 +20,8 @@ Ants::Ants(int width, int height)
     , starting_food_density_(1500)
     , e2_(rd_())
     , dist_(0, 1)
+    , width_(width)
+    , height_(height)
 {
     rainbow_board_ = new int[width * height];
     world_ = new WorldEntry[width_ * height_];
