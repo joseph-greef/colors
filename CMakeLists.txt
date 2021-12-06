@@ -23,7 +23,8 @@ include_directories(
   gifenc
   src
   src/rulesets
-  src/rulesets/include
+  src/rulesets/utilities
+  src/rulesets/utilities/rainbows
 )
 
 
@@ -40,3 +41,4 @@ add_subdirectory(clip)
 add_library(gifenc STATIC gifenc/gifenc.c gifenc/gifenc.h)
 
 add_subdirectory(src)
+

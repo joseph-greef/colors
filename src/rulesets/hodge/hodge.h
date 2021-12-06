@@ -9,8 +9,8 @@
 
 class Hodge : public Ruleset {
     private:
-        int *board_;
-        int *board_buffer_;
+        Board<int> *board_;
+        Board<int> *board_buffer_;
         int death_threshold_;
         int infection_rate_;
         int infection_threshold_;
@@ -20,24 +20,10 @@ class Hodge : public Ruleset {
         bool podge_;
         Rainbows rainbows_;
 
-
-        int *cudev_board_;
-        int *cudev_board_buffer_;
-
-        void copy_board_to_gpu();
-
         void start_cuda();
         void stop_cuda();
 
-        int get_next_value_healthy(int x, int y);
-        int get_next_value_infected(int x, int y);
-        int get_sum_neighbors(int x, int y);
-
         void randomize_ruleset();
-        void update_board();
-        void update_hodge();
-        void update_hodgepodge();
-
 
     public:
         Hodge(int width, int height);

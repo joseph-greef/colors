@@ -21,17 +21,13 @@ namespace BoardType {
 
 class Ruleset {
     protected:
-        int height_;
         bool use_gpu_;
-        int width_;
-
 
         virtual void start_cuda() = 0;
         virtual void stop_cuda() = 0;
 
-
     public:
-        Ruleset(int width, int height);
+        Ruleset();
         virtual ~Ruleset();
 
         virtual BoardType::BoardType board_get_type() = 0;
@@ -48,8 +44,6 @@ class Ruleset {
 
         virtual void tick() = 0;
 
-        int get_num_alive_neighbors(int *board, int x, int y, int radius,
-                                    NeighborhoodType type);
         void toggle_gpu();
 };
 

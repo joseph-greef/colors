@@ -9,7 +9,7 @@
 
 
 EmptyRuleset::EmptyRuleset(int width, int height)
-    : Ruleset(width, height)
+    : Ruleset()
 {
 
     std::cout << "Allocating CUDA memory for EmptyRuleset" << std::endl;
@@ -62,19 +62,19 @@ void EmptyRuleset::stop_cuda() {
 }
 
 
-void EmptyRuleset::start() { 
+void EmptyRuleset::start() {
     std::cout << "Starting EmptyRuleset" << std::endl;
     Ruleset::start();
 }
 
-void EmptyRuleset::stop() { 
+void EmptyRuleset::stop() {
     Ruleset::stop();
 }
 
 void EmptyRuleset::tick() {
     if(use_gpu_) {
 
-        call_cuda_empty_ruleset(width_, height_);
+        call_cuda_empty_ruleset();
 
     }
     else {

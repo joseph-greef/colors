@@ -25,11 +25,11 @@ KeyFunction InputManager::key_functions_[SDL_NUM_SCANCODES] = { FunctionType::No
 ManagerMode::ManagerMode InputManager::mode_ = ManagerMode::Normal;
 bool InputManager::reset_pending_ = false;
 
-std::list<ComboFunction*> InputManager::mouse_left_combos_ = 
+std::list<ComboFunction*> InputManager::mouse_left_combos_ =
         std::list<ComboFunction*>();
 FunctionType::FunctionType InputManager::mouse_left_mode_ = FunctionType::None;
 
-std::list<ComboFunction*> InputManager::mouse_right_combos_ = 
+std::list<ComboFunction*> InputManager::mouse_right_combos_ =
         std::list<ComboFunction*>();
 FunctionType::FunctionType InputManager::mouse_right_mode_ = FunctionType::None;
 
@@ -174,7 +174,7 @@ void InputManager::handle_input(SDL_Event event) {
     if((mode_ == ManagerMode::Normal || mode_ == ManagerMode::IntAccumulator) &&
             event.type == SDL_KEYDOWN) {
         ComboFunction *combo = get_combo_func(event.key.keysym.scancode,
-                                              control, shift); 
+                                              control, shift);
         switch(combo->func_type) {
             case FunctionType::Void:
                 combo->void_func();
@@ -224,7 +224,7 @@ void InputManager::handle_input(SDL_Event event) {
                 int_accumulator_ = INT_MIN;
                 return;
             }
-            else if(event.key.keysym.sym >= SDLK_KP_1 && 
+            else if(event.key.keysym.sym >= SDLK_KP_1 &&
                     event.key.keysym.sym <= SDLK_KP_0) {
                 //order is KP_1, KP_2 ... KP_0
                 int num_val = event.key.keysym.sym - SDLK_KP_1 + 1;
@@ -304,17 +304,17 @@ int InputManager::modify_int(IntEntry *entry, int override_value,
     if(modify_value) {
         *(entry->variable) += modify_value;
     }
-    
+
     if(*(entry->variable) < entry->min_value) {
         *(entry->variable) = entry->min_value;
     }
     if(*(entry->variable) > entry->max_value) {
         *(entry->variable) = entry->max_value;
     }
-    
-    std::cout << get_combo_func(entry->scancode, entry->control, entry->shift)->description 
-              << ": " 
-              << *(entry->variable) 
+
+    std::cout << get_combo_func(entry->scancode, entry->control, entry->shift)->description
+              << ": "
+              << *(entry->variable)
               << std::endl;
 
     return *(entry->variable);
@@ -383,10 +383,10 @@ void InputManager::print_controls() {
     std::cout << "-----------+---+---+-----------+------------" << std::endl;
 
     for(RuleEntry entry: to_print) {
-        std::cout << std::setw(10) << entry.key_name << " | " << 
+        std::cout << std::setw(10) << entry.key_name << " | " <<
                      (entry.control ? "*" : " ") << " | " <<
                      (entry.shift ? "*" : " ") << " | " <<
-                     std::setw(9) << entry.owner_name << 
+                     std::setw(9) << entry.owner_name <<
                      " | " << entry.description << std::endl;
     }
 

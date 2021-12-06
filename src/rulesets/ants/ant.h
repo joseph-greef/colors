@@ -2,14 +2,14 @@
 #define _ANTS_ANT_H
 
 struct Ant {
-    Ant(int x_, int y_, Colony *colony_)  
+    Ant(int x_, int y_, Colony *colony_)
         : x(x_)
         , y(y_)
         , enemy_seen(false)
         , has_food(false)
         , steps_since_event(0)
         , total_steps(0)
-        , colony(colony_) 
+        , colony(colony_)
     {}
 
     int x;

@@ -97,9 +97,9 @@ Game::Game(int fps_target, int width, int height)
     ADD_FUNCTION_CALLER(&Game::take_screenshot, SDL_SCANCODE_LEFTBRACKET, false, false,
                         "Game", "Take screenshot");
 
-    ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z, 
+    ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z,
                                false, false, "Game", "Change ruleset", _1, _2, false);
-    ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z, 
+    ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z,
                                true, false, "Game", "Change ruleset (transfer board)",
                                _1, _2, true);
 
@@ -269,7 +269,7 @@ void Game::save_rule_string_to_file(void) {
 void Game::save_rule_string_to_temp(int index) {
     saved_rules_[index].ruleset_num = current_ruleset_;
     saved_rules_[index].rule_string = active_ruleset_->get_rule_string();
-    std::cout << std::endl << index << " | " << 
+    std::cout << std::endl << index << " | " <<
                  saved_rules_[index].rule_string << std::endl;
 }
 

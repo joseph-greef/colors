@@ -1,4 +1,3 @@
-# rulesets/ants
 
 add_library(hodge STATIC
   hodge.cpp

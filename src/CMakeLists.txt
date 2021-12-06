@@ -1,4 +1,3 @@
-# Root CMakeLists
 
 add_subdirectory(rulesets)
 
@@ -33,7 +32,7 @@ target_link_libraries(colors PRIVATE
   clip
   cudart_static
   gifenc
-  rulesets
+  utilities
   SDL2
   SDL2_image
   ${OpenCV_LIBS}

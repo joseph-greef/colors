@@ -2,133 +2,138 @@
 #include "hodge.cuh"
 
 
-__device__ int get_next_value_healthy(int x, int y, int *board, 
-                                      int death_threshold, int k1, int k2,
-                                      int width, int height) {
+__host__ __device__
+int get_next_value_healthy(int x, int y, Board<int> *board, int death_threshold,
+                           int k1, int k2) {
     int check_x = 0, check_y = 0, offset = 0;
     int ill = 0, infected = 0;
     for(int i = x - 1; i <= x + 1; i++) {
         for(int j = y - 1; j <= y + 1; j++) {
-            check_x = (i + width) % width;
-            check_y = (j + height) % height;
-            offset = check_y * width + check_x;
+            check_x = (i + board->width_) % board->width_;
+            check_y = (j + board->height_) % board->height_;
+            offset = check_y * board->width_ + check_x;
 
-            ill += board[offset] == death_threshold;
-            infected += board[offset] > 0 &&
-                        board[offset] < death_threshold;
+            ill += board->get(offset) == death_threshold;
+            infected += board->get(offset) > 0 &&
+                        board->get(offset) < death_threshold;
         }
     }
     return (infected / k1) + (ill / k2);
 }
 
-__device__ int get_next_value_infected(int x, int y, int *board, 
-                                       int death_threshold, int infection_rate,
-                                       int width, int height) {
+__host__ __device__
+int get_next_value_infected(int x, int y, Board<int> *board,
+                            int death_threshold, int infection_rate) {
     int check_x = 0, check_y = 0, offset = 0;
     int ill = 0, infected = 0, sum = 0;
     for(int i = x - 1; i <= x + 1; i++) {
         for(int j = y - 1; j <= y + 1; j++) {
-            check_x = (i + width) % width;
-            check_y = (j + height) % height;
-            offset = check_y * width + check_x;
+            check_x = (i + board->width_) % board->width_;
+            check_y = (j + board->height_) % board->height_;
+            offset = check_y * board->width_ + check_x;
 
-            ill += board[offset] == death_threshold;
-            infected += board[offset] > 0 &&
-                        board[offset] < death_threshold;
-            if(board[offset] > 0) {
-                sum += board[offset];
+            ill += board->get(offset) == death_threshold;
+            infected += board->get(offset) > 0 &&
+                        board->get(offset) < death_threshold;
+            if(board->get(offset) > 0) {
+                sum += board->get(offset);
             }
         }
     }
     return sum / (ill + infected + 1) + infection_rate;
 }
 
-__device__ int get_sum_neighbors(int x, int y, int *board, 
-                                 int width, int height) {
+__host__ __device__
+int get_sum_neighbors(int x, int y, Board<int> *board) {
     int check_x = 0, check_y = 0, offset = 0;
     int sum = 0;
     for(int i = x - 1; i <= x + 1; i++) {
         for(int j = y - 1; j <= y + 1; j++) {
-            check_x = (i + width) % width;
-            check_y = (j + height) % height;
-            offset = check_y * width + check_x;
+            check_x = (i + board->width_) % board->width_;
+            check_y = (j + board->height_) % board->height_;
+            offset = check_y * board->width_ + check_x;
 
-            if(board[offset] > 0) {
-                sum += board[offset];
+            if(board->get(offset) > 0) {
+                sum += board->get(offset);
             }
         }
     }
     return sum;
 }
 
-__global__ void cuda_hodge(int* board, int* board_buffer, int death_threshold,
-                           int infection_rate, int infection_threshold,
-                           int width, int height) {
+__host__ __device__
+void hodge_step(Board<int>* board, Board<int>* board_buffer, int index,
+                int death_threshold, int infection_rate, int infection_threshold) {
+    int j = index / board->width_;
+    int i = index % board->width_;
+
+    if(board->get(index) <= 0) {
+        board_buffer->set(index, (int)(get_sum_neighbors(i, j, board) >=
+                                    infection_threshold));
+    }
+    else if(board->get(index) < death_threshold) {
+        board_buffer->set(index, get_sum_neighbors(i, j, board) / 9 + infection_rate);
+    }
+    else if(board->get(index) >= death_threshold) {
+        board_buffer->set(index, 0);
+    }
+}
+
+__host__ __device__
+void hodgepodge_step(Board<int>* board, Board<int>* board_buffer, int index,
+                     int death_threshold, int infection_rate, int k1, int k2) {
+    int j = index / board->width_;
+    int i = index % board->width_;
+
+    if(board->get(index) <= 0) {
+        board_buffer->set(index, get_next_value_healthy(i, j, board,
+                                                     death_threshold, k1, k2));
+    }
+    else if(board->get(index) < death_threshold) {
+        board_buffer->set(index, get_next_value_infected(i, j, board,
+                                                      death_threshold,
+                                                      infection_rate));
+    }
+    else if(board->get(index) >= death_threshold) {
+        board_buffer->set(index, 0);
+    }
+}
+
+__global__
+void hodge_kernel(Board<int>* board, Board<int>* board_buffer, int death_threshold,
+                  int infection_rate, int infection_threshold) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
-    while (index < height * width) {
-        
-        int j = index / width;
-        int i = index % width;
-
-        if(board[index] <= 0) {
-            board_buffer[index] = (int)(get_sum_neighbors(i, j, board,
-                                                          width, height) >= 
-                                        infection_threshold);
-        }
-        else if(board[index] < death_threshold) {
-            board_buffer[index] = get_sum_neighbors(i, j, board, width, height) / 
-                                   9;
-            board_buffer[index] += infection_rate;
-        }
-        else if(board[index] >= death_threshold) {
-            board_buffer[index] = 0;
-        }
-
+    while (index < board->height_ * board->width_) {
+        hodge_step(board, board_buffer, index, death_threshold, infection_rate,
+                   infection_threshold);
         index += blockDim.x * gridDim.x;
     }
 }
 
-__global__ void cuda_hodgepodge(int* board, int* board_buffer, int death_threshold,
-                                int infection_rate, int k1, int k2,
-                                int width, int height) {
+__global__
+void hodgepodge_kernel(Board<int>* board, Board<int>* board_buffer,
+                       int death_threshold, int infection_rate, int k1, int k2) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
-    while (index < height * width) {
-        
-        int j = index / width;
-        int i = index % width;
-
-        if(board[index] <= 0) {
-            board_buffer[index] = get_next_value_healthy(i, j, board, 
-                                                         death_threshold, k1, k2,
-                                                         width, height);
-        }
-        else if(board[index] < death_threshold) {
-            board_buffer[index] = get_next_value_infected(i, j, board,
-                                                          death_threshold,
-                                                          infection_rate, 
-                                                          width, height);
-        }
-        else if(board[index] >= death_threshold) {
-            board_buffer[index] = 0;
-        }
-
+    while (index < board->height_ * board->width_) {
+        hodgepodge_step(board, board_buffer, index, death_threshold,
+                        infection_rate, k1, k2);
         index += blockDim.x * gridDim.x;
     }
 }
 
-void call_cuda_hodge(int *board, int *board_buffer, int death_threshold,
-                     int infection_rate, int infection_threshold, 
-                     int width, int height) {
-    cuda_hodge<<<512, 128>>>(board, board_buffer, death_threshold,
-                             infection_rate, infection_threshold,
-                             width, height);
+void call_hodge_kernel(Board<int> *board, Board<int> *board_buffer,
+                       int death_threshold, int infection_rate,
+                       int infection_threshold) {
+    hodge_kernel<<<512, 128>>>(board->device_copy_, board_buffer->device_copy_,
+                               death_threshold,
+                               infection_rate, infection_threshold);
 }
 
-void call_cuda_hodgepodge(int *board, int *board_buffer, int death_threshold,
-                     int infection_rate, int k1, int k2, 
-                     int width, int height) {
-    cuda_hodgepodge<<<512, 128>>>(board, board_buffer, death_threshold,
-                                  infection_rate, k1, k2,
-                                  width, height);
+void call_hodgepodge_kernel(Board<int> *board, Board<int> *board_buffer,
+                            int death_threshold, int infection_rate,
+                            int k1, int k2) {
+    hodgepodge_kernel<<<512, 128>>>(board->device_copy_, board_buffer->device_copy_,
+                                    death_threshold,
+                                    infection_rate, k1, k2);
 }
 

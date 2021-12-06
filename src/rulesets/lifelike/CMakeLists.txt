@@ -1,5 +1,3 @@
-# rulesets/ants
-
 
 add_library(lifelike STATIC
   lifelike.cpp

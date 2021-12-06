@@ -284,7 +284,7 @@ bool Colony::move_ant(Ant *ant) {
                     else {
                         move_value[j * 3 + i] *= 1.060;
                     }
-                }    
+                }
             }
         }
     }

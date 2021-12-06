@@ -2,6 +2,8 @@
 #ifndef _LIFELIKE_H
 #define _LIFELIKE_H
 
+#include "board.cuh"
+
 #include "initializer.h"
 #include "rainbows.h"
 #include "ruleset.h"
@@ -9,8 +11,9 @@
 
 class LifeLike : public Ruleset {
     private:
-        int *board_;
-        int *board_buffer_;
+        Board<int> *board_;
+        Board<int> *board_buffer_;
+
         bool born_[9];
         int current_tick_;
         Initializer initializer_;
@@ -20,10 +23,7 @@ class LifeLike : public Ruleset {
         bool stay_alive_[9];
 
         void randomize_ruleset();
-        void update_board();
 
-        int *cudev_board_;
-        int *cudev_board_buffer_;
         bool *cudev_born_;
         bool *cudev_stay_alive_;
 

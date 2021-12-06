@@ -3,18 +3,16 @@
 #include <iostream>
 #include <stdlib.h>
 
-#include "curand.h"
-#include "cuda_runtime.h"
 #include "lifelike.cuh"
 
 #include "input_manager.h"
 #include "lifelike.h"
 
 LifeLike::LifeLike(int width, int height)
-    : Ruleset(width, height)
-    , initializer_(&board_, 1, 54, width, height)
+    : Ruleset()
+    , initializer_(&board_, 1, 54)
     , num_faders_(0)
-    , rainbows_(width, height, 1)
+    , rainbows_(1)
     , random_fader_modulo_(6)
 {
     //Random pretty pattern
@@ -41,13 +39,10 @@ LifeLike::LifeLike(int width, int height)
     memcpy(born_, born_tmp, sizeof(born_));
     memcpy(stay_alive_, stay_alive_tmp, sizeof(stay_alive_));
 
-    board_ = new int[width*height];
-    board_buffer_ = new int[width*height];
-
+    board_ = new Board<int>(width, height);
+    board_buffer_ = new Board<int>(width, height);
 
     std::cout << "Allocating CUDA memory for LifeLike" << std::endl;
-    cudaMalloc((void**)&cudev_board_, width_ * height_ * sizeof(int));
-    cudaMalloc((void**)&cudev_board_buffer_, width_ * height_ * sizeof(int));
     cudaMalloc((void**)&cudev_born_, 9 * sizeof(int));
     cudaMalloc((void**)&cudev_stay_alive_, 9 * sizeof(bool));
 
@@ -56,22 +51,13 @@ LifeLike::LifeLike(int width, int height)
 }
 
 LifeLike::~LifeLike() {
-    delete [] board_;
-    delete [] board_buffer_;
+    delete board_;
+    delete board_buffer_;
 
     std::cout << "Freeing CUDA memory for LifeLike" << std::endl;
-    cudaFree((void*)cudev_board_);
-    cudaFree((void*)cudev_board_buffer_);
     cudaFree((void*)cudev_born_);
     cudaFree((void*)cudev_stay_alive_);
 
-}
-
-
-void LifeLike::copy_board_to_gpu() {
-    cudaMemcpy(cudev_board_, board_, width_ * height_ * sizeof(int),
-               cudaMemcpyHostToDevice);
-    cudaDeviceSynchronize();
 }
 
 void LifeLike::copy_rules_to_gpu() {
@@ -84,13 +70,12 @@ void LifeLike::copy_rules_to_gpu() {
 
 void LifeLike::start_cuda() {
     copy_rules_to_gpu();
-    copy_board_to_gpu();
+    board_->copy_host_to_device();
 }
 
 void LifeLike::stop_cuda() {
+    board_->copy_device_to_host();
 }
-
-
 
 BoardType::BoardType LifeLike::board_get_type() {
     return BoardType::AgeBoard;
@@ -109,7 +94,7 @@ std::string LifeLike::get_name() {
 }
 
 void LifeLike::get_pixels(uint32_t *pixels) {
-    rainbows_.age_to_pixels(board_, pixels);
+    rainbows_.age_to_pixels(board_, pixels, use_gpu_);
 }
 
 std::string LifeLike::get_rule_string() {
@@ -133,6 +118,10 @@ void LifeLike::load_rule_string(std::string rules) {
         rule_ss >> stay_alive_[i];
     }
     rule_ss >> num_faders_;
+
+    if(use_gpu_) {
+        copy_rules_to_gpu();
+    }
 }
 
 void LifeLike::print_human_readable_rules() {
@@ -169,10 +158,10 @@ void LifeLike::randomize_ruleset() {
 }
 
 void LifeLike::set_board(void *new_board) {
-    memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
+    //memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
-void LifeLike::start() { 
+void LifeLike::start() {
     std::cout << "Starting LifeLike" << std::endl;
     Ruleset::start();
 
@@ -190,7 +179,7 @@ void LifeLike::start() {
     rainbows_.start();
 }
 
-void LifeLike::stop() { 
+void LifeLike::stop() {
     Ruleset::stop();
 
     InputManager::remove_var_changer(SDL_SCANCODE_R, false, false);
@@ -203,6 +192,7 @@ void LifeLike::stop() {
 }
 
 void LifeLike::tick() {
+    /*
     if(initializer_.was_board_changed()) {
         current_tick_ = num_faders_;
 
@@ -210,71 +200,24 @@ void LifeLike::tick() {
             copy_board_to_gpu();
         }
     }
+    */
 
     if(use_gpu_) {
-
-        int *temp = NULL;
-
-        call_cuda_lifelike(cudev_board_, cudev_board_buffer_, cudev_born_,
-                           cudev_stay_alive_, num_faders_, current_tick_,
-                           width_, height_);
-
-        cudaMemcpy(board_, cudev_board_buffer_, 
-                   width_ * height_ * sizeof(int), cudaMemcpyDeviceToHost);
+        call_lifelike_kernel(board_, board_buffer_, cudev_born_,
+                             cudev_stay_alive_, num_faders_, current_tick_);
 
         cudaDeviceSynchronize();
-
-        temp = cudev_board_buffer_;
-        cudev_board_buffer_ = cudev_board_;
-        cudev_board_ = temp;
-
     }
     else {
-        update_board();
-    }
-    current_tick_++;
-}
-
-void LifeLike::update_board() {
-    for(int j = 0; j < height_; j++) {
-        for(int i = 0; i < width_; i++) {
-            //get how many alive neighbors it has
-            int neighbors = Ruleset::get_num_alive_neighbors(board_, i, j, 1,
-                                                             Moore);
-            int offset = j * width_ + i;
-
-            if(board_[offset] > 0) {
-                if(stay_alive_[neighbors]) {
-                    board_buffer_[offset] = board_[offset];
-                }
-                else {
-                    board_buffer_[offset] = -current_tick_;
-                }
-
-            }
-            //board_ + current_tick_ is the number of ticks since state change
-            //so this block is when the cell is allowed to be born
-            else if(board_[offset] + current_tick_ >= num_faders_) {
-                if(born_[neighbors]) {
-                    board_buffer_[offset] = current_tick_;
-                }
-                else {
-                    board_buffer_[offset] = board_[offset];
-                }
-            }
-            //this block is the refractory states, just chill
-            else {
-                board_buffer_[offset] = board_[offset];
-            }
+        for(int i = 0; i < board_->width_ * board_->height_; i++) {
+            lifelike_step(board_, board_buffer_, i, born_, stay_alive_,
+                          num_faders_, current_tick_);
         }
     }
+    Board<int> *tmp = board_buffer_;
+    board_buffer_ = board_;
+    board_ = tmp;
 
-    {
-        int *tmp = board_buffer_;
-        board_buffer_ = board_;
-        board_ = tmp;
-    }
-
+    current_tick_++;
 }
-
 
