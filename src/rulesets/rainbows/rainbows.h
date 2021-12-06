@@ -42,7 +42,7 @@ class Rainbows {
         int last_height_;
         int last_width_;
 
-        static uint32_t colors[][RAINBOW_LENGTH];
+        static uint32_t colors_host[][RAINBOW_LENGTH];
         static int num_colors;
 
         void save_gif_frame(Board<int> *board);

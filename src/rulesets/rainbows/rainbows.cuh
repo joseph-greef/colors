@@ -7,8 +7,16 @@
 
 #include "board.cuh"
 
+__host__ __device__
+void age_to_pixels_step(Board<int> *board, uint32_t *pixels, int index,
+                        uint32_t *alive_gradient, uint32_t *dead_gradient,
+                        int alive_offset, int dead_offset, int color_offset,
+                        bool changing_background);
 
-void call_rainbows_kernel(Board<int> *board, Board<int> *board_buffer);
 
+void call_age_to_pixels_kernel(Board<int> *board, uint32_t *pixels,
+                               int alive_color_scheme, int dead_color_scheme,
+                               int alive_offset, int dead_offset, int color_offset,
+                               bool changing_background);
 
 #endif //_RAINBOWS_CUH
