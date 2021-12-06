@@ -24,7 +24,7 @@ include_directories(
   src
   src/rulesets
   src/rulesets/utilities
-  src/rulesets/rainbows
+  src/rulesets/utilities/rainbows
 )
 
 
