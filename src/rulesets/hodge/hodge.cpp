@@ -18,7 +18,7 @@ Hodge::Hodge(int width, int height)
     , k1_(2)
     , k2_(5)
     , podge_(true)
-    , rainbows_(width, height, 1)
+    , rainbows_(1)
 {
     board_ = new Board<int>(width, height);
     board_buffer_ = new Board<int>(width, height);
@@ -58,7 +58,7 @@ std::string Hodge::get_name() {
 }
 
 void Hodge::get_pixels(uint32_t *pixels) {
-    rainbows_.age_to_pixels(board_->get_data(use_gpu_), pixels);
+    rainbows_.age_to_pixels(board_, pixels, use_gpu_);
 }
 
 std::string Hodge::get_rule_string() {

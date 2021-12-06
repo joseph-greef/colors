@@ -20,6 +20,7 @@ public:
     ~Board();
 
     void clear();
+    void copy_device_to_host();
     void copy_host_to_device();
 
     T* get_data(bool gpu);
@@ -47,7 +48,6 @@ public:
         host_data_[index] = value;
 #endif //__CUDA_ARCH__
     }
-
 };
 
 #include "board.h.cu"

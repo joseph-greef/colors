@@ -14,7 +14,7 @@ Ants::Ants(int width, int height)
     , food_probability_(10)
     , num_colonies_(8)
     , num_food_for_child_(50)
-    , rainbows_(width, height, 0)
+    , rainbows_(0)
     , rainbow_train_len_(256)
     , rainbow_view_(false)
     , starting_food_density_(1500)
@@ -79,7 +79,7 @@ std::string Ants::get_name() {
 
 void Ants::get_pixels(uint32_t *pixels) {
     if(rainbow_view_) {
-        rainbows_.age_to_pixels(rainbow_board_, pixels);
+        //rainbows_.age_to_pixels(rainbow_board_, pixels);
     }
     else {
         if(colony_pheromone_display_ > 0 &&

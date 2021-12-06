@@ -28,6 +28,12 @@ void Board<T>::clear() {
 }
 
 template <class T>
+void Board<T>::copy_device_to_host() {
+    cudaMemcpy(host_data_, device_data_,
+               width_ * height_ * sizeof(T), cudaMemcpyDeviceToHost);
+}
+
+template <class T>
 void Board<T>::copy_host_to_device() {
     cudaMemcpy(device_data_, host_data_, width_ * height_ * sizeof(T),
                cudaMemcpyHostToDevice);

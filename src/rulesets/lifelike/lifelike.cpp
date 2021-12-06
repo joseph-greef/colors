@@ -12,7 +12,7 @@ LifeLike::LifeLike(int width, int height)
     : Ruleset()
     , initializer_(&board_, 1, 54)
     , num_faders_(0)
-    , rainbows_(width, height, 1)
+    , rainbows_(1)
     , random_fader_modulo_(6)
 {
     //Random pretty pattern
@@ -51,8 +51,8 @@ LifeLike::LifeLike(int width, int height)
 }
 
 LifeLike::~LifeLike() {
-    delete [] board_;
-    delete [] board_buffer_;
+    delete board_;
+    delete board_buffer_;
 
     std::cout << "Freeing CUDA memory for LifeLike" << std::endl;
     cudaFree((void*)cudev_born_);
@@ -94,7 +94,7 @@ std::string LifeLike::get_name() {
 }
 
 void LifeLike::get_pixels(uint32_t *pixels) {
-    rainbows_.age_to_pixels(board_->get_data(use_gpu_), pixels);
+    rainbows_.age_to_pixels(board_, pixels, use_gpu_);
 }
 
 std::string LifeLike::get_rule_string() {

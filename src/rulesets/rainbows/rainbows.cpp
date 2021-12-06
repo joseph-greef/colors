@@ -5,10 +5,11 @@
 #include <iostream>
 #include <sstream>
 
+#include "rainbows.cuh"
 #include "input_manager.h"
 #include "rainbows.h"
 
-Rainbows::Rainbows(int width, int height, int color_speed)
+Rainbows::Rainbows(int color_speed)
     : alive_color_scheme_(1)
     , alive_offset_(0)
     , changing_background_(false)
@@ -24,40 +25,45 @@ Rainbows::Rainbows(int width, int height, int color_speed)
     , gif_loop_(true)
     , saved_alive_color_scheme_(2)
     , saved_dead_color_scheme_(2)
-    , height_(height)
-    , width_(width)
+    , last_height_(0)
+    , last_width_(0)
 {
 }
 
 Rainbows::~Rainbows() {
 }
 
-void Rainbows::age_to_pixels(int *age_board, uint32_t *pixels) {
-    for(int j = 0; j < height_; j++) {
-        for(int i = 0; i < width_; i++) {
-            int offset = j * width_ + i;
-            if(age_board[offset] > 0) {
+void Rainbows::age_to_pixels(Board<int> *board, uint32_t *pixels, bool use_gpu) {
+    if(use_gpu) {
+        board->copy_device_to_host();
+    }
+    last_height_ = board->height_;
+    last_width_ = board->width_;
+    for(int j = 0; j < board->height_; j++) {
+        for(int i = 0; i < board->width_; i++) {
+            int offset = j * board->width_ + i;
+            if(board->get(offset) > 0) {
                 pixels[offset] =
                     colors[alive_color_scheme_]
-                        [(age_board[offset] + alive_offset_ + color_offset_) &
+                        [(board->get(offset) + alive_offset_ + color_offset_) &
                          255];
             }
-            else if(changing_background_ || age_board[offset] < 0) {
+            else if(changing_background_ || board->get(offset) < 0) {
                 pixels[offset] =
                     colors[dead_color_scheme_]
-                        [(-age_board[offset] + dead_offset_ + color_offset_) &
+                        [(-board->get(offset) + dead_offset_ + color_offset_) &
                          255];
             }
             else {
                 pixels[offset] =
                     colors[dead_color_scheme_]
-                        [(-age_board[offset] + dead_offset_) & 255];
+                        [(-board->get(offset) + dead_offset_) & 255];
             }
         }
     }
 
     if(gif_) {
-        save_gif_frame(age_board);
+        save_gif_frame(board);
     }
 
     color_counter_++;
@@ -82,18 +88,18 @@ void Rainbows::reset_colors() {
     dead_offset_ = 0;
 }
 
-void Rainbows::save_gif_frame(int *age_board) {
-    for(int i = 0; i < width_ * height_; i++) {
-        if(age_board[i] > 0) {
-            gif_->frame[i] = (age_board[i] + alive_offset_ + color_offset_) &
+void Rainbows::save_gif_frame(Board<int> *board) {
+    for(int i = 0; i < board->width_ * board->height_; i++) {
+        if(board->get(i) > 0) {
+            gif_->frame[i] = (board->get(i) + alive_offset_ + color_offset_) &
                              255;
         }
-        if(age_board[i] < 0) {
-            gif_->frame[i] = (-age_board[i] + dead_offset_ + color_offset_) &
+        if(board->get(i) < 0) {
+            gif_->frame[i] = (-board->get(i) + dead_offset_ + color_offset_) &
                              255;
         }
         else {
-            gif_->frame[i] = (-age_board[i] + dead_offset_) & 255;
+            gif_->frame[i] = (-board->get(i) + dead_offset_) & 255;
         }
     }
     ge_add_frame(gif_, gif_delay_);
@@ -191,8 +197,8 @@ void Rainbows::toggle_gif() {
             rainbow_no_alpha[nai + 2] = components[0];
         }
 
-        gif_ = ge_new_gif(str.c_str(), width_, height_, rainbow_no_alpha, 8,
-                          gif_loop_ ? 0 : -1);
+        gif_ = ge_new_gif(str.c_str(), last_width_, last_height_,
+                          rainbow_no_alpha, 8, gif_loop_ ? 0 : -1);
         gif_frames_ = gif_frames_setting_;
     }
 }
