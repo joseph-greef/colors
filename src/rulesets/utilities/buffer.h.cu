@@ -3,7 +3,7 @@
 #include <typeinfo>
 
 template <class T>
-Board<T>::Board(int width, int height)
+Buffer<T>::Buffer(int width, int height)
     : width_(width)
     , height_(height)
     , device_copy_(NULL)
@@ -12,13 +12,13 @@ Board<T>::Board(int width, int height)
     host_data_ = new T[width_*height_];
     host_data_alloced_ = true;
 
-    cudaMalloc((void**)&device_copy_, sizeof(Board<T>));
-    cudaMemcpy(device_copy_, this, sizeof(Board<T>),
+    cudaMalloc((void**)&device_copy_, sizeof(Buffer<T>));
+    cudaMemcpy(device_copy_, this, sizeof(Buffer<T>),
                cudaMemcpyHostToDevice);
 }
 
 template <class T>
-Board<T>::Board(int width, int height, T *host_data)
+Buffer<T>::Buffer(int width, int height, T *host_data)
     : width_(width)
     , height_(height)
     , host_data_(host_data)
@@ -27,13 +27,13 @@ Board<T>::Board(int width, int height, T *host_data)
     cudaMalloc((void**)&device_data_, width_ * height_ * sizeof(T));
     host_data_alloced_ = false;
 
-    cudaMalloc((void**)&device_copy_, sizeof(Board<T>));
-    cudaMemcpy(device_copy_, this, sizeof(Board<T>),
+    cudaMalloc((void**)&device_copy_, sizeof(Buffer<T>));
+    cudaMemcpy(device_copy_, this, sizeof(Buffer<T>),
                cudaMemcpyHostToDevice);
 }
 
 template <class T>
-Board<T>::~Board() {
+Buffer<T>::~Buffer() {
     cudaFree((void*)device_data_);
     cudaFree((void*)device_copy_);
     if(host_data_alloced_) {
@@ -42,25 +42,25 @@ Board<T>::~Board() {
 }
 
 template <class T>
-void Board<T>::clear() {
+void Buffer<T>::clear() {
     memset(host_data_, 0, width_*height_*sizeof(T));
     cudaMemset(device_data_, 0, width_*height_*sizeof(T));
 }
 
 template <class T>
-void Board<T>::copy_device_to_host() {
+void Buffer<T>::copy_device_to_host() {
     cudaMemcpy(host_data_, device_data_,
                width_ * height_ * sizeof(T), cudaMemcpyDeviceToHost);
 }
 
 template <class T>
-void Board<T>::copy_host_to_device() {
+void Buffer<T>::copy_host_to_device() {
     cudaMemcpy(device_data_, host_data_, width_ * height_ * sizeof(T),
                cudaMemcpyHostToDevice);
 }
 
 template <class T>
-void Board<T>::copy_from_board(Board<T> *other, bool use_gpu) {
+void Buffer<T>::copy_from_buffer(Buffer<T> *other, bool use_gpu) {
     cudaMemcpy(host_data_, other->get_data(use_gpu), width_ * height_ * sizeof(T),
                cudaMemcpyHostToHost);
     if(use_gpu) {
@@ -69,7 +69,7 @@ void Board<T>::copy_from_board(Board<T> *other, bool use_gpu) {
 }
 
 template <class T>
-T* Board<T>::get_data(bool gpu) {
+T* Buffer<T>::get_data(bool gpu) {
     if(gpu) {
         cudaMemcpy(host_data_, device_data_,
                    width_ * height_ * sizeof(T), cudaMemcpyDeviceToHost);
@@ -78,12 +78,12 @@ T* Board<T>::get_data(bool gpu) {
 }
 
 template <class T>
-std::size_t Board<T>::get_type() {
+std::size_t Buffer<T>::get_type() {
     return typeid(T).hash_code();
 }
 
 template <class T>
-void Board<T>::set_host_data(T *new_host_data, int new_width, int new_height) {
+void Buffer<T>::set_host_data(T *new_host_data, int new_width, int new_height) {
     if(host_data_alloced_) {
         delete [] host_data_;
     }

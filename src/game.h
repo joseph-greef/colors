@@ -25,11 +25,11 @@ class Game {
         bool running_;
         TempRuleEntry saved_rules_[10];
         SDL_Window *window_;
-        Board<Pixel<uint8_t>> *pixels_;
+        Buffer<Pixel<uint8_t>> *pixels_;
         int width_;
         int height_;
 
-        int change_ruleset(int new_ruleset, int modifier, bool transfer_board);
+        int change_ruleset(int new_ruleset, int modifier, bool transfer_buffer);
         void load_rule_string_from_clipboard(void);
         void load_rule_string_from_file(void);
         void load_rule_string_from_temp(int index);

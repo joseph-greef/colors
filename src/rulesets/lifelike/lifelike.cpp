@@ -40,8 +40,8 @@ LifeLike::LifeLike(int width, int height)
     memcpy(born_, born_tmp, sizeof(born_));
     memcpy(stay_alive_, stay_alive_tmp, sizeof(stay_alive_));
 
-    board_ = new Board<int>(width, height);
-    board_buffer_ = new Board<int>(width, height);
+    board_ = new Buffer<int>(width, height);
+    board_buffer_ = new Buffer<int>(width, height);
 
     std::cout << "Allocating CUDA memory for LifeLike" << std::endl;
     cudaMalloc((void**)&cudev_born_, 9 * sizeof(int));
@@ -82,24 +82,24 @@ void LifeLike::stop_cuda() {
 }
 
 /*
- * Board Copy Functions:
+ * Buffer Copy Functions:
  */
-std::set<std::size_t> LifeLike::board_types_provided() {
-    std::set<std::size_t> boards = { INT_BOARD };
-    return boards;
+std::set<std::size_t> LifeLike::buffer_types_provided() {
+    std::set<std::size_t> buffers = { INT_BUFFER };
+    return buffers;
 }
 
-std::size_t LifeLike::select_board_type(std::set<std::size_t> types) {
-    if(types.find(INT_BOARD) != types.end()) {
-        return INT_BOARD;
+std::size_t LifeLike::select_buffer_type(std::set<std::size_t> types) {
+    if(types.find(INT_BUFFER) != types.end()) {
+        return INT_BUFFER;
     }
     else {
         return NOT_COMPATIBLE;
     }
 }
 
-void* LifeLike::get_board(std::size_t type) {
-    if(type == INT_BOARD) {
+void* LifeLike::get_buffer(std::size_t type) {
+    if(type == INT_BUFFER) {
         return static_cast<void*>(board_);
     }
     else {
@@ -107,10 +107,10 @@ void* LifeLike::get_board(std::size_t type) {
     }
 }
 
-void LifeLike::set_board(void *new_board, std::size_t type) {
-    if(type == INT_BOARD) {
-        Board<int> *temp_board = static_cast<Board<int>*>(new_board);
-        board_->copy_from_board(temp_board, use_gpu_);
+void LifeLike::set_buffer(void *new_buffer, std::size_t type) {
+    if(type == INT_BUFFER) {
+        Buffer<int> *temp_buffer = static_cast<Buffer<int>*>(new_buffer);
+        board_->copy_from_buffer(temp_buffer, use_gpu_);
     }
 }
 
@@ -121,7 +121,7 @@ std::string LifeLike::get_name() {
     return "LifeLike";
 }
 
-void LifeLike::get_pixels(Board<Pixel<uint8_t>> *pixels) {
+void LifeLike::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
     rainbows_.age_to_pixels(board_, pixels, use_gpu_);
 }
 
@@ -238,7 +238,7 @@ void LifeLike::tick() {
                           num_faders_, current_tick_);
         }
     }
-    Board<int> *tmp = board_buffer_;
+    Buffer<int> *tmp = board_buffer_;
     board_buffer_ = board_;
     board_ = tmp;
 

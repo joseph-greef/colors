@@ -3,7 +3,7 @@
 
 
 __host__ __device__
-int get_next_value_healthy(int x, int y, Board<int> *board, int death_threshold,
+int get_next_value_healthy(int x, int y, Buffer<int> *board, int death_threshold,
                            int k1, int k2) {
     int check_x = 0, check_y = 0, offset = 0;
     int ill = 0, infected = 0;
@@ -22,7 +22,7 @@ int get_next_value_healthy(int x, int y, Board<int> *board, int death_threshold,
 }
 
 __host__ __device__
-int get_next_value_infected(int x, int y, Board<int> *board,
+int get_next_value_infected(int x, int y, Buffer<int> *board,
                             int death_threshold, int infection_rate) {
     int check_x = 0, check_y = 0, offset = 0;
     int ill = 0, infected = 0, sum = 0;
@@ -44,7 +44,7 @@ int get_next_value_infected(int x, int y, Board<int> *board,
 }
 
 __host__ __device__
-int get_sum_neighbors(int x, int y, Board<int> *board) {
+int get_sum_neighbors(int x, int y, Buffer<int> *board) {
     int check_x = 0, check_y = 0, offset = 0;
     int sum = 0;
     for(int i = x - 1; i <= x + 1; i++) {
@@ -62,7 +62,7 @@ int get_sum_neighbors(int x, int y, Board<int> *board) {
 }
 
 __host__ __device__
-void hodge_step(Board<int>* board, Board<int>* board_buffer, int index,
+void hodge_step(Buffer<int>* board, Buffer<int>* board_buffer, int index,
                 int death_threshold, int infection_rate, int infection_threshold) {
     int j = index / board->width_;
     int i = index % board->width_;
@@ -80,7 +80,7 @@ void hodge_step(Board<int>* board, Board<int>* board_buffer, int index,
 }
 
 __host__ __device__
-void hodgepodge_step(Board<int>* board, Board<int>* board_buffer, int index,
+void hodgepodge_step(Buffer<int>* board, Buffer<int>* board_buffer, int index,
                      int death_threshold, int infection_rate, int k1, int k2) {
     int j = index / board->width_;
     int i = index % board->width_;
@@ -100,7 +100,7 @@ void hodgepodge_step(Board<int>* board, Board<int>* board_buffer, int index,
 }
 
 __global__
-void hodge_kernel(Board<int>* board, Board<int>* board_buffer, int death_threshold,
+void hodge_kernel(Buffer<int>* board, Buffer<int>* board_buffer, int death_threshold,
                   int infection_rate, int infection_threshold) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < board->height_ * board->width_) {
@@ -111,7 +111,7 @@ void hodge_kernel(Board<int>* board, Board<int>* board_buffer, int death_thresho
 }
 
 __global__
-void hodgepodge_kernel(Board<int>* board, Board<int>* board_buffer,
+void hodgepodge_kernel(Buffer<int>* board, Buffer<int>* board_buffer,
                        int death_threshold, int infection_rate, int k1, int k2) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
     while (index < board->height_ * board->width_) {
@@ -121,7 +121,7 @@ void hodgepodge_kernel(Board<int>* board, Board<int>* board_buffer,
     }
 }
 
-void call_hodge_kernel(Board<int> *board, Board<int> *board_buffer,
+void call_hodge_kernel(Buffer<int> *board, Buffer<int> *board_buffer,
                        int death_threshold, int infection_rate,
                        int infection_threshold) {
     hodge_kernel<<<512, 128>>>(board->device_copy_, board_buffer->device_copy_,
@@ -129,7 +129,7 @@ void call_hodge_kernel(Board<int> *board, Board<int> *board_buffer,
                                infection_rate, infection_threshold);
 }
 
-void call_hodgepodge_kernel(Board<int> *board, Board<int> *board_buffer,
+void call_hodgepodge_kernel(Buffer<int> *board, Buffer<int> *board_buffer,
                             int death_threshold, int infection_rate,
                             int k1, int k2) {
     hodgepodge_kernel<<<512, 128>>>(board->device_copy_, board_buffer->device_copy_,

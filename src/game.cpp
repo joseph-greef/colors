@@ -61,7 +61,7 @@ Game::Game(int fps_target, int width, int height)
     SDL_ShowCursor(0);
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
-    pixels_ = new Board<Pixel<uint8_t>>(width, height,
+    pixels_ = new Buffer<Pixel<uint8_t>>(width, height,
             static_cast<Pixel<uint8_t>*>(SDL_GetWindowSurface(window_)->pixels));
 
     rulesets_.push_back(new LifeLike(width_, height_));
@@ -103,7 +103,7 @@ Game::Game(int fps_target, int width, int height)
     ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z,
                                false, false, "Game", "Change ruleset", _1, _2, false);
     ADD_FUNCTION_CALLER_W_ARGS(&Game::change_ruleset, IntFunc, SDL_SCANCODE_Z,
-                               true, false, "Game", "Change ruleset (transfer board)",
+                               true, false, "Game", "Change ruleset (transfer buffer)",
                                _1, _2, true);
 
     InputManager::add_bool_toggler(&running_, SDL_SCANCODE_ESCAPE, false, false,
@@ -142,7 +142,7 @@ Game::~Game() {
     SDL_Quit();
 }
 
-int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
+int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_buffer) {
     if(new_ruleset == INT_MIN) {
         new_ruleset = current_ruleset_;
     }
@@ -159,15 +159,15 @@ int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
         active_ruleset_->start();
         current_ruleset_ = new_ruleset;
 
-        if(transfer_board) {
-            std::size_t selected_type = active_ruleset_->select_board_type(
-                    old_ruleset->board_types_provided());
-            if(selected_type == RGBA_BOARD) {
+        if(transfer_buffer) {
+            std::size_t selected_type = active_ruleset_->select_buffer_type(
+                    old_ruleset->buffer_types_provided());
+            if(selected_type == RGBA_BUFFER) {
                 old_ruleset->get_pixels(pixels_);
-                active_ruleset_->set_board(pixels_, RGBA_BOARD);
+                active_ruleset_->set_buffer(pixels_, RGBA_BUFFER);
             }
             else if(selected_type != NOT_COMPATIBLE) {
-                active_ruleset_->set_board(old_ruleset->get_board(selected_type),
+                active_ruleset_->set_buffer(old_ruleset->get_buffer(selected_type),
                                            selected_type);
             }
         }

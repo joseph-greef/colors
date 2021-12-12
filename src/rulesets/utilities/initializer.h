@@ -4,29 +4,30 @@
 #include <random>
 #include "SDL2/SDL.h"
 
-#include "board.cuh"
+#include "buffer.cuh"
+
 
 class Initializer {
 private:
-    Board<int> **board_ptr_;
+    Buffer<int> **buffer_ptr_;
     int density_;
     int dot_radius_;
     int word_size_;
 
     std::string init_words(std::string words);
 public:
-    //Initializer(Board *b);
+    //Initializer(Buffer *b);
 
-    //These take pointers to boards so the initializer always operates on the
-    //current board.
-    Initializer(Board<int> **board, int density, int dot_radius);
+    //These take pointers to buffers so the initializer always operates on the
+    //current buffer.
+    Initializer(Buffer<int> **buffer, int density, int dot_radius);
     ~Initializer();
 
-    void clear_board();
+    void clear_buffer();
     void init_center_cross();
     void init_center_diamond();
     void init_center_square();
-    void init_random_board();
+    void init_random_buffer();
 
     void start();
     void stop();

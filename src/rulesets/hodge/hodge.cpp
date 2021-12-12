@@ -21,8 +21,8 @@ Hodge::Hodge(int width, int height)
     , podge_(true)
     , rainbows_(1)
 {
-    board_ = new Board<int>(width, height);
-    board_buffer_ = new Board<int>(width, height);
+    board_ = new Buffer<int>(width, height);
+    board_buffer_ = new Buffer<int>(width, height);
 
     initializer_.init_center_square();
 }
@@ -44,24 +44,24 @@ void Hodge::stop_cuda() {
 }
 
 /*
- * Board Copy Functions:
+ * Buffer Copy Functions:
  */
-std::set<std::size_t> Hodge::board_types_provided() {
-    std::set<std::size_t> boards = { INT_BOARD };
-    return boards;
+std::set<std::size_t> Hodge::buffer_types_provided() {
+    std::set<std::size_t> buffers = { INT_BUFFER };
+    return buffers;
 }
 
-std::size_t Hodge::select_board_type(std::set<std::size_t> types) {
-    if(types.find(INT_BOARD) != types.end()) {
-        return INT_BOARD;
+std::size_t Hodge::select_buffer_type(std::set<std::size_t> types) {
+    if(types.find(INT_BUFFER) != types.end()) {
+        return INT_BUFFER;
     }
     else {
         return NOT_COMPATIBLE;
     }
 }
 
-void* Hodge::get_board(std::size_t type) {
-    if(type == INT_BOARD) {
+void* Hodge::get_buffer(std::size_t type) {
+    if(type == INT_BUFFER) {
         return static_cast<void*>(board_);
     }
     else {
@@ -69,10 +69,10 @@ void* Hodge::get_board(std::size_t type) {
     }
 }
 
-void Hodge::set_board(void *new_board, std::size_t type) {
-    if(type == INT_BOARD) {
-        Board<int> *temp_board = static_cast<Board<int>*>(new_board);
-        board_->copy_from_board(temp_board, use_gpu_);
+void Hodge::set_buffer(void *new_buffer, std::size_t type) {
+    if(type == INT_BUFFER) {
+        Buffer<int> *temp_buffer = static_cast<Buffer<int>*>(new_buffer);
+        board_->copy_from_buffer(temp_buffer, use_gpu_);
     }
 }
 
@@ -83,7 +83,7 @@ std::string Hodge::get_name() {
     return "Hodge";
 }
 
-void Hodge::get_pixels(Board<Pixel<uint8_t>> *pixels) {
+void Hodge::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
     rainbows_.age_to_pixels(board_, pixels, use_gpu_);
 }
 
@@ -207,7 +207,7 @@ void Hodge::tick() {
         }
     }
     {
-        Board<int> *tmp = board_buffer_;
+        Buffer<int> *tmp = board_buffer_;
         board_buffer_ = board_;
         board_ = tmp;
     }

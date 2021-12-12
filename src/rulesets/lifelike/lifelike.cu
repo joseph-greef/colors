@@ -2,7 +2,7 @@
 #include "lifelike.cuh"
 
 __host__ __device__ static
-int get_num_alive_neighbors(int x, int y, Board<int> *board)
+int get_num_alive_neighbors(int x, int y, Buffer<int> *board)
 {
 
     int check_x, check_y, count = 0;
@@ -38,7 +38,7 @@ int get_num_alive_neighbors(int x, int y, Board<int> *board)
 }
 
 __host__ __device__
-void lifelike_step(Board<int>* board, Board<int>* board_buffer, int index,
+void lifelike_step(Buffer<int>* board, Buffer<int>* board_buffer, int index,
                    bool *born, bool *stay_alive,
                    int num_faders, int current_tick)
 {
@@ -70,7 +70,7 @@ void lifelike_step(Board<int>* board, Board<int>* board_buffer, int index,
 
 
 __global__ static
-void lifelike_kernel(Board<int>* board, Board<int>* board_buffer,
+void lifelike_kernel(Buffer<int>* board, Buffer<int>* board_buffer,
                      bool *born, bool *stay_alive, int num_faders,
                      int current_tick) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
@@ -85,7 +85,7 @@ void lifelike_kernel(Board<int>* board, Board<int>* board_buffer,
 }
 
 
-void call_lifelike_kernel(Board<int> *board, Board<int> *board_buffer, bool *born,
+void call_lifelike_kernel(Buffer<int> *board, Buffer<int> *board_buffer, bool *born,
                           bool *stay_alive, int num_faders, int current_tick) {
     lifelike_kernel<<<512, 128>>>(board->device_copy_, board_buffer->device_copy_,
                                   born, stay_alive, num_faders, current_tick);

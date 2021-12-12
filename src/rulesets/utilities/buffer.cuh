@@ -1,14 +1,14 @@
 
-#ifndef BOARD_CUH
-#define BOARD_CUH
+#ifndef BUFFER_CUH
+#define BUFFER_CUH
 
 #include <cstdint>
 
 #include "cuda_runtime.h"
 
 #define NOT_COMPATIBLE ((size_t)0)
-#define RGBA_BOARD ((size_t)1)
-#define INT_BOARD (typeid(int).hash_code())
+#define RGBA_BUFFER ((size_t)1)
+#define INT_BUFFER (typeid(int).hash_code())
 
 template <class T>
 union Pixel {
@@ -32,24 +32,24 @@ __host__ __device__ inline Pixel<uint8_t> uint32_to_pixel(uint32_t color) {
 }
 
 template <class T>
-class Board {
+class Buffer {
 private:
     T *device_data_;
     T *host_data_;
     bool host_data_alloced_;
 public:
-    Board<T> *device_copy_;
+    Buffer<T> *device_copy_;
     int width_;
     int height_;
 
-    Board(int width, int height);
-    Board(int width, int height, T *host_data);
-    ~Board();
+    Buffer(int width, int height);
+    Buffer(int width, int height, T *host_data);
+    ~Buffer();
 
     void clear();
     void copy_device_to_host();
     void copy_host_to_device();
-    void copy_from_board(Board<T> *other, bool gpu);
+    void copy_from_buffer(Buffer<T> *other, bool gpu);
 
     T* get_data(bool gpu);
     std::size_t get_type();
@@ -79,7 +79,7 @@ public:
     }
 };
 
-#include "board.h.cu"
+#include "buffer.h.cu"
 
-#endif //BOARD_CUH
+#endif //BUFFER_CUH
 

@@ -7,16 +7,17 @@ extern "C" {
 #include <SDL2/SDL.h>
 #include <stdint.h>
 
-#include "board.cuh"
+#include "buffer.cuh"
 
 #define RAINBOW_LENGTH 256
 #define GIF_COLOR_LEN 256
+
 
 class Rainbows {
     public:
         Rainbows(int color_speed);
         ~Rainbows();
-        void age_to_pixels(Board<int> *board, Board<Pixel<uint8_t>> *pixels,
+        void age_to_pixels(Buffer<int> *board, Buffer<Pixel<uint8_t>> *pixels,
                            bool use_gpu);
         void randomize_colors();
         void reset_colors();
@@ -46,7 +47,7 @@ class Rainbows {
         static uint32_t colors_host[][RAINBOW_LENGTH];
         static int num_colors;
 
-        void save_gif_frame(Board<int> *board);
+        void save_gif_frame(Buffer<int> *board);
         void toggle_colors();
         void toggle_gif();
 };

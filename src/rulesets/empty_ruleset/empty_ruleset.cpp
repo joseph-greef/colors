@@ -26,22 +26,22 @@ void EmptyRuleset::stop_cuda() {
 }
 
 /*
- * Board Copy Functions:
+ * Buffer Copy Functions:
  */
-std::set<std::size_t> EmptyRuleset::board_types_provided() {
-    std::set<std::size_t> boards = { };
-    return boards;
+std::set<std::size_t> EmptyRuleset::buffer_types_provided() {
+    std::set<std::size_t> buffers = { };
+    return buffers;
 }
 
-std::size_t EmptyRuleset::select_board_type(std::set<std::size_t> types) {
+std::size_t EmptyRuleset::select_buffer_type(std::set<std::size_t> types) {
     return NOT_COMPATIBLE;
 }
 
-void* EmptyRuleset::get_board(std::size_t type) {
+void* EmptyRuleset::get_buffer(std::size_t type) {
     return NULL;
 }
 
-void EmptyRuleset::set_board(void *new_board, std::size_t type) {
+void EmptyRuleset::set_buffer(void *new_buffer, std::size_t type) {
 }
 
 /*
@@ -50,7 +50,7 @@ void EmptyRuleset::set_board(void *new_board, std::size_t type) {
 std::string EmptyRuleset::get_name() {
     return "EmptyRuleset";
 }
-void EmptyRuleset::get_pixels(Board<Pixel<uint8_t>> *pixels) {
+void EmptyRuleset::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
 }
 
 std::string EmptyRuleset::get_rule_string() {

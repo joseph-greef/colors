@@ -1,7 +1,7 @@
 
 template <class T>
-__host__ __device__ Pixel<T> interpolate(float x, float y, Board<Pixel<T>> &board) {
-    if(x >= board.width_ || x < 0 || y >= board.height_ || y < 0) {
+__host__ __device__ Pixel<T> interpolate(float x, float y, Buffer<Pixel<T>> &buffer) {
+    if(x >= buffer.width_ || x < 0 || y >= buffer.height_ || y < 0) {
         Pixel<T> p = {0, 0, 0, 0};
         return p;
     }
@@ -17,10 +17,10 @@ __host__ __device__ Pixel<T> interpolate(float x, float y, Board<Pixel<T>> &boar
     T tr_bias = 1024 * x_bias * (1-y_bias);
     T tl_bias = 1024 - br_bias - bl_bias - tr_bias;
 
-    Pixel<T> tl = board.get(x1, y1); //buffer[y1 * width + x1].value;
-    Pixel<T> tr = board.get(x2, y1); //buffer[y1 * width + x2].value;
-    Pixel<T> bl = board.get(x2, y1); //buffer[y2 * width + x1].value;
-    Pixel<T> br = board.get(x2, y1); //buffer[y2 * width + x2].value;
+    Pixel<T> tl = buffer.get(x1, y1); //buffer[y1 * width + x1].value;
+    Pixel<T> tr = buffer.get(x2, y1); //buffer[y1 * width + x2].value;
+    Pixel<T> bl = buffer.get(x2, y1); //buffer[y2 * width + x1].value;
+    Pixel<T> br = buffer.get(x2, y1); //buffer[y2 * width + x2].value;
 
     Pixel<T> dest = {0, 0, 0, 0};
 

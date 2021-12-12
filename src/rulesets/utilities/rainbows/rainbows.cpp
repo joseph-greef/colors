@@ -9,6 +9,7 @@
 #include "input_manager.h"
 #include "rainbows.h"
 
+
 Rainbows::Rainbows(int color_speed)
     : alive_color_scheme_(1)
     , alive_offset_(0)
@@ -33,7 +34,7 @@ Rainbows::Rainbows(int color_speed)
 Rainbows::~Rainbows() {
 }
 
-void Rainbows::age_to_pixels(Board<int> *board, Board<Pixel<uint8_t>> *pixels, bool use_gpu) {
+void Rainbows::age_to_pixels(Buffer<int> *board, Buffer<Pixel<uint8_t>> *pixels, bool use_gpu) {
     last_height_ = board->height_;
     last_width_ = board->width_;
     if(use_gpu) {
@@ -79,7 +80,7 @@ void Rainbows::reset_colors() {
     dead_offset_ = 0;
 }
 
-void Rainbows::save_gif_frame(Board<int> *board) {
+void Rainbows::save_gif_frame(Buffer<int> *board) {
     for(int i = 0; i < board->width_ * board->height_; i++) {
         if(board->get(i) > 0) {
             gif_->frame[i] = (board->get(i) + alive_offset_ + color_offset_) &

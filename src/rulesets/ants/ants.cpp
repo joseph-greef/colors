@@ -49,19 +49,19 @@ void Ants::stop_cuda() {
 }
 
 /*
- * Board Copy Functions:
+ * Buffer Copy Functions:
  */
-std::set<std::size_t> Ants::board_types_provided() {
-    std::set<std::size_t> boards = { INT_BOARD };
-    return boards;
+std::set<std::size_t> Ants::buffer_types_provided() {
+    std::set<std::size_t> buffers = { INT_BUFFER };
+    return buffers;
 }
 
-std::size_t Ants::select_board_type(std::set<std::size_t> types) {
+std::size_t Ants::select_buffer_type(std::set<std::size_t> types) {
     return NOT_COMPATIBLE;
 }
 
-void* Ants::get_board(std::size_t type) {
-    if(type == INT_BOARD) {
+void* Ants::get_buffer(std::size_t type) {
+    if(type == INT_BUFFER) {
         return static_cast<void*>(rainbow_board_);
     }
     else {
@@ -69,7 +69,7 @@ void* Ants::get_board(std::size_t type) {
     }
 }
 
-void Ants::set_board(void *new_board, std::size_t type) {
+void Ants::set_buffer(void *new_buffer, std::size_t type) {
 }
 
 std::string Ants::get_name() {
@@ -79,7 +79,7 @@ std::string Ants::get_name() {
 /*
  * Other Standard Ruleset Functions
  */
-void Ants::get_pixels(Board<Pixel<uint8_t>> *pixels) {
+void Ants::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
     if(rainbow_view_) {
         //rainbows_.age_to_pixels(rainbow_board_, pixels);
     }
