@@ -6,6 +6,10 @@
 
 #include "cuda_runtime.h"
 
+#define NOT_COMPATIBLE ((size_t)0)
+#define RGBA_BOARD ((size_t)1)
+#define INT_BOARD (typeid(int).hash_code())
+
 template <class T>
 union Pixel {
     struct {
@@ -45,6 +49,7 @@ public:
     void clear();
     void copy_device_to_host();
     void copy_host_to_device();
+    void copy_from_board(Board<T> *other, bool gpu);
 
     T* get_data(bool gpu);
     std::size_t get_type();

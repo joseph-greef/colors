@@ -149,7 +149,8 @@ int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
     new_ruleset += modifier;
     if(new_ruleset != current_ruleset_ &&
        new_ruleset >= 0 &&
-       new_ruleset < rulesets_.size()) {
+       new_ruleset < rulesets_.size())
+    {
         Ruleset *old_ruleset = active_ruleset_;
 
         active_ruleset_->stop();
@@ -159,15 +160,15 @@ int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
         current_ruleset_ = new_ruleset;
 
         if(transfer_board) {
-            if(active_ruleset_->board_set_type() == BoardType::PixelBoard) {
-                uint32_t tmp_board[width_ * height_];
-                //old_ruleset->get_pixels(tmp_board);
-                //active_ruleset_->set_board(static_cast<void*>(tmp_board));
+            std::size_t selected_type = active_ruleset_->select_board_type(
+                    old_ruleset->board_types_provided());
+            if(selected_type == RGBA_BOARD) {
+                old_ruleset->get_pixels(pixels_);
+                active_ruleset_->set_board(pixels_, RGBA_BOARD);
             }
-            else if (old_ruleset->board_get_type() != BoardType::Other &&
-                     active_ruleset_->board_set_type() != BoardType::Other &&
-                     old_ruleset->board_get_type() == active_ruleset_->board_set_type()) {
-                active_ruleset_->set_board(old_ruleset->get_board());
+            else if(selected_type != NOT_COMPATIBLE) {
+                active_ruleset_->set_board(old_ruleset->get_board(selected_type),
+                                           selected_type);
             }
         }
     }

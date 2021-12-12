@@ -2,24 +2,11 @@
 #define _RULESET_H
 
 #include "SDL2/SDL.h"
+#include <set>
 #include <stdint.h>
 #include <string>
-#include <vector>
 
 #include "board.cuh"
-
-enum NeighborhoodType {
-    VonNeuman,
-    Moore,
-};
-
-namespace BoardType {
-    enum BoardType {
-        AgeBoard,
-        PixelBoard,
-        Other,
-    };
-};
 
 class Ruleset {
     protected:
@@ -32,15 +19,16 @@ class Ruleset {
         Ruleset();
         virtual ~Ruleset();
 
-        virtual BoardType::BoardType board_get_type() = 0;
-        virtual BoardType::BoardType board_set_type() = 0;
-        virtual void* get_board() = 0;
+        virtual std::set<std::size_t> board_types_provided() = 0;
+        virtual std::size_t select_board_type(std::set<std::size_t> types) = 0;
+        virtual void* get_board(std::size_t type) = 0;
+        virtual void set_board(void *new_board, std::size_t type) = 0;
+
         virtual std::string get_name() = 0;
         virtual void get_pixels(Board<Pixel<uint8_t>> *pixels) = 0;
         virtual std::string get_rule_string() = 0;
         virtual void load_rule_string(std::string rules) = 0;
         virtual void print_human_readable_rules() = 0;
-        virtual void set_board(void *new_board) = 0;
         virtual void start();
         virtual void stop();
 

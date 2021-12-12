@@ -1,5 +1,6 @@
 #include <climits>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 
 #include "curand.h"
@@ -31,7 +32,9 @@ Hodge::~Hodge() {
     delete board_buffer_;
 }
 
-
+/*
+ * Cuda Functions:
+ */
 void Hodge::start_cuda() {
     board_->copy_host_to_device();
 }
@@ -40,19 +43,42 @@ void Hodge::stop_cuda() {
     board_->copy_device_to_host();
 }
 
-
-BoardType::BoardType Hodge::board_get_type() {
-    return BoardType::AgeBoard;
+/*
+ * Board Copy Functions:
+ */
+std::set<std::size_t> Hodge::board_types_provided() {
+    std::set<std::size_t> boards = { INT_BOARD };
+    return boards;
 }
 
-BoardType::BoardType Hodge::board_set_type() {
-    return BoardType::AgeBoard;
+std::size_t Hodge::select_board_type(std::set<std::size_t> types) {
+    if(types.find(INT_BOARD) != types.end()) {
+        return INT_BOARD;
+    }
+    else {
+        return NOT_COMPATIBLE;
+    }
 }
 
-void* Hodge::get_board() {
-    return static_cast<void*>(board_);
+void* Hodge::get_board(std::size_t type) {
+    if(type == INT_BOARD) {
+        return static_cast<void*>(board_);
+    }
+    else {
+        return NULL;
+    }
 }
 
+void Hodge::set_board(void *new_board, std::size_t type) {
+    if(type == INT_BOARD) {
+        Board<int> *temp_board = static_cast<Board<int>*>(new_board);
+        board_->copy_from_board(temp_board, use_gpu_);
+    }
+}
+
+/*
+ * Other Standard Ruleset Functions
+ */
 std::string Hodge::get_name() {
     return "Hodge";
 }
@@ -105,10 +131,6 @@ void Hodge::randomize_ruleset() {
     infection_threshold_ = rand() % 4 + 1;
 
     rainbows_.randomize_colors();
-}
-
-void Hodge::set_board(void *new_board) {
-    //memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
 }
 
 void Hodge::start() {
@@ -191,3 +213,6 @@ void Hodge::tick() {
     }
 }
 
+/*
+ * Hodge Specific Functions
+ */

@@ -39,44 +39,46 @@ Ants::~Ants() {
     delete [] world_;
 }
 
-void Ants::add_colony(int num_ants) {
-    colonies_.push_back(new Colony(width_, height_,
-                                   rand() % width_, rand() % height_,
-                                   generate_color()));
-    colonies_.back()->add_ants(&ants_, num_ants);
+/*
+ * Cuda Functions:
+ */
+void Ants::start_cuda() {
 }
 
-BoardType::BoardType Ants::board_get_type() {
-    return BoardType::AgeBoard;
+void Ants::stop_cuda() {
 }
 
-BoardType::BoardType Ants::board_set_type() {
-    return BoardType::Other;
+/*
+ * Board Copy Functions:
+ */
+std::set<std::size_t> Ants::board_types_provided() {
+    std::set<std::size_t> boards = { INT_BOARD };
+    return boards;
 }
 
-uint32_t Ants::generate_color() {
-    uint8_t r = 0;
-    uint8_t b = 0;
-    uint8_t g = 0;
-    do {
-        r = rand() % 245 + 5;
-        g = rand() % 245 + 5;
-        b = rand() % 245 + 5;
-    } while(g > r + b || r + g + b < 200);
-
-    return (r << 0) |
-           (g << 8) |
-           (b << 16);
+std::size_t Ants::select_board_type(std::set<std::size_t> types) {
+    return NOT_COMPATIBLE;
 }
 
-void* Ants::get_board() {
-    return static_cast<void*>(rainbow_board_);
+void* Ants::get_board(std::size_t type) {
+    if(type == INT_BOARD) {
+        return static_cast<void*>(rainbow_board_);
+    }
+    else {
+        return NULL;
+    }
+}
+
+void Ants::set_board(void *new_board, std::size_t type) {
 }
 
 std::string Ants::get_name() {
     return "Ants";
 }
 
+/*
+ * Other Standard Ruleset Functions
+ */
 void Ants::get_pixels(Board<Pixel<uint8_t>> *pixels) {
     if(rainbow_view_) {
         //rainbows_.age_to_pixels(rainbow_board_, pixels);
@@ -131,44 +133,6 @@ void Ants::load_rule_string(std::string rules) {
 }
 
 void Ants::print_human_readable_rules() {
-}
-
-void Ants::reset() {
-    for(Colony *colony: colonies_) {
-        delete colony;
-    }
-    colonies_.clear();
-    ants_.clear();
-    for(Food *food: foods_) {
-        delete food;
-    }
-    foods_.clear();
-
-    restock_colonies(25);
-    for(int i = 0; i < width_ * height_ / starting_food_density_; i++) {
-        foods_.push_back(new Food(rand() % (width_ - 2) + 1,
-                                  rand() % (height_ - 2) + 1,
-                                  rand() % 50));
-    }
-
-    current_tick_ = 0;
-    memset(rainbow_board_, 0, width_ * height_ * sizeof(int));
-}
-
-void Ants::restock_colonies(int num_ants) {
-    while(static_cast<int>(colonies_.size()) < num_colonies_) {
-        std::cout << "restocking" << std::endl;
-        add_colony(num_ants);
-    }
-}
-
-void Ants::set_board(void *new_board) {
-}
-
-void Ants::start_cuda() {
-}
-
-void Ants::stop_cuda() {
 }
 
 void Ants::start() {
@@ -369,3 +333,58 @@ void Ants::tick() {
 
     current_tick_++;
 } //tick()
+
+/*
+ * Ants Specific Functions
+ */
+void Ants::add_colony(int num_ants) {
+    colonies_.push_back(new Colony(width_, height_,
+                                   rand() % width_, rand() % height_,
+                                   generate_color()));
+    colonies_.back()->add_ants(&ants_, num_ants);
+}
+
+uint32_t Ants::generate_color() {
+    uint8_t r = 0;
+    uint8_t b = 0;
+    uint8_t g = 0;
+    do {
+        r = rand() % 245 + 5;
+        g = rand() % 245 + 5;
+        b = rand() % 245 + 5;
+    } while(g > r + b || r + g + b < 200);
+
+    return (r << 0) |
+           (g << 8) |
+           (b << 16);
+}
+
+void Ants::reset() {
+    for(Colony *colony: colonies_) {
+        delete colony;
+    }
+    colonies_.clear();
+    ants_.clear();
+    for(Food *food: foods_) {
+        delete food;
+    }
+    foods_.clear();
+
+    restock_colonies(25);
+    for(int i = 0; i < width_ * height_ / starting_food_density_; i++) {
+        foods_.push_back(new Food(rand() % (width_ - 2) + 1,
+                                  rand() % (height_ - 2) + 1,
+                                  rand() % 50));
+    }
+
+    current_tick_ = 0;
+    memset(rainbow_board_, 0, width_ * height_ * sizeof(int));
+}
+
+void Ants::restock_colonies(int num_ants) {
+    while(static_cast<int>(colonies_.size()) < num_colonies_) {
+        std::cout << "restocking" << std::endl;
+        add_colony(num_ants);
+    }
+}
+

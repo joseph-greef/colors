@@ -60,6 +60,15 @@ void Board<T>::copy_host_to_device() {
 }
 
 template <class T>
+void Board<T>::copy_from_board(Board<T> *other, bool use_gpu) {
+    cudaMemcpy(host_data_, other->get_data(use_gpu), width_ * height_ * sizeof(T),
+               cudaMemcpyHostToHost);
+    if(use_gpu) {
+        copy_host_to_device();
+    }
+}
+
+template <class T>
 T* Board<T>::get_data(bool gpu) {
     if(gpu) {
         cudaMemcpy(host_data_, device_data_,

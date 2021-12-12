@@ -1,6 +1,7 @@
 
 #include <climits>
 #include <iostream>
+#include <sstream>
 #include <stdlib.h>
 
 #include "lifelike.cuh"
@@ -60,6 +61,9 @@ LifeLike::~LifeLike() {
 
 }
 
+/*
+ * Cuda functions
+ */
 void LifeLike::copy_rules_to_gpu() {
     cudaMemcpy(cudev_born_, born_, 9 * sizeof(bool),
                cudaMemcpyHostToDevice);
@@ -77,18 +81,42 @@ void LifeLike::stop_cuda() {
     board_->copy_device_to_host();
 }
 
-BoardType::BoardType LifeLike::board_get_type() {
-    return BoardType::AgeBoard;
+/*
+ * Board Copy Functions:
+ */
+std::set<std::size_t> LifeLike::board_types_provided() {
+    std::set<std::size_t> boards = { INT_BOARD };
+    return boards;
 }
 
-BoardType::BoardType LifeLike::board_set_type() {
-    return BoardType::AgeBoard;
+std::size_t LifeLike::select_board_type(std::set<std::size_t> types) {
+    if(types.find(INT_BOARD) != types.end()) {
+        return INT_BOARD;
+    }
+    else {
+        return NOT_COMPATIBLE;
+    }
 }
 
-void* LifeLike::get_board() {
-    return static_cast<void*>(board_);
+void* LifeLike::get_board(std::size_t type) {
+    if(type == INT_BOARD) {
+        return static_cast<void*>(board_);
+    }
+    else {
+        return NULL;
+    }
 }
 
+void LifeLike::set_board(void *new_board, std::size_t type) {
+    if(type == INT_BOARD) {
+        Board<int> *temp_board = static_cast<Board<int>*>(new_board);
+        board_->copy_from_board(temp_board, use_gpu_);
+    }
+}
+
+/*
+ * Other Standard Ruleset Functions
+ */
 std::string LifeLike::get_name() {
     return "LifeLike";
 }
@@ -157,10 +185,6 @@ void LifeLike::randomize_ruleset() {
 
 }
 
-void LifeLike::set_board(void *new_board) {
-    //memcpy(board_, new_board, width_ * height_* sizeof(board_[0]));
-}
-
 void LifeLike::start() {
     std::cout << "Starting LifeLike" << std::endl;
     Ruleset::start();
@@ -220,4 +244,8 @@ void LifeLike::tick() {
 
     current_tick_++;
 }
+
+/*
+ * LifeLike Specific Functions
+ */
 
