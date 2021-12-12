@@ -233,7 +233,7 @@ void LifeLike::tick() {
         cudaDeviceSynchronize();
     }
     else {
-        for(int i = 0; i < board_->width_ * board_->height_; i++) {
+        for(int i = 0; i < board_->w_ * board_->h_; i++) {
             lifelike_step(board_, board_buffer_, i, born_, stay_alive_,
                           num_faders_, current_tick_);
         }

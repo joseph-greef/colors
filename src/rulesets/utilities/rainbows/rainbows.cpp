@@ -26,8 +26,8 @@ Rainbows::Rainbows(int color_speed)
     , gif_loop_(true)
     , saved_alive_color_scheme_(2)
     , saved_dead_color_scheme_(2)
-    , last_height_(0)
-    , last_width_(0)
+    , last_h_(0)
+    , last_w_(0)
 {
 }
 
@@ -35,8 +35,8 @@ Rainbows::~Rainbows() {
 }
 
 void Rainbows::age_to_pixels(Buffer<int> *board, Buffer<Pixel<uint8_t>> *pixels, bool use_gpu) {
-    last_height_ = board->height_;
-    last_width_ = board->width_;
+    last_h_ = board->h_;
+    last_w_ = board->w_;
     if(use_gpu) {
         call_age_to_pixels_kernel(board, pixels,
                                   alive_color_scheme_, dead_color_scheme_,
@@ -46,7 +46,7 @@ void Rainbows::age_to_pixels(Buffer<int> *board, Buffer<Pixel<uint8_t>> *pixels,
         pixels->copy_device_to_host();
     }
     else {
-        for(int index = 0; index < board->height_ * board->width_; index++) {
+        for(int index = 0; index < board->h_ * board->w_; index++) {
             age_to_pixels_step(board, pixels, index,
                                colors_host[alive_color_scheme_],
                                colors_host[dead_color_scheme_], alive_offset_,
@@ -81,7 +81,7 @@ void Rainbows::reset_colors() {
 }
 
 void Rainbows::save_gif_frame(Buffer<int> *board) {
-    for(int i = 0; i < board->width_ * board->height_; i++) {
+    for(int i = 0; i < board->w_ * board->h_; i++) {
         if(board->get(i) > 0) {
             gif_->frame[i] = (board->get(i) + alive_offset_ + color_offset_) &
                              255;
@@ -189,7 +189,7 @@ void Rainbows::toggle_gif() {
             rainbow_no_alpha[nai + 2] = components[0];
         }
 
-        gif_ = ge_new_gif(str.c_str(), last_width_, last_height_,
+        gif_ = ge_new_gif(str.c_str(), last_w_, last_h_,
                           rainbow_no_alpha, 8, gif_loop_ ? 0 : -1);
         gif_frames_ = gif_frames_setting_;
     }

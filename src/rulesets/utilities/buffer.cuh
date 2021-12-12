@@ -39,8 +39,8 @@ private:
     bool host_data_alloced_;
 public:
     Buffer<T> *device_copy_;
-    int width_;
-    int height_;
+    int w_;
+    int h_;
 
     Buffer(int width, int height);
     Buffer(int width, int height, T *host_data);
@@ -56,7 +56,7 @@ public:
     void set_host_data(T *new_host_data, int width, int height);
 
     __host__ __device__ inline T get(int x, int y) {
-        return get(y * width_ + x);
+        return get(y * w_ + x);
     }
 
     __host__ __device__ inline T get(int index) {
@@ -67,7 +67,7 @@ public:
 #endif //__CUDA_ARCH__
     }
     __host__ __device__ inline void set(int x, int y, T value) {
-        return set(y * width_ + x, value);
+        return set(y * w_ + x, value);
     }
 
     __host__ __device__ inline void set(int index, T value) {

@@ -195,7 +195,7 @@ void Hodge::tick() {
         cudaDeviceSynchronize();
     }
     else {
-        for(int i = 0; i < board_->width_ * board_->height_; i++) {
+        for(int i = 0; i < board_->w_ * board_->h_; i++) {
             if(podge_) {
                 hodgepodge_step(board_, board_buffer_, i, death_threshold_,
                                 infection_rate_, k1_, k2_);

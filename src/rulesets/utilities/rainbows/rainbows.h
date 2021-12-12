@@ -41,8 +41,8 @@ class Rainbows {
         int saved_alive_color_scheme_;
         int saved_dead_color_scheme_;
 
-        int last_height_;
-        int last_width_;
+        int last_h_;
+        int last_w_;
 
         static uint32_t colors_host[][RAINBOW_LENGTH];
         static int num_colors;

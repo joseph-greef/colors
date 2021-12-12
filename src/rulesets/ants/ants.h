@@ -49,8 +49,8 @@ class Ants : public Ruleset {
         void reset();
         void restock_colonies(int num_ants);
 
-        int width_;
-        int height_;
+        int w_;
+        int h_;
 
         void start_cuda();
         void stop_cuda();

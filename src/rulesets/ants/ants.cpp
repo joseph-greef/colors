@@ -20,11 +20,11 @@ Ants::Ants(int width, int height)
     , starting_food_density_(1500)
     , e2_(rd_())
     , dist_(0, 1)
-    , width_(width)
-    , height_(height)
+    , w_(width)
+    , h_(height)
 {
     rainbow_board_ = new int[width * height];
-    world_ = new WorldEntry[width_ * height_];
+    world_ = new WorldEntry[w_ * h_];
     reset();
 }
 
@@ -92,8 +92,8 @@ void Ants::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
             (*colonies_it)->draw_pheromones((uint32_t*)pixels->get_data(false));
         }
         else {
-            for(int j = 0; j < height_; j++) {
-                for(int i = 0; i < width_; i++) {
+            for(int j = 0; j < h_; j++) {
+                for(int i = 0; i < w_; i++) {
                     pixels->set(i, j, {0, 0, 0, 0});
                 }
             }
@@ -102,12 +102,12 @@ void Ants::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
             colony->draw_self((uint32_t*)pixels->get_data(false));
         }
         for(Ant *ant: ants_) {
-            int offset = ant->y * width_ + ant->x;
+            int offset = ant->y * w_ + ant->x;
             uint32_t color = ant->colony->get_color();
             pixels->set(offset, uint32_to_pixel(color));
         }
         for(Food *food: foods_) {
-            int offset = food->y * width_ + food->x;
+            int offset = food->y * w_ + food->x;
             pixels->set(offset, uint32_to_pixel(0x0000FF00)); //Green food
         }
     }
@@ -125,8 +125,8 @@ std::string Ants::get_rule_string() {
 }
 
 void Ants::load_rule_string(std::string rules) {
-    colonies_.push_back(new Colony(width_, height_,
-                                   rand() % width_, rand() % height_,
+    colonies_.push_back(new Colony(w_, h_,
+                                   rand() % w_, rand() % h_,
                                    generate_color(),
                                    rules));
     colonies_.back()->add_ants(&ants_, 5);
@@ -195,7 +195,7 @@ void Ants::tick() {
             ant_to_remove.push_back(ant);
         }
         else {
-            rainbow_board_[ant->y * width_ + ant->x] = rainbow_train_len_;
+            rainbow_board_[ant->y * w_ + ant->x] = rainbow_train_len_;
         }
     }
     //Delete the ones that died
@@ -204,10 +204,10 @@ void Ants::tick() {
     }
 
     if(current_tick_ % color_speed_ == 0) {
-        for(int j = 0; j < height_; j++) {
-            for(int i = 0; i < width_; i++) {
-                if(rainbow_board_[j * width_ + i] > 0) {
-                    rainbow_board_[j * width_ + i]--;
+        for(int j = 0; j < h_; j++) {
+            for(int i = 0; i < w_; i++) {
+                if(rainbow_board_[j * w_ + i] > 0) {
+                    rainbow_board_[j * w_ + i]--;
                 }
             }
         }
@@ -257,10 +257,10 @@ void Ants::tick() {
     restock_colonies(5);
 
     //Detect and handle events
-    memset(world_, 0, width_*height_*sizeof(world_[0]));
+    memset(world_, 0, w_*h_*sizeof(world_[0]));
 
     for(Food *food: foods_) {
-        int offset = food->y * width_ + food->x;
+        int offset = food->y * w_ + food->x;
         world_[offset].type = FoodType;
         world_[offset].ptr = food;
     }
@@ -273,7 +273,7 @@ void Ants::tick() {
 
     ant_to_remove.clear();
     for(Ant *ant: ants_) {
-        int offset = ant->y * width_ + ant->x;
+        int offset = ant->y * w_ + ant->x;
         bool overwrite_world = true;
         if(world_[offset].type == FoodType) {
             Food *f = static_cast<Food*>(world_[offset].ptr);
@@ -282,8 +282,8 @@ void Ants::tick() {
                 if(f->bites_left == 0) {
                     delete f;
                     foods_.remove(f);
-                    foods_.push_back(new Food(rand() % (width_ - 2) + 1,
-                                              rand() % (height_ - 2) + 1,
+                    foods_.push_back(new Food(rand() % (w_ - 2) + 1,
+                                              rand() % (h_ - 2) + 1,
                                               rand() % 50));
                 }
                 ant->has_food = true;
@@ -338,8 +338,8 @@ void Ants::tick() {
  * Ants Specific Functions
  */
 void Ants::add_colony(int num_ants) {
-    colonies_.push_back(new Colony(width_, height_,
-                                   rand() % width_, rand() % height_,
+    colonies_.push_back(new Colony(w_, h_,
+                                   rand() % w_, rand() % h_,
                                    generate_color()));
     colonies_.back()->add_ants(&ants_, num_ants);
 }
@@ -371,14 +371,14 @@ void Ants::reset() {
     foods_.clear();
 
     restock_colonies(25);
-    for(int i = 0; i < width_ * height_ / starting_food_density_; i++) {
-        foods_.push_back(new Food(rand() % (width_ - 2) + 1,
-                                  rand() % (height_ - 2) + 1,
+    for(int i = 0; i < w_ * h_ / starting_food_density_; i++) {
+        foods_.push_back(new Food(rand() % (w_ - 2) + 1,
+                                  rand() % (h_ - 2) + 1,
                                   rand() % 50));
     }
 
     current_tick_ = 0;
-    memset(rainbow_board_, 0, width_ * height_ * sizeof(int));
+    memset(rainbow_board_, 0, w_ * h_ * sizeof(int));
 }
 
 void Ants::restock_colonies(int num_ants) {

@@ -7,8 +7,8 @@
 #include "colony.h"
 
 Colony::Colony(int width, int height, int x, int y, uint32_t color)
-    : height_(height)
-    , width_(width)
+    : h_(height)
+    , w_(width)
     , x_(x)
     , y_(y)
     , color_(color)
@@ -28,14 +28,14 @@ Colony::Colony(int width, int height, int x, int y, uint32_t color)
     if(x_ < 3) {
         x_ = 3;
     }
-    else if(x_ > width_ - 3) {
-        x_ = width_ - 3;
+    else if(x_ > w_ - 3) {
+        x_ = w_ - 3;
     }
     if(y_ < 3) {
         y_ = 3;
     }
-    else if(y_ > height_ - 3) {
-        y_ = height_ - 3;
+    else if(y_ > h_ - 3) {
+        y_ = h_ - 3;
     }
 
     DNA_.aggression_ = dist_positive_(e2_) * 2;
@@ -134,17 +134,17 @@ void Colony::add_ants(std::list<Ant*> *ants, int number) {
 }
 
 void Colony::add_enemy_smell(int x, int y, float amount) {
-    enemy_pheromones_[y * width_ + x] += amount;
+    enemy_pheromones_[y * w_ + x] += amount;
 }
 
 void Colony::add_food_smell(int x, int y, float amount) {
-    food_pheromones_[y * width_ + x] += amount;
+    food_pheromones_[y * w_ + x] += amount;
 }
 
 void Colony::draw_pheromones(uint32_t *pixels) {
-    for(int j = 0; j < height_; j++) {
-        for(int i = 0; i < width_; i++) {
-            int offset = j * width_ + i;
+    for(int j = 0; j < h_; j++) {
+        for(int i = 0; i < w_; i++) {
+            int offset = j * w_ + i;
             //if(home_pheromones_[offset] != 0) {
                 //std::cout << i << " " << j << " " << home_pheromones_[offset] << std::endl;
             //}
@@ -171,7 +171,7 @@ void Colony::draw_self(uint32_t *pixels) {
     for(int j = -2; j <= 2; j++) {
         for(int i = -2; i <= 2; i++) {
             if(i == 0 || j == 0) {
-                int offset = (y_ + j) * width_ + (x_ + i);
+                int offset = (y_ + j) * w_ + (x_ + i);
                 pixels[offset] = color_;
             }
         }
@@ -181,7 +181,7 @@ void Colony::draw_self(uint32_t *pixels) {
 //return whether this colony's ant won
 bool Colony::enemy_encountered(Ant *ant, Ant *enemy_ant,
                                float roll, float enemy_roll) {
-    enemy_pheromones_[ant->y * width_ + ant->x] += DNA_.enemy_encounter_amount_;
+    enemy_pheromones_[ant->y * w_ + ant->x] += DNA_.enemy_encounter_amount_;
 
     if(enemy_ant->colony->get_aggression() + enemy_roll >= DNA_.aggression_ + roll) {
         ants_.remove(ant);
@@ -231,7 +231,7 @@ int Colony::get_num_food_collected() {
 }
 
 int Colony::get_offset() {
-    return y_ * width_ + x_;
+    return y_ * w_ + x_;
 }
 
 uint32_t Colony::get_num_ants() {
@@ -262,9 +262,9 @@ bool Colony::move_ant(Ant *ant) {
                 move_value[j * 3 + i] = -std::numeric_limits<float>::max();
             }
             else {
-                int tmp_x = ((ant->x + i - 1) + width_) % width_;
-                int tmp_y = ((ant->y + j - 1) + height_) % height_;
-                int pheromone_offset = tmp_y * width_ + tmp_x;
+                int tmp_x = ((ant->x + i - 1) + w_) % w_;
+                int tmp_y = ((ant->y + j - 1) + h_) % h_;
+                int pheromone_offset = tmp_y * w_ + tmp_x;
                 if(!ant->has_food) {
                     move_value[j * 3 + i] += food_pheromones_[pheromone_offset];
                     move_value[j * 3 + i] += DNA_.aggression_ *
@@ -318,18 +318,18 @@ bool Colony::move_ant(Ant *ant) {
     if(ant->x < 1) {
         ant->x = 1;
     }
-    else if(ant->x > width_ - 2) {
-        ant->x = width_ - 2;
+    else if(ant->x > w_ - 2) {
+        ant->x = w_ - 2;
     }
     if(ant->y < 1) {
         ant->y = 1;
     }
-    else if(ant->y > height_ - 2) {
-        ant->y = height_ - 2;
+    else if(ant->y > h_ - 2) {
+        ant->y = h_ - 2;
     }
 
 
-    int pheromone_offset = ant->y * width_ + ant->x;
+    int pheromone_offset = ant->y * w_ + ant->x;
     if(ant->enemy_seen) {
         enemy_pheromones_[pheromone_offset] +=
             (DNA_.max_signal_steps_/static_cast<float>(ant->steps_since_event)) *
@@ -349,8 +349,8 @@ bool Colony::move_ant(Ant *ant) {
 }
 
 Colony* Colony::make_child() {
-    Ant *far_ant = new Ant(rand() % width_,
-                           rand() % height_,
+    Ant *far_ant = new Ant(rand() % w_,
+                           rand() % h_,
                            NULL);
     uint32_t new_color = color_;
     ColonyDNA new_dna(DNA_);
@@ -398,7 +398,7 @@ Colony* Colony::make_child() {
 
     std::cout << "Creating child" << std::endl;
     //And return the new colony
-    return new Colony(width_, height_, new_color, &new_dna, far_ant);
+    return new Colony(w_, h_, new_color, &new_dna, far_ant);
 }
 
 bool Colony::owns_ant(Ant *ant) {
@@ -407,15 +407,15 @@ bool Colony::owns_ant(Ant *ant) {
 
 
 void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
-    cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
-    cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
-    cv::Mat food(height_, width_, CV_32F, food_pheromones_);
-    cv::Mat food_buffer(height_, width_, CV_32F, food_pheromones_buffer_);
-    cv::Mat home(height_, width_, CV_32F, home_pheromones_);
-    cv::Mat home_buffer(height_, width_, CV_32F, home_pheromones_buffer_);
+    cv::Mat enemy(h_, w_, CV_32F, enemy_pheromones_);
+    cv::Mat enemy_buffer(h_, w_, CV_32F, enemy_pheromones_buffer_);
+    cv::Mat food(h_, w_, CV_32F, food_pheromones_);
+    cv::Mat food_buffer(h_, w_, CV_32F, food_pheromones_buffer_);
+    cv::Mat home(h_, w_, CV_32F, home_pheromones_);
+    cv::Mat home_buffer(h_, w_, CV_32F, home_pheromones_buffer_);
 
-    food_pheromones_[y_ * width_ + x_] = 0;
-    home_pheromones_[y_ * width_ + x_] += DNA_.home_smell_amount_;
+    food_pheromones_[y_ * w_ + x_] = 0;
+    home_pheromones_[y_ * w_ + x_] += DNA_.home_smell_amount_;
 
     enemy_mat_.upload(enemy, stream);
     food_mat_.upload(food, stream);
@@ -436,15 +436,15 @@ void Colony::queue_cuda_ops(cv::cuda::Stream stream) {
 
 
 void Colony::update_pheromones() {
-    cv::Mat enemy(height_, width_, CV_32F, enemy_pheromones_);
-    cv::Mat enemy_buffer(height_, width_, CV_32F, enemy_pheromones_buffer_);
-    cv::Mat food(height_, width_, CV_32F, food_pheromones_);
-    cv::Mat food_buffer(height_, width_, CV_32F, food_pheromones_buffer_);
-    cv::Mat home(height_, width_, CV_32F, home_pheromones_);
-    cv::Mat home_buffer(height_, width_, CV_32F, home_pheromones_buffer_);
+    cv::Mat enemy(h_, w_, CV_32F, enemy_pheromones_);
+    cv::Mat enemy_buffer(h_, w_, CV_32F, enemy_pheromones_buffer_);
+    cv::Mat food(h_, w_, CV_32F, food_pheromones_);
+    cv::Mat food_buffer(h_, w_, CV_32F, food_pheromones_buffer_);
+    cv::Mat home(h_, w_, CV_32F, home_pheromones_);
+    cv::Mat home_buffer(h_, w_, CV_32F, home_pheromones_buffer_);
 
-    food_pheromones_[y_ * width_ + x_] = 0;
-    home_pheromones_[y_ * width_ + x_] += DNA_.home_smell_amount_;
+    food_pheromones_[y_ * w_ + x_] = 0;
+    home_pheromones_[y_ * w_ + x_] += DNA_.home_smell_amount_;
 
     enemy *= DNA_.pheromone_decay_rate_;
     cv::GaussianBlur(enemy, enemy_buffer, cv::Size(DNA_.enemy_blur_size_, DNA_.enemy_blur_size_), DNA_.enemy_smooth_amount_);

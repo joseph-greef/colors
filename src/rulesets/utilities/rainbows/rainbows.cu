@@ -33,7 +33,7 @@ void age_to_pixels_kernel(Buffer<int> *board, Buffer<Pixel<uint8_t>> *pixels,
                           int alive_offset, int dead_offset, int color_offset,
                           bool changing_background) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
-    while (index < board->height_ * board->width_) {
+    while (index < board->h_ * board->w_) {
         age_to_pixels_step(board, pixels, index,
                            colors_device[alive_color_scheme],
                            colors_device[dead_color_scheme], alive_offset,

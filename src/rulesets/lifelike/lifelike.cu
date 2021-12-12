@@ -12,8 +12,8 @@ int get_num_alive_neighbors(int x, int y, Buffer<int> *board)
                 continue;
 
 
-            check_x = (i + board->width_) % board->width_;
-            check_y = (j + board->height_) % board->height_;
+            check_x = (i + board->w_) % board->w_;
+            check_y = (j + board->h_) % board->h_;
             //and check the coordinate, if it's alive increase count
             if (board->get(check_x, check_y) > 0) {
                 count++;
@@ -42,8 +42,8 @@ void lifelike_step(Buffer<int>* board, Buffer<int>* board_buffer, int index,
                    bool *born, bool *stay_alive,
                    int num_faders, int current_tick)
 {
-    int j = index / board->width_;
-    int i = index % board->width_;
+    int j = index / board->w_;
+    int i = index % board->w_;
     //get how many alive neighbors it has
     int neighbors = get_num_alive_neighbors(i, j, board);
 
@@ -74,7 +74,7 @@ void lifelike_kernel(Buffer<int>* board, Buffer<int>* board_buffer,
                      bool *born, bool *stay_alive, int num_faders,
                      int current_tick) {
     unsigned int index = blockIdx.x * blockDim.x + threadIdx.x;
-    while (index < board->height_ * board->width_) {
+    while (index < board->h_ * board->w_) {
 
         lifelike_step(board, board_buffer, index, born, stay_alive, num_faders,
                       current_tick);

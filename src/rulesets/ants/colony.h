@@ -37,8 +37,8 @@ struct ColonyDNA {
 class Colony {
     private:
         //Info variables
-        int height_;
-        int width_;
+        int h_;
+        int w_;
         int x_;
         int y_;
         int colony_number_;

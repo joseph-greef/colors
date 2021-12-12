@@ -26,8 +26,8 @@ void Initializer::clear_buffer() {
 
 void Initializer::init_center_cross() {
     Buffer<int> *buffer = *buffer_ptr_;
-    int h = buffer->height_;
-    int w = buffer->width_;
+    int h = buffer->h_;
+    int w = buffer->w_;
     buffer->clear();
     for(int i = w / 2 - density_; i < w / 2 + density_; i++) {
         for(int j = h / 2 - dot_radius_; j < h / 2 + dot_radius_; j++) {
@@ -44,8 +44,8 @@ void Initializer::init_center_cross() {
 
 void Initializer::init_center_diamond() {
     Buffer<int> *buffer = *buffer_ptr_;
-    int h = buffer->height_;
-    int w = buffer->width_;
+    int h = buffer->h_;
+    int w = buffer->w_;
     buffer->clear();
     for (int i = w / 2 - dot_radius_; i < w / 2 + dot_radius_; i++) {
         for (int j = h /  2 - dot_radius_; j < h / 2 + dot_radius_; j++) {
@@ -59,8 +59,8 @@ void Initializer::init_center_diamond() {
 
 void Initializer::init_center_square() {
     Buffer<int> *buffer = *buffer_ptr_;
-    int h = buffer->height_;
-    int w = buffer->width_;
+    int h = buffer->h_;
+    int w = buffer->w_;
     buffer->clear();
     for (int i = w / 2 - dot_radius_; i < w / 2 + dot_radius_; i++) {
         for (int j = h /  2 - dot_radius_; j < h / 2 + dot_radius_; j++) {
@@ -72,8 +72,8 @@ void Initializer::init_center_square() {
 
 void Initializer::init_random_buffer() {
     Buffer<int> *buffer = *buffer_ptr_;
-    int h = buffer->height_;
-    int w = buffer->width_;
+    int h = buffer->h_;
+    int w = buffer->w_;
     buffer->clear();
     for (int i = 0; i < w; i++) {
         for (int j = 0; j < h; j++) {
@@ -86,8 +86,8 @@ void Initializer::init_random_buffer() {
 std::string Initializer::init_words(std::string words) {
     Buffer<int> *buffer = *buffer_ptr_;
     int full_width = words.length() * 10 * word_size_;
-    int x = (buffer->width_ - full_width) / 2;
-    int y = (buffer->height_ - 8 * word_size_) / 2;
+    int x = (buffer->w_ - full_width) / 2;
+    int y = (buffer->h_ - 8 * word_size_) / 2;
 
     buffer->clear();
     for(char c: words) {

@@ -1,7 +1,7 @@
 
 template <class T>
 __host__ __device__ Pixel<T> interpolate(float x, float y, Buffer<Pixel<T>> &buffer) {
-    if(x >= buffer.width_ || x < 0 || y >= buffer.height_ || y < 0) {
+    if(x >= buffer.w_ || x < 0 || y >= buffer.h_ || y < 0) {
         Pixel<T> p = {0, 0, 0, 0};
         return p;
     }
