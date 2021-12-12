@@ -25,6 +25,7 @@ class Game {
         bool running_;
         TempRuleEntry saved_rules_[10];
         SDL_Window *window_;
+        Board<Pixel<uint8_t>> *pixels_;
         int width_;
         int height_;
 
@@ -42,7 +43,6 @@ class Game {
     public:
         Game(int fps_target, int width, int height);
         ~Game();
-        void draw_board(uint32_t *board);
         void main(void);
 };
 

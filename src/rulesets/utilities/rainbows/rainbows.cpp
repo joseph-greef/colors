@@ -33,19 +33,16 @@ Rainbows::Rainbows(int color_speed)
 Rainbows::~Rainbows() {
 }
 
-void Rainbows::age_to_pixels(Board<int> *board, uint32_t *pixels, bool use_gpu) {
+void Rainbows::age_to_pixels(Board<int> *board, Board<Pixel<uint8_t>> *pixels, bool use_gpu) {
     last_height_ = board->height_;
     last_width_ = board->width_;
     if(use_gpu) {
-        uint32_t *pixels_device = NULL;
-        int pixels_size = board->width_ * board->height_ * sizeof(uint32_t);
-        cudaMalloc((void**)&pixels_device, pixels_size);
-        call_age_to_pixels_kernel(board->device_copy_, pixels_device,
+        call_age_to_pixels_kernel(board, pixels,
                                   alive_color_scheme_, dead_color_scheme_,
                                   alive_offset_, dead_offset_, color_offset_,
                                   changing_background_);
-        cudaMemcpy(pixels, pixels_device, pixels_size, cudaMemcpyDeviceToHost);
-        cudaFree((void*)pixels_device);
+
+        pixels->copy_device_to_host();
     }
     else {
         for(int index = 0; index < board->height_ * board->width_; index++) {

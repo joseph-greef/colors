@@ -77,7 +77,7 @@ std::string Ants::get_name() {
     return "Ants";
 }
 
-void Ants::get_pixels(uint32_t *pixels) {
+void Ants::get_pixels(Board<Pixel<uint8_t>> *pixels) {
     if(rainbow_view_) {
         //rainbows_.age_to_pixels(rainbow_board_, pixels);
     }
@@ -87,25 +87,26 @@ void Ants::get_pixels(uint32_t *pixels) {
         {
             auto colonies_it = colonies_.begin();
             std::advance(colonies_it, colony_pheromone_display_ - 1);
-            (*colonies_it)->draw_pheromones(pixels);
+            (*colonies_it)->draw_pheromones((uint32_t*)pixels->get_data(false));
         }
         else {
             for(int j = 0; j < height_; j++) {
                 for(int i = 0; i < width_; i++) {
-                    pixels[j * width_ + i] = 0;
+                    pixels->set(i, j, {0, 0, 0, 0});
                 }
             }
         }
         for(Colony *colony: colonies_) {
-            colony->draw_self(pixels);
+            colony->draw_self((uint32_t*)pixels->get_data(false));
         }
         for(Ant *ant: ants_) {
             int offset = ant->y * width_ + ant->x;
-            pixels[offset] = ant->colony->get_color();
+            uint32_t color = ant->colony->get_color();
+            pixels->set(offset, uint32_to_pixel(color));
         }
         for(Food *food: foods_) {
             int offset = food->y * width_ + food->x;
-            pixels[offset] = 0x00FF00; //Green food
+            pixels->set(offset, uint32_to_pixel(0x0000FF00)); //Green food
         }
     }
 }

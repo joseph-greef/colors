@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "board.cuh"
+
 enum NeighborhoodType {
     VonNeuman,
     Moore,
@@ -34,7 +36,7 @@ class Ruleset {
         virtual BoardType::BoardType board_set_type() = 0;
         virtual void* get_board() = 0;
         virtual std::string get_name() = 0;
-        virtual void get_pixels(uint32_t *pixels) = 0;
+        virtual void get_pixels(Board<Pixel<uint8_t>> *pixels) = 0;
         virtual std::string get_rule_string() = 0;
         virtual void load_rule_string(std::string rules) = 0;
         virtual void print_human_readable_rules() = 0;
@@ -53,3 +55,4 @@ class Ruleset {
 #define NUM_RULESETS 3
 
 #endif //_RULESET_H
+

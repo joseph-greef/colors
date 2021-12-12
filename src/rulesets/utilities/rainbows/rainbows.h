@@ -16,7 +16,8 @@ class Rainbows {
     public:
         Rainbows(int color_speed);
         ~Rainbows();
-        void age_to_pixels(Board<int> *board, uint32_t *pixels, bool use_gpu);
+        void age_to_pixels(Board<int> *board, Board<Pixel<uint8_t>> *pixels,
+                           bool use_gpu);
         void randomize_colors();
         void reset_colors();
         void start();

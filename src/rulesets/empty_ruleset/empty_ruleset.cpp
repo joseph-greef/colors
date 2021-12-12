@@ -38,7 +38,7 @@ void* EmptyRuleset::get_board() {
 std::string EmptyRuleset::get_name() {
     return "EmptyRuleset";
 }
-void EmptyRuleset::get_pixels(uint32_t *pixels) {
+void EmptyRuleset::get_pixels(Board<Pixel<uint8_t>> *pixels) {
 }
 
 std::string EmptyRuleset::get_rule_string() {

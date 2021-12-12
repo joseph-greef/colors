@@ -61,6 +61,9 @@ Game::Game(int fps_target, int width, int height)
     SDL_ShowCursor(0);
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
+    pixels_ = new Board<Pixel<uint8_t>>(width, height,
+            static_cast<Pixel<uint8_t>*>(SDL_GetWindowSurface(window_)->pixels));
+
     rulesets_.push_back(new LifeLike(width_, height_));
     rulesets_.push_back(new Hodge(width_, height_));
     rulesets_.push_back(new Ants(width_, height_));
@@ -158,8 +161,8 @@ int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
         if(transfer_board) {
             if(active_ruleset_->board_set_type() == BoardType::PixelBoard) {
                 uint32_t tmp_board[width_ * height_];
-                old_ruleset->get_pixels(tmp_board);
-                active_ruleset_->set_board(static_cast<void*>(tmp_board));
+                //old_ruleset->get_pixels(tmp_board);
+                //active_ruleset_->set_board(static_cast<void*>(tmp_board));
             }
             else if (old_ruleset->board_get_type() != BoardType::Other &&
                      active_ruleset_->board_set_type() != BoardType::Other &&
@@ -169,10 +172,6 @@ int Game::change_ruleset(int new_ruleset, int modifier, bool transfer_board) {
         }
     }
     return 0;
-}
-
-void Game::draw_board(uint32_t *board) {
-    active_ruleset_->get_pixels(board);
 }
 
 void Game::load_rule_string_from_clipboard(void) {
@@ -215,8 +214,7 @@ void Game::main(void) {
     while(running_) {
         auto start_time = std::chrono::high_resolution_clock::now();
 
-        active_ruleset_->get_pixels(
-                static_cast<uint32_t*>(SDL_GetWindowSurface(window_)->pixels));
+        active_ruleset_->get_pixels(pixels_);
         SDL_UpdateWindowSurface(window_);
 
         active_ruleset_->tick();

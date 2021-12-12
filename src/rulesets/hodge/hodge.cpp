@@ -57,7 +57,7 @@ std::string Hodge::get_name() {
     return "Hodge";
 }
 
-void Hodge::get_pixels(uint32_t *pixels) {
+void Hodge::get_pixels(Board<Pixel<uint8_t>> *pixels) {
     rainbows_.age_to_pixels(board_, pixels, use_gpu_);
 }
 
