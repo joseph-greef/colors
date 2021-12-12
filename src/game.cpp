@@ -18,8 +18,6 @@ Game::Game(int fps_target, int width, int height)
     , current_ruleset_(0)
     , fps_target_(fps_target)
     , running_(true)
-    , width_(width)
-    , height_(height)
 {
     SDL_DisplayMode display_mode;
 
@@ -42,11 +40,11 @@ Game::Game(int fps_target, int width, int height)
     }
 
     SDL_GetCurrentDisplayMode(0, &display_mode);
-    if(height_ < 1) {
-        height_ = display_mode.h;
+    if(height < 1) {
+        height = display_mode.h;
     }
-    if(width_ < 1) {
-        width_ = display_mode.w;
+    if(width < 1) {
+        width = display_mode.w;
     }
     if(fps_target_ < 1) {
         fps_target_ = display_mode.refresh_rate;
@@ -55,8 +53,8 @@ Game::Game(int fps_target, int width, int height)
     window_ = SDL_CreateWindow("Colors",               // window title
                                SDL_WINDOWPOS_CENTERED, // x position
                                SDL_WINDOWPOS_CENTERED, // y position
-                               width_,                 // width
-                               height_,                // height
+                               width,                 // width
+                               height,                // height
                                SDL_WINDOW_BORDERLESS);
     SDL_ShowCursor(0);
     SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -64,9 +62,9 @@ Game::Game(int fps_target, int width, int height)
     pixels_ = new Buffer<Pixel<uint8_t>>(width, height,
             static_cast<Pixel<uint8_t>*>(SDL_GetWindowSurface(window_)->pixels));
 
-    rulesets_.push_back(new LifeLike(width_, height_));
-    rulesets_.push_back(new Hodge(width_, height_));
-    rulesets_.push_back(new Ants(width_, height_));
+    rulesets_.push_back(new LifeLike(width, height));
+    rulesets_.push_back(new Hodge(width, height));
+    rulesets_.push_back(new Ants(width, height));
     active_ruleset_ = rulesets_[current_ruleset_];
     active_ruleset_->start();
 

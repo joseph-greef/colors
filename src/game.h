@@ -26,8 +26,6 @@ class Game {
         TempRuleEntry saved_rules_[10];
         SDL_Window *window_;
         Buffer<Pixel<uint8_t>> *pixels_;
-        int width_;
-        int height_;
 
         int change_ruleset(int new_ruleset, int modifier, bool transfer_buffer);
         void load_rule_string_from_clipboard(void);
