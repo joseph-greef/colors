@@ -4,6 +4,7 @@
 #include <list>
 #include <random>
 
+#include "rainbows.h"
 #include "ruleset.h"
 #include "colony.h"
 #include "food.h"

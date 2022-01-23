@@ -65,6 +65,7 @@ Game::Game(int fps_target, int width, int height)
     rulesets_.push_back(new LifeLike(width, height));
     rulesets_.push_back(new Hodge(width, height));
     rulesets_.push_back(new Ants(width, height));
+    rulesets_.push_back(new Painting(width, height));
     rulesets_.push_back(new EmptyRuleset(width, height));
     active_ruleset_ = rulesets_[current_ruleset_];
     active_ruleset_->start();
