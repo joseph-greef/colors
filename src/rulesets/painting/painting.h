@@ -11,7 +11,10 @@
 
 class Painting : public Ruleset {
     private:
+        Buffer<int> *age_board_;
+        Stroke current_stroke_;
         Rainbows rainbows_;
+        double time_;
 
         void start_cuda();
         void stop_cuda();

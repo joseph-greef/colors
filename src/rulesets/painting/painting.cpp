@@ -10,11 +10,15 @@
 
 Painting::Painting(int width, int height)
     : Ruleset()
+    , current_stroke_()
     , rainbows_(1)
+    , time_(0)
 {
+    age_board_ = new Buffer<int>(width, height);
 }
 
 Painting::~Painting() {
+    delete age_board_;
 }
 
 /*
@@ -32,7 +36,7 @@ void Painting::stop_cuda() {
  * Buffer Copy Functions:
  */
 std::set<std::size_t> Painting::buffer_types_provided() {
-    std::set<std::size_t> buffers= {  };
+    std::set<std::size_t> buffers= { INT_BUFFER };
     return buffers;
 }
 
@@ -55,6 +59,7 @@ std::string Painting::get_name() {
 }
 
 void Painting::get_pixels(Buffer<Pixel<uint8_t>> *pixels) {
+    rainbows_.age_to_pixels(age_board_, pixels, use_gpu_);
 }
 
 std::string Painting::get_rule_string() {
@@ -83,7 +88,9 @@ void Painting::tick() {
     //    call_cuda_painting();
     //}
     //else {
+        current_stroke_.mark(age_board_, time_);
     //}
+    time_ += 1;
 }
 
 /*
